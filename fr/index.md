@@ -12,7 +12,7 @@ hero:
 features:
   - title: "Serveur de Langage Clice"
     details: "Serveur de langage C++ de nouvelle génération offrant une autocomplétion intelligente et une navigation dans le code"
-    link: /clice/fr
+    link: https://docs.clice.io/clice/
     linkText: "En Savoir Plus"
   - title: "Outil de Construction Catter"
     details: "Outil puissant d'interception du processus de construction pour générer des bases de données de compilation et analyser les builds"

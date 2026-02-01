@@ -13,7 +13,7 @@ hero:
 features:
   - title: "Clice Language Server"
     details: "下一代 C++ 语言服务器，提供智能代码补全和导航功能"
-    link: /clice/zh
+    link: https://docs.clice.io/clice/zh/
     linkText: "了解更多"
   - title: "Catter Build Tool"
     details: "强大的构建过程拦截工具，生成编译数据库并进行构建分析"

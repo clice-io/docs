@@ -12,7 +12,7 @@ hero:
 features:
   - title: "Clice 言語サーバー"
     details: "インテリジェントなコード補完とナビゲーションを提供する次世代 C++ 言語サーバー"
-    link: /clice/zh
+    link: https://docs.clice.io/clice/zh/
     linkText: "詳細を見る"
   - title: "Catter ビルドツール"
     details: "コンパイルデータベースの生成とビルド分析を行う強力なビルドプロセス傍受ツール"
