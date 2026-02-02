@@ -1,0 +1,1 @@
+import{_ as t,o as a,c as e}from"./chunks/framework.9XX48Qcy.js";const d=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"gsoc/application.md","filePath":"en/gsoc/application.md"}'),o={name:"gsoc/application.md"};function c(n,p,s,i,r,l){return a(),e("div")}const m=t(o,[["render",c]]);export{d as __pageData,m as default};
