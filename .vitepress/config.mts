@@ -5,7 +5,7 @@ export default defineConfig({
     description: "新一代 C++ 工具链",
     cleanUrls: true,
     rewrites: {
-        "en/:rest": ":rest",
+        "en/:rest*": ":rest*",
     },
     themeConfig: {
         socialLinks: [
