@@ -7,13 +7,12 @@ export default defineConfig({
     rewrites: {
         "en/:rest": ":rest",
     },
-
     themeConfig: {
         socialLinks: [
             { icon: 'github', link: 'https://github.com/clice-io' }
         ],
+        outline: "deep",
     },
-
     locales: {
         root: {
             label: 'English',
