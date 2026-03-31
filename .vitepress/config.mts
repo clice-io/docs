@@ -116,29 +116,5 @@ export default defineConfig({
                 },
             },
         },
-        fr: {
-            label: "Français",
-            lang: "fr-FR",
-            link: "/fr",
-            themeConfig: {
-                nav: [
-                    { text: "Accueil", link: "/fr/" },
-                    { text: "Clice", link: "/clice/guide/what-is-clice" },
-                    { text: "Catter", link: "/catter/overview" },
-                ],
-            },
-        },
-        ja: {
-            label: "日本語",
-            lang: "ja-JP",
-            link: "/ja",
-            themeConfig: {
-                nav: [
-                    { text: "ホーム", link: "/ja/" },
-                    { text: "Clice", link: "/zh/clice/guide/what-is-clice" },
-                    { text: "Catter", link: "/zh/catter/overview" },
-                ],
-            },
-        },
     },
 });
