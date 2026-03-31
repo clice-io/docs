@@ -18,4 +18,8 @@ features:
     details: "Powerful build process interception tool for generating compilation databases and build analysis"
     link: https://github.com/clice-io/catter
     linkText: "Learn More"
+  - title: "Clore Documentation Generator"
+    details: "Documentation generation tool that combines LLM and language services to produce high-quality docs from code and comments"
+    link: https://github.com/clice-io/clore
+    linkText: "Learn More"
 ---

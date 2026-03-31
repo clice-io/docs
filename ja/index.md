@@ -18,4 +18,8 @@ features:
     details: "コンパイルデータベースの生成とビルド分析を行う強力なビルドプロセス傍受ツール"
     link: https://github.com/clice-io/catter
     linkText: "詳細を見る"
+  - title: "Clore ドキュメント生成ツール"
+    details: "LLM と言語サービスを組み合わせ、コードとコメントから高品質なドキュメントを生成するツール"
+    link: https://github.com/clice-io/clore
+    linkText: "詳細を見る"
 ---

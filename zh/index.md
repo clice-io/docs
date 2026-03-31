@@ -19,4 +19,8 @@ features:
     details: "强大的构建过程拦截工具，生成编译数据库并进行构建分析"
     link: https://github.com/clice-io/catter
     linkText: "了解更多"
+  - title: "Clore Documentation Generator"
+    details: "结合 LLM 和语言服务的文档生成工具，可从代码与注释中生成高质量文档"
+    link: https://github.com/clice-io/clore
+    linkText: "了解更多"
 ---
