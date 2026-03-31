@@ -12,11 +12,11 @@ hero:
 features:
   - title: "Clice 言語サーバー"
     details: "インテリジェントなコード補完とナビゲーションを提供する次世代 C++ 言語サーバー"
-    link: https://docs.clice.io/clice/zh/
+    link: /zh/clice/guide/what-is-clice
     linkText: "詳細を見る"
   - title: "Catter ビルドツール"
     details: "コンパイルデータベースの生成とビルド分析を行う強力なビルドプロセス傍受ツール"
-    link: https://github.com/clice-io/catter
+    link: /zh/catter/overview
     linkText: "詳細を見る"
   - title: "Clore ドキュメント生成ツール"
     details: "LLM と言語サービスを組み合わせ、コードとコメントから高品質なドキュメントを生成するツール"

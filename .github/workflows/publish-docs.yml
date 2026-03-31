@@ -24,6 +24,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Clone&Copy Clice
+        shell: bash
+        run: |
+          git clone https://github.com/clice-io/clice.git
+          cp -a clice/docs/en/. ./en/clice/
+          cp -a clice/docs/zh/. ./zh/clice/
+
+      - name: Clone&Copy Catter
+        shell: bash
+        run: |
+          git clone https://github.com/clice-io/catter.git
+          cp -a catter/doc/. ./en/catter/
+          cp -a catter/doc/. ./zh/catter/
+
       - name: Build
         run: npm run build
 
