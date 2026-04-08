@@ -12,10 +12,14 @@ hero:
 features:
   - title: "Clice Language Server"
     details: "Next-generation C++ language server providing intelligent code completion and navigation"
-    link: https://docs.clice.io/clice/
+    link: /clice/guide/what-is-clice
     linkText: "Learn More"
   - title: "Catter Build Tool"
     details: "Powerful build process interception tool for generating compilation databases and build analysis"
-    link: https://github.com/clice-io/catter
+    link: /catter/overview
+    linkText: "Learn More"
+  - title: "Clore Documentation Generator"
+    details: "Documentation generation tool that combines LLM and language services to produce high-quality docs from code and comments"
+    link: https://github.com/clice-io/clore
     linkText: "Learn More"
 ---
