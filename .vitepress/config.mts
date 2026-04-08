@@ -19,9 +19,9 @@ export default defineConfig({
             themeConfig: {
                 nav: [
                     { text: "Blog", link: "/blog/" },
-                    { text: "Clice", link: "/clice/guide/what-is-clice" },
-                    { text: "Catter", link: "/catter/overview" },
-                    { text: "Cltas", link: "https://clice-io.github.io/cltas/" },
+                    { text: "clice", link: "/clice/guide/what-is-clice" },
+                    { text: "catter", link: "/catter/overview" },
+                    { text: "cltas", link: "https://clice-io.github.io/cltas/" },
                 ],
                 sidebar: {
                     "/clice/": [
@@ -72,9 +72,9 @@ export default defineConfig({
             themeConfig: {
                 nav: [
                     { text: "博客", link: "/zh/blog/" },
-                    { text: "Clice", link: "/zh/clice/guide/what-is-clice" },
-                    { text: "Catter", link: "/zh/catter/overview" },
-                    { text: "Cltas", link: "https://clice-io.github.io/cltas/" },
+                    { text: "clice", link: "/zh/clice/guide/what-is-clice" },
+                    { text: "catter", link: "/zh/catter/overview" },
+                    { text: "cltas", link: "https://clice-io.github.io/cltas/" },
                 ],
                 sidebar: {
                     "/zh/clice/": [
