@@ -1,29 +1,59 @@
 <script setup lang="ts">
-const props = defineProps<{
-  date: string
-  author: string
-  title: string
-  summary: string
-  href: string
-  cta: string
-}>()
+function isNonEmptyString(value: unknown): boolean {
+  return typeof value === 'string' && value.trim().length > 0
+}
 
-function assertText(value: string, field: string): void {
-  if (typeof value !== 'string' || value.trim().length === 0) {
+const props = defineProps({
+  date: {
+    type: String,
+    required: true,
+    validator: isNonEmptyString
+  },
+  author: {
+    type: String,
+    required: true,
+    validator: isNonEmptyString
+  },
+  title: {
+    type: String,
+    required: true,
+    validator: isNonEmptyString
+  },
+  summary: {
+    type: String,
+    required: true,
+    validator: isNonEmptyString
+  },
+  href: {
+    type: String,
+    required: true,
+    validator: isNonEmptyString
+  },
+  cta: {
+    type: String,
+    required: true,
+    validator: isNonEmptyString
+  }
+})
+
+function assertText(value: unknown, field: string): void {
+  if (!isNonEmptyString(value)) {
     throw new Error(`[BlogFeaturedCard] Required field "${field}" must be a non-empty string.`)
   }
 }
 
-assertText(props.date, 'date')
-assertText(props.author, 'author')
-assertText(props.title, 'title')
-assertText(props.summary, 'summary')
-assertText(props.href, 'href')
-assertText(props.cta, 'cta')
+if (import.meta.env.DEV) {
+  assertText(props.date, 'date')
+  assertText(props.author, 'author')
+  assertText(props.title, 'title')
+  assertText(props.summary, 'summary')
+  assertText(props.href, 'href')
+  assertText(props.cta, 'cta')
+}
 </script>
 
 <template>
-  <a class="featured-card" :href="href" target="_blank" rel="noreferrer">
+  <a class="featured-card" :href="href" target="_blank" rel="noopener noreferrer">
     <div class="copy">
       <p class="meta">{{ date }} · {{ author }}</p>
       <h2>{{ title }}</h2>

@@ -1,15 +1,17 @@
 <script setup lang="ts">
-const props = defineProps<{
-  title: string
-}>()
+const props = defineProps({
+  title: {
+    type: String,
+    required: true,
+    validator: (value: string) => value.trim().length > 0,
+  },
+})
 
-function assertText(value: string, field: string): void {
-  if (typeof value !== 'string' || value.trim().length === 0) {
-    throw new Error(`[BlogShell] Required field "${field}" must be a non-empty string.`)
+if (import.meta.env.DEV) {
+  if (!props.title || props.title.trim().length === 0) {
+    throw new Error(`[BlogShell] Required field "title" must be a non-empty string.`)
   }
 }
-
-assertText(props.title, 'title')
 </script>
 
 <template>

@@ -8,7 +8,7 @@ outline: false
 <BlogShell title="Technical Blog">
   <template #featured>
     <BlogFeaturedCard
-      date="2025-12-20"
+      date="2025-12-21"
       author="ykiko"
       title="Building an Elegant C++ Cross-Platform Development and Build Workflow"
       summary="A practical walkthrough for setting up a clean cross-platform C++ build workflow across compilers, platforms, and build systems."
@@ -26,7 +26,7 @@ outline: false
     cta="Read article"
   />
   <BlogPostCard
-    date="2025-02-04"
+    date="2025-02-05"
     author="ykiko"
     title="Deep Dive into Clang (Part 1)"
     summary="Entry points for understanding Clang internals and APIs when building practical C++ tooling."
@@ -50,7 +50,7 @@ outline: false
     cta="Read article"
   />
   <BlogPostCard
-    date="2024-04-16"
+    date="2024-04-17"
     author="ykiko"
     title="Thoroughly Understanding C++ ABI"
     summary="A practical ABI explanation focused on binary compatibility and engineering tradeoffs."
