@@ -1,7 +1,7 @@
 node_modules
 .DS_Store
 .vitepress/cache
-.vitepress/temp
+.vitepress/.temp
 .vitepress/dist
 clice/
 catter/
