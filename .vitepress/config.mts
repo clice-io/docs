@@ -18,7 +18,7 @@ export default defineConfig({
             link: "/",
             themeConfig: {
                 nav: [
-                    { text: "Home", link: "/" },
+                    { text: "Blog", link: "/blog/" },
                     { text: "Clice", link: "/clice/guide/what-is-clice" },
                     { text: "Catter", link: "/catter/overview" },
                     { text: "Cltas", link: "https://clice-io.github.io/cltas/" },
@@ -71,7 +71,7 @@ export default defineConfig({
             link: "/zh",
             themeConfig: {
                 nav: [
-                    { text: "首页", link: "/zh/" },
+                    { text: "博客", link: "/zh/blog/" },
                     { text: "Clice", link: "/zh/clice/guide/what-is-clice" },
                     { text: "Catter", link: "/zh/catter/overview" },
                     { text: "Cltas", link: "https://clice-io.github.io/cltas/" },
