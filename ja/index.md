@@ -18,8 +18,12 @@ features:
     details: "コンパイルデータベースの生成とビルド分析を行う強力なビルドプロセス傍受ツール"
     link: /zh/catter/overview
     linkText: "詳細を見る"
-  - title: "Clore ドキュメント生成ツール"
-    details: "LLM と言語サービスを組み合わせ、コードとコメントから高品質なドキュメントを生成するツール"
-    link: https://github.com/clice-io/clore
+  - title: "Cltas Toolchain Database"
+    details: "システムヘッダーパス、暗黙フラグ、プラットフォーム差異、クロスコンパイル情報を集約した C/C++ ツールチェーンの統合メタデータDB"
+    link: https://github.com/clice-io/cltas
+    linkText: "詳細を見る"
+  - title: "Eventide プロトコルツールキット"
+    details: "Clice エコシステム由来の C++23 ツールキット。コルーチン実行基盤、コンパイル時リフレクション、serde、型付き IPC/LSP バインディング、オプション解析を提供"
+    link: https://github.com/clice-io/eventide
     linkText: "詳細を見る"
 ---

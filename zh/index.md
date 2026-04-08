@@ -19,8 +19,12 @@ features:
     details: "强大的构建过程拦截工具，生成编译数据库并进行构建分析"
     link: /zh/catter/overview
     linkText: "了解更多"
-  - title: "Clore Documentation Generator"
-    details: "结合 LLM 和语言服务的文档生成工具，可从代码与注释中生成高质量文档"
-    link: https://github.com/clice-io/clore
+  - title: "Cltas Toolchains Database"
+    details: "统一的 C/C++ 工具链元数据库，收录系统头文件路径、隐式编译参数、平台差异与交叉编译信息"
+    link: https://github.com/clice-io/cltas
+    linkText: "了解更多"
+  - title: "Eventide Protocol Toolkit"
+    details: "源自 Clice 生态的 C++23 工具包，包含协程运行时、编译期反射、serde、类型化 IPC/LSP 绑定与参数解析"
+    link: https://github.com/clice-io/eventide
     linkText: "了解更多"
 ---

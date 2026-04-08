@@ -21,6 +21,7 @@ export default defineConfig({
                     { text: "Home", link: "/" },
                     { text: "Clice", link: "/clice/guide/what-is-clice" },
                     { text: "Catter", link: "/catter/overview" },
+                    { text: "Cltas", link: "https://clice-io.github.io/cltas/" },
                 ],
                 sidebar: {
                     "/clice/": [
@@ -73,6 +74,7 @@ export default defineConfig({
                     { text: "首页", link: "/zh/" },
                     { text: "Clice", link: "/zh/clice/guide/what-is-clice" },
                     { text: "Catter", link: "/zh/catter/overview" },
+                    { text: "Cltas", link: "https://clice-io.github.io/cltas/" },
                 ],
                 sidebar: {
                     "/zh/clice/": [
