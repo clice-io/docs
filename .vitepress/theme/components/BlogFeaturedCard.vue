@@ -1,64 +1,30 @@
 <script setup lang="ts">
-function isNonEmptyString(value: unknown): boolean {
-  return typeof value === 'string' && value.trim().length > 0
-}
+import {
+  assertRequiredTextProps,
+  createRequiredTextProp
+} from './blogCardProps'
 
 const props = defineProps({
-  date: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  },
-  author: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  },
-  title: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  },
-  summary: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  },
-  href: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  },
-  cta: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  }
+  date: createRequiredTextProp(),
+  author: createRequiredTextProp(),
+  title: createRequiredTextProp(),
+  summary: createRequiredTextProp(),
+  href: createRequiredTextProp(),
+  cta: createRequiredTextProp()
 })
 
-function assertText(value: unknown, field: string): void {
-  if (!isNonEmptyString(value)) {
-    throw new Error(`[BlogFeaturedCard] Required field "${field}" must be a non-empty string.`)
-  }
-}
-
 if (import.meta.env.DEV) {
-  assertText(props.date, 'date')
-  assertText(props.author, 'author')
-  assertText(props.title, 'title')
-  assertText(props.summary, 'summary')
-  assertText(props.href, 'href')
-  assertText(props.cta, 'cta')
+  assertRequiredTextProps('BlogFeaturedCard', props)
 }
 </script>
 
 <template>
-  <a class="featured-card" :href="href" target="_blank" rel="noopener noreferrer">
+  <a class="featured-card" :href="props.href" target="_blank" rel="noopener noreferrer">
     <div class="copy">
-      <p class="meta">{{ date }} · {{ author }}</p>
-      <h2>{{ title }}</h2>
-      <p class="summary">{{ summary }}</p>
-      <span class="cta">{{ cta }} <span class="vpi-arrow-right icon"></span></span>
+      <p class="meta">{{ props.date }} · {{ props.author }}</p>
+      <h2>{{ props.title }}</h2>
+      <p class="summary">{{ props.summary }}</p>
+      <span class="cta">{{ props.cta }} <span class="vpi-arrow-right icon"></span></span>
     </div>
     <div class="art" aria-hidden="true" />
   </a>

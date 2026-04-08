@@ -1,65 +1,31 @@
 <script setup lang="ts">
-function isNonEmptyString(value: unknown): boolean {
-  return typeof value === 'string' && value.trim().length > 0
-}
+import {
+  assertRequiredTextProps,
+  createRequiredTextProp
+} from './blogCardProps'
 
 const props = defineProps({
-  date: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  },
-  author: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  },
-  title: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  },
-  summary: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  },
-  href: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  },
-  cta: {
-    type: String,
-    required: true,
-    validator: isNonEmptyString
-  }
+  date: createRequiredTextProp(),
+  author: createRequiredTextProp(),
+  title: createRequiredTextProp(),
+  summary: createRequiredTextProp(),
+  href: createRequiredTextProp(),
+  cta: createRequiredTextProp()
 })
 
-function assertText(value: unknown, field: string): void {
-  if (!isNonEmptyString(value)) {
-    throw new Error(`[BlogPostCard] Required field "${field}" must be a non-empty string.`)
-  }
-}
-
 if (import.meta.env.DEV) {
-  assertText(props.date, 'date')
-  assertText(props.author, 'author')
-  assertText(props.title, 'title')
-  assertText(props.summary, 'summary')
-  assertText(props.href, 'href')
-  assertText(props.cta, 'cta')
+  assertRequiredTextProps('BlogPostCard', props)
 }
 </script>
 
 <template>
-  <a class="post-card" :href="href" target="_blank" rel="noopener noreferrer">
+  <a class="post-card" :href="props.href" target="_blank" rel="noopener noreferrer">
     <article class="content">
-      <div class="meta">{{ date }} · {{ author }}</div>
-      <h3 class="title">{{ title }}</h3>
-      <p class="summary">{{ summary }}</p>
+      <div class="meta">{{ props.date }} · {{ props.author }}</div>
+      <h3 class="title">{{ props.title }}</h3>
+      <p class="summary">{{ props.summary }}</p>
       <div class="footer">
-        <span class="cta">{{ cta }}<span class="vpi-arrow-right icon"></span></span>
+        <span class="cta">{{ props.cta }}<span class="vpi-arrow-right icon"></span></span>
       </div>
     </article>
   </a>
