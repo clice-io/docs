@@ -22,6 +22,10 @@ features:
     details: "Base de metadonnees unifiee des toolchains C/C++: chemins d'en-tetes systeme, options implicites, specificites de plateforme et cibles de cross-compilation"
     link: https://github.com/clice-io/cltas
     linkText: "En Savoir Plus"
+- title: "Clore Document Generator"
+    details: "Générateur de documentation C++ basé sur LLVM, utilisant un LLM pour expliquer les structures syntaxiques"
+    link: https://github.com/clice-io/clore
+    linkText: "En Savoir Plus"
   - title: "Boite a outils de protocole Eventide"
     details: "Boite a outils C++23 issue de l'ecosysteme Clice: runtime coroutine, reflection compile-time, serde, couche IPC/LSP typee et parsing d'options"
     link: https://github.com/clice-io/eventide
