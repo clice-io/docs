@@ -26,7 +26,7 @@ features:
   - title: "Clore Document Generator"
     details: "基于 LLVM 的 C++ 文档生成器，使用 LLM 来解释语法结构"
     link: https://github.com/clice-io/clore
-    linkText: "En Savoir Plus"
+    linkText: "了解更多"
   - title: "Eventide Protocol Toolkit"
     details: "源自 Clice 生态的 C++23 工具包，包含协程运行时、编译期反射、serde、类型化 IPC/LSP 绑定与参数解析"
     link: https://github.com/clice-io/eventide

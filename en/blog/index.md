@@ -41,36 +41,4 @@ outline: false
     href="https://www.ykiko.me/en/articles/13394352064/"
     cta="Read article"
   />
-  <BlogPostCard
-    date="2024-04-24"
-    author="ykiko"
-    title="Super easy-to-use C++ Online Compiler (VSCode Version)"
-    summary="How to integrate Compiler Explorer into VSCode to tighten edit-build-run loops in daily C++ workflow."
-    href="https://www.ykiko.me/en/articles/694365783/"
-    cta="Read article"
-  />
-  <BlogPostCard
-    date="2024-04-17"
-    author="ykiko"
-    title="Thoroughly Understanding C++ ABI"
-    summary="A practical ABI explanation focused on binary compatibility and engineering tradeoffs."
-    href="https://www.ykiko.me/en/articles/692886292/"
-    cta="Read article"
-  />
-  <BlogPostCard
-    date="2023-11-29"
-    author="ykiko"
-    title="Master your C++ code with Clang tools."
-    summary="A practical guide to using Clang tooling APIs for parsing, analysis, and source-to-source automation."
-    href="https://www.ykiko.me/en/articles/669360731/"
-    cta="Read article"
-  />
-  <BlogPostCard
-    date="2023-11-29"
-    author="ykiko"
-    title="Various approaches to code generation"
-    summary="Engineering approaches to generation pipelines, tradeoffs, and implementation techniques in real projects."
-    href="https://www.ykiko.me/en/articles/669359855/"
-    cta="Read article"
-  />
 </BlogShell>
