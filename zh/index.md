@@ -14,21 +14,16 @@ features:
   - title: "Clice Language Server"
     details: "下一代 C++ 语言服务器，提供智能代码补全和导航功能"
     link: /zh/clice/guide/what-is-clice
-    linkText: "了解更多"
   - title: "Catter Build Tool"
     details: "强大的构建过程拦截工具，生成编译数据库并进行构建分析"
     link: /zh/catter/overview
-    linkText: "了解更多"
   - title: "Cltas Toolchains Database"
     details: "统一的 C/C++ 工具链元数据库，收录系统头文件路径、隐式编译参数、平台差异与交叉编译信息"
     link: https://github.com/clice-io/cltas
-    linkText: "了解更多"
   - title: "Clore Document Generator"
     details: "基于 LLVM 的 C++ 文档生成器，使用 LLM 来解释语法结构"
     link: https://github.com/clice-io/clore
-    linkText: "了解更多"
-  - title: "Eventide Protocol Toolkit"
+  - title: "Kotatsu Protocol Toolkit"
     details: "源自 Clice 生态的 C++23 工具包，包含协程运行时、编译期反射、serde、类型化 IPC/LSP 绑定与参数解析"
-    link: https://github.com/clice-io/eventide
-    linkText: "了解更多"
+    link: https://github.com/clice-io/kotatsu
 ---

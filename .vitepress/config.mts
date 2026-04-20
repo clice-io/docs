@@ -8,8 +8,17 @@ export default defineConfig({
         "en/:rest*": ":rest*",
     },
     themeConfig: {
-        socialLinks: [{ icon: "github", link: "https://github.com/clice-io" }],
         outline: "deep",
+        search: {
+            provider: "local"
+        },
+        socialLinks: [
+            { icon: "github", link: "https://github.com/clice-io" },
+            { icon: "discord", link: "https://discord.gg/UgnwYqXWqT" },
+        ],
+        footer: {
+            copyright: "Copyright © 2024-2026"
+        }
     },
     locales: {
         root: {
@@ -20,7 +29,8 @@ export default defineConfig({
                 nav: [
                     { text: "Blog", link: "/blog/" },
                     { text: "clice", link: "/clice/" },
-                    { text: "catter", link: "/catter/overview" },
+                    { text: "catter", link: "/catter/" },
+                    { text: "clore", link: "/clore/" },
                     { text: "cltas", link: "https://clice-io.github.io/cltas/" },
                 ],
                 sidebar: {
@@ -73,7 +83,8 @@ export default defineConfig({
                 nav: [
                     { text: "博客", link: "/zh/blog/" },
                     { text: "clice", link: "/zh/clice/" },
-                    { text: "catter", link: "/zh/catter/overview" },
+                    { text: "catter", link: "/zh/catter/" },
+                    { text: "clore", link: "/zh/clore/" },
                     { text: "cltas", link: "https://clice-io.github.io/cltas/" },
                 ],
                 sidebar: {

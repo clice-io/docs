@@ -2,9 +2,7 @@
 import { h } from 'vue'
 import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
-import BlogFeaturedCard from './components/BlogFeaturedCard.vue'
-import BlogPostCard from './components/BlogPostCard.vue'
-import BlogShell from './components/BlogShell.vue'
+import BlogPostList from './components/BlogPostList.vue'
 import './style.css'
 
 export default {
@@ -15,8 +13,6 @@ export default {
     })
   },
   enhanceApp({ app }) {
-    app.component('BlogShell', BlogShell)
-    app.component('BlogFeaturedCard', BlogFeaturedCard)
-    app.component('BlogPostCard', BlogPostCard)
+    app.component('BlogPostList', BlogPostList)
   }
 } satisfies Theme
