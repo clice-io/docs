@@ -15,13 +15,13 @@ features:
     link: /clice/guide/what-is-clice
   - title: "Catter Build Tool"
     details: "Powerful build process interception tool for generating compilation databases and build analysis"
-    link: /catter/overview
+    link: /catter
   - title: "Cltas Toolchain Database"
     details: "Unified open C/C++ toolchain metadata database covering system header paths, implicit flags, platform quirks, and cross-compilation targets"
     link: https://github.com/clice-io/cltas
   - title: "Clore Document Generator"
     details: "An LLVM-based C++ documentation generator, using LLM to interpret syntactic structures"
-    link: https://github.com/clice-io/clore
+    link: /clore
   - title: "Kotatsu Protocol Toolkit"
     details: "C++23 toolkit from the Clice ecosystem with coroutine runtime, reflection, serde, typed IPC/LSP bindings, and option parsing"
     link: https://github.com/clice-io/kotatsu
