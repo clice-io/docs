@@ -31,6 +31,7 @@ jobs:
           git clone https://github.com/clice-io/clice.git
           cp -rf clice/docs/en en/clice
           cp -rf clice/docs/zh zh/clice
+          rm -rf clice/
           
       - name: Clone & Copy Catter
         shell: bash
@@ -40,6 +41,7 @@ jobs:
           cp -rf catter/doc zh/catter
           cp catter/README.md en/catter/index.md
           cp catter/README.md zh/catter/index.md
+          rm -rf catter/
 
       - name: Clone & Copy Clore
         shell: bash
@@ -47,6 +49,7 @@ jobs:
           git clone https://github.com/clice-io/clore.git
           cp -rf clore/docs/en en/clore
           cp -rf clore/docs/zh zh/clore
+          rm -rf clore/
 
       - name: Build
         run: npm run build
