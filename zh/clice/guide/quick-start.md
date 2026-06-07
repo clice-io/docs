@@ -1,0 +1,126 @@
+# Quick Start
+
+## Editor Plugins
+
+clice 实现了 [Language Server Protocol](https://microsoft.github.io/language-server-protocol)，任何支持该协议的编辑器原则上均可以与 clice 一起使用，提供像 `code completion`, `diagnostics`, `go-to-definition`, 等等。
+
+但是除了标准协议之外，clice 还支持一些协议扩展，为了更好的处理这些协议扩展以及更好的与编辑器集成。使用特定编辑器中的 clice 插件往往是更好的选择，它们大多数都是开箱即用的，并且支持 clice 的协议扩展。
+
+### Visual Studio Code
+
+### Vim/Neovim
+
+### Others
+
+其它的编辑器还没有可用的 clice 插件（欢迎贡献！），为了在它们中使用 clice，请自行安装 clice 并参考特定编辑器的文档关于如何使用一个语言服务器。
+
+## Installation
+
+如果你的编辑器插件负责了 clice 的下载，可以跳过这一步。
+
+### Download Prebuilt Binary
+
+通过 Release 界面下载 clice 二进制版本。
+
+### Build from Source
+
+自己从源码编译 clice，具体的步骤参考 [build](../dev/build.md)。
+
+## Project Setup
+
+为了让 clice 能正确理解你的代码（例如找到头文件的位置），需要为 clice 提供一份 `compile_commands.json` 文件，也就说所谓的 [编译数据库](https://clang.llvm.org/docs/JSONCompilationDatabase.html)。编译数据库中提供了每个源文件的编译选项。
+
+### CMake
+
+对于使用 cmake 的构建系统来说，在构建的时候添加 `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` 选项即可，例如
+
+```cmake
+cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+```
+
+这会在 `build` 目录下生成一份 `compile_commands.json` 文件。
+
+::: warning
+注意：只有当 cmake 的生成器选择为 makefile 和 ninja 的时候，这个选项才有作用。对于其它生成器会忽略这个选项，也就是说无法生成编译数据库。
+:::
+
+### Bazel
+
+Bazel 不支持直接生成编译数据库，推荐使用 [bazel-compile-commands-extractor](https://github.com/hedronvision/bazel-compile-commands-extractor)。在安装好之后，你可以这样生成 `compile_commands.json`:
+
+```bash
+bazel run @hedron_compile_commands//:refresh_all
+```
+
+### Visual Studio
+
+Visual Studio（2019 16.1+）可以通过 CMake 集成来生成编译数据库。将项目作为 CMake 项目打开，然后在 `CMakeSettings.json` 中配置：
+
+```json
+{
+  "configurations": [
+    {
+      "name": "x64-Debug",
+      "generator": "Ninja",
+      "buildRoot": "${projectDir}\\build",
+      "cmakeCommandArgs": "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    }
+  ]
+}
+```
+
+对于基于 MSBuild 的项目（`.vcxproj`），可以使用 [compiledb-vs](https://github.com/pjbroad/compiledb-vs) 或 [catter](https://github.com/clice-io/catter) 来生成编译数据库。
+
+### Makefile
+
+对于基于 Makefile 的项目，使用 [bear](https://github.com/rizsotto/Bear) 来拦截编译命令：
+
+```bash
+bear -- make
+```
+
+这会在当前目录生成 `compile_commands.json`。注意 `bear` 需要干净的构建来捕获所有命令——如果需要的话，在运行 `bear -- make` 之前先执行 `make clean`。
+
+另外，如果使用 GNU Make，也可以使用 [compiledb](https://github.com/nicktimko/compiledb)：
+
+```bash
+compiledb make
+```
+
+### Meson
+
+Meson 在配置阶段会自动生成编译数据库：
+
+```bash
+meson setup build
+```
+
+`compile_commands.json` 会生成在 `build` 目录下。
+
+### Xmake
+
+用下列任意方法生成编译数据库。
+
+#### 命令行手动生成
+
+在命令行中执行以下命令：
+
+```bash
+xmake project -k compile_commands --lsp=clangd build
+```
+
+> 通过这种方法生成的编译数据库无法自动更新，需要在项目编译配置更改时手动重新生成。
+
+#### VSCode 扩展
+
+Xmake 提供的官方 VSCode 扩展会在 `xmake.lua` 更新时自动生成编译数据库。然而默认情况下，它将编译数据库生成到了 `.vscode` 文件夹。在 `settings.json` 中添加以下配置：
+
+```json
+"xmake.compileCommandsDirectory": "build"
+```
+
+以将编译数据库的生成目录调整到 `build`，供 clice 使用。
+
+### Others
+
+对于任意其它的构建系统，可以使用 [catter](https://github.com/clice-io/catter) 来生成编译数据库。它通过伪装编译器的方式来捕获编译命令，能够可靠地与任何调用编译器可执行文件的构建系统配合工作。
