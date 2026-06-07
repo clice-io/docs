@@ -1,4 +1,4 @@
-name: Deploy Docs
+name: deploy docs
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
