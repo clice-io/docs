@@ -137,3 +137,56 @@
   --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }
 
+.project-home .VPHero.has-image .container {
+  text-align: left;
+}
+
+.project-home .VPHero.has-image .name,
+.project-home .VPHero.has-image .text,
+.project-home .VPHero.has-image .tagline {
+  margin: 0;
+}
+
+.project-home .VPHero.has-image .actions {
+  justify-content: flex-start;
+}
+
+.project-home .VPHomeHero .main {
+  order: 1;
+}
+
+.project-home .VPHomeHero .image {
+  order: 2;
+  margin: 32px 0 0;
+}
+
+.project-home .VPHomeHero .image-container {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  transform: none;
+}
+
+.project-home .VPHomeHero .image-bg {
+  display: none;
+}
+
+@media (min-width: 960px) {
+  .project-home .VPHomeHero .container {
+    align-items: center;
+    gap: 56px;
+  }
+
+  .project-home .VPHomeHero .main {
+    max-width: 520px;
+  }
+
+  .project-home .VPHomeHero .image {
+    margin: 0;
+    min-height: auto;
+  }
+
+  .project-home .VPHomeHero .image-container {
+    display: block;
+  }
+}

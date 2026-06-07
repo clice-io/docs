@@ -1,63 +1,67 @@
-name: Publish Docs
+name: Publish Documentation
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-
-permissions:
-  contents: write
+  workflow_call:
+    inputs:
+      project:
+        description: "Project name (used as subdirectory under en/ and zh/)"
+        required: true
+        type: string
+      docs-path:
+        description: "Path to docs directory in source repo"
+        required: false
+        type: string
+        default: "docs"
+    secrets:
+      token:
+        description: "GitHub token with write access to docs repo"
+        required: true
 
 jobs:
-  build-and-deploy:
+  publish:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Checkout source repo
+        uses: actions/checkout@v4
         with:
-          node-version: '24'
+          path: source
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Clone & Copy Clice
-        shell: bash
-        run: |
-          git clone https://github.com/clice-io/clice.git
-          cp -rf clice/docs/en en/clice
-          cp -rf clice/docs/zh zh/clice
-          rm -rf clice/
-          
-      - name: Clone & Copy Catter
-        shell: bash
-        run: |
-          git clone https://github.com/clice-io/catter.git
-          cp -rf catter/doc en/catter
-          cp -rf catter/doc zh/catter
-          cp catter/README.md en/catter/index.md
-          cp catter/README.md zh/catter/index.md
-          rm -rf catter/
-
-      - name: Clone & Copy Clore
-        shell: bash
-        run: |
-          git clone https://github.com/clice-io/clore.git
-          cp -rf clore/docs/en en/clore
-          cp -rf clore/docs/zh zh/clore
-          rm -rf clore/
-
-      - name: Build
-        run: npm run build
-
-      - name: Deploy to GitHub Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Checkout docs repo
+        uses: actions/checkout@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .vitepress/dist
-          keep_files: true
+          repository: clice-io/docs
+          token: ${{ secrets.token }}
+          path: docs-repo
+
+      - name: Sync documentation
+        run: |
+          project="${{ inputs.project }}"
+          src="source/${{ inputs.docs-path }}"
+
+          rm -rf "docs-repo/en/${project}"
+          rm -rf "docs-repo/zh/${project}"
+
+          [ -d "${src}/en" ] && cp -rf "${src}/en" "docs-repo/en/${project}"
+          [ -d "${src}/zh" ] && cp -rf "${src}/zh" "docs-repo/zh/${project}"
+
+      - name: Create Pull Request
+        id: create-pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          path: docs-repo
+          token: ${{ secrets.token }}
+          branch: sync/${{ inputs.project }}
+          title: "docs: sync ${{ inputs.project }}"
+          body: |
+            Automated documentation sync.
+
+            Source: [`${{ github.repository }}@${{ github.sha }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+          commit-message: "docs: sync ${{ inputs.project }}"
+          delete-branch: true
+
+      - name: Enable auto-merge
+        if: steps.create-pr.outputs.pull-request-number
+        run: gh pr merge ${{ steps.create-pr.outputs.pull-request-number }} --auto --squash
+        env:
+          GH_TOKEN: ${{ secrets.token }}
+          GH_REPO: clice-io/docs
