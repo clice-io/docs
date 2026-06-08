@@ -1,2 +1,7 @@
 reviews:
-  enabled: false
+  auto_review:
+    enabled: false
+  high_level_summary: false
+
+chat:
+  auto_reply: false
