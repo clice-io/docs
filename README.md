@@ -1,6 +1,6 @@
 # Project Clice Documentation
 
-Documentation site for [Project Clice](https://clice-io.github.io/docs/), built with [VitePress](https://vitepress.dev/).
+Documentation site for [Project Clice](https://docs.clice.io), built with [VitePress](https://vitepress.dev/).
 
 ## Sync docs from other repos
 
