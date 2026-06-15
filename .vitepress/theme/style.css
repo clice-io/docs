@@ -190,3 +190,51 @@
     display: block;
   }
 }
+
+/**
+ * Component: Task List Checkboxes
+ * -------------------------------------------------------------------------- */
+
+.task-list-item {
+  list-style: none;
+  position: relative;
+}
+
+.task-list-item input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--vp-c-divider);
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-right: 6px;
+  position: relative;
+  top: -1px;
+  cursor: default;
+}
+
+.task-list-item input[type="checkbox"]:checked {
+  background-color: #22c55e;
+  border-color: #22c55e;
+}
+
+.task-list-item input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.task-list-item input[type="checkbox"]:not(:checked) {
+  background-color: var(--vp-c-bg-soft);
+}
+
+.dark .task-list-item input[type="checkbox"]:not(:checked) {
+  border-color: var(--vp-c-divider);
+  background-color: var(--vp-c-bg-soft);
+}

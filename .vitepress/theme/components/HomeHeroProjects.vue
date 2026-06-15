@@ -5,9 +5,10 @@ import ProjectShowcase from './ProjectShowcase.vue'
 
 const route = useRoute()
 
+const isRoot = computed(() => route.path === '/' || route.path === '/zh/' || route.path === '/zh')
 const locale = computed(() => (route.path.startsWith('/zh') ? 'zh' : 'en'))
 </script>
 
 <template>
-  <ProjectShowcase :locale="locale" />
+  <ProjectShowcase v-if="isRoot" :locale="locale" />
 </template>
