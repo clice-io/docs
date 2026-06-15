@@ -14,11 +14,9 @@ export default withMermaid(defineConfig({
         config: (md) => {
             md.use(footnote);
             md.use(taskLists);
-            md.renderer.rules.footnote_ref = (tokens, idx) => {
-                const id = tokens[idx].meta.id;
-                const n = id + 1;
-                return `<sup class="footnote-ref"><a href="#fn${n}" id="fnref${n}:${tokens[idx].meta.subId}">[${n}]</a></sup>`;
-            };
+            // Override caption only (display text) so repeated refs show [1] not [1:1]; leaves id/href intact.
+            md.renderer.rules.footnote_caption = (tokens, idx) =>
+                `[${Number(tokens[idx].meta.id + 1)}]`;
         },
     },
     rewrites: {
