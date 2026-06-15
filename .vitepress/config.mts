@@ -1,5 +1,7 @@
 import { defineConfig } from "vitepress";
 import { withMermaid } from "vitepress-plugin-mermaid";
+import footnote from "markdown-it-footnote";
+import taskLists from "markdown-it-task-lists";
 import { genSidebar } from "./sidebar";
 
 const projects = ["clice", "catter", "clore"];
@@ -8,6 +10,15 @@ export default withMermaid(defineConfig({
     title: "Project Clice",
     description: "新一代 C++ 工具链",
     cleanUrls: true,
+    markdown: {
+        config: (md) => {
+            md.use(footnote);
+            md.use(taskLists);
+            // Override caption only (display text) so repeated refs show [1] not [1:1]; leaves id/href intact.
+            md.renderer.rules.footnote_caption = (tokens, idx) =>
+                `[${Number(tokens[idx].meta.id + 1)}]`;
+        },
+    },
     rewrites: {
         "en/:rest*": ":rest*",
     },
