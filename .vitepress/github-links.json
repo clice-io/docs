@@ -1,0 +1,356 @@
+{
+  "clangd/clangd/issues/1009": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Go to declaration even if signatures mismatch"
+  },
+  "clangd/clangd/issues/1034": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Duplicate inlay hints in the presence of explicit function template instantiation"
+  },
+  "clangd/clangd/issues/1067": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Refactoring: Replace `using namespace` with `using` for the individual elements"
+  },
+  "clangd/clangd/issues/1254": {
+    "type": "issue",
+    "state": "open",
+    "reason": "reopened",
+    "title": "\"Extract to Function\" tweak often not offered where it should be"
+  },
+  "clangd/clangd/issues/1325": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Index doesn't understand overrides of specializations"
+  },
+  "clangd/clangd/issues/1446": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Support `source.fixAll` (batch applying quick fixes)"
+  },
+  "clangd/clangd/issues/1455": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "clangd doesn't support code folding for class access specifiers"
+  },
+  "clangd/clangd/issues/1509": {
+    "type": "issue",
+    "state": "open",
+    "reason": "reopened",
+    "title": "Semantic token type for constructors and destructor should be `method`, not `class`"
+  },
+  "clangd/clangd/issues/1617": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Switch between header/source doesn't find correct file in trivial cases."
+  },
+  "clangd/clangd/issues/1619": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Code action for dropping qualifiers or using aliases"
+  },
+  "clangd/clangd/issues/1690": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "[Bug] It takes too long time to build preamble when open a file."
+  },
+  "clangd/clangd/issues/1697": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Make go-to-definition go to the macro's underlying function (same for show-references)"
+  },
+  "clangd/clangd/issues/1709": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Semantic highlighting: Support for `std::format` strings"
+  },
+  "clangd/clangd/issues/1710": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Extract function can extract code containing types defined in the enclosing functions scope"
+  },
+  "clangd/clangd/issues/1747": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "clangd throws away FixIts when the fix is not in the main file"
+  },
+  "clangd/clangd/issues/1982": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "`NOLINT` directives don't work for `unused-includes`"
+  },
+  "clangd/clangd/issues/2000": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "`clangd` still shows some `clang-tidy` warnings from inside a macro coming from a system header"
+  },
+  "clangd/clangd/issues/2010": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Adding include through code-actions uses absolute paths"
+  },
+  "clangd/clangd/issues/2254": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "New inlay hint type: implicit conversion hints"
+  },
+  "clangd/clangd/issues/2303": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Inlay hints - array disgnators , should have same text length."
+  },
+  "clangd/clangd/issues/2382": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "crash on ExtractVariable - prepare"
+  },
+  "clangd/clangd/issues/2426": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "signature help triggers unexpectedly"
+  },
+  "clangd/clangd/issues/2454": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Add a quick fix to generate a missing method declaration corresponding to an out-of-line method definition"
+  },
+  "clangd/clangd/issues/2472": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Provide signature help for operator[]"
+  },
+  "clangd/clangd/issues/2476": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Add a setting to control whether formatting is applied to changes made by a code action"
+  },
+  "clangd/clangd/issues/2486": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Module name does not get a semantic highlighting"
+  },
+  "clangd/clangd/issues/2510": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Implementation of onTypeFormatting assumes that the position in the request is *after* the inserted character"
+  },
+  "clangd/clangd/issues/2569": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "[C++20 modules] Important features still missing for the module support of clangd"
+  },
+  "clangd/clangd/issues/2577": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "[C++20 modules] Auto-insert module import statements"
+  },
+  "clangd/clangd/issues/2580": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Add \"Remove function\" tweak"
+  },
+  "clangd/clangd/issues/2619": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Semantic tokens for using-declarations are inconsistent"
+  },
+  "clangd/clangd/issues/2620": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Nested macro invocations result in incorrect parameter name inlay hints"
+  },
+  "clangd/clangd/issues/2622": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "[Modules] Remove module partitions of other modules from suggestions"
+  },
+  "clangd/clangd/issues/2623": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "[Modules] Fix missing icons from suggested module imports"
+  },
+  "clangd/clangd/issues/2626": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "[Modules] Add a new single-token completion for `import` and `module`, with type `CompletionItemKind.Keyword`"
+  },
+  "clangd/clangd/issues/2666": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Move folding range `startLine` to the declaration line for function/class bodies"
+  },
+  "clangd/clangd/issues/2667": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Support LSP 3.17 `collapsedText` for folding ranges"
+  },
+  "clangd/clangd/issues/2675": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "\"Move function body to declaration\" not appear for functions involving cstdint types"
+  },
+  "clangd/clangd/issues/289": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "signaturehelp triggers in comments"
+  },
+  "clangd/clangd/issues/443": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Improve code completion inside templates (e.g. provide completions for container[i].^ where container is a vector<vector<T>>)"
+  },
+  "clangd/clangd/issues/446": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "refactor: inline and extract variables"
+  },
+  "clangd/clangd/issues/460": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "refactor: modify function parameters"
+  },
+  "clangd/clangd/issues/466": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Refactor: invert if"
+  },
+  "clangd/clangd/issues/467": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Refactor: Create from usage"
+  },
+  "clangd/clangd/issues/601": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "More detailed outline/document symbol information"
+  },
+  "clangd/clangd/issues/603": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "code completion: add operator suggestions"
+  },
+  "clangd/clangd/issues/616": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Outliner not detecting variables in functions (VS Code)"
+  },
+  "clangd/clangd/issues/696": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "RA similar \"auto import\" by code action"
+  },
+  "clangd/clangd/issues/698": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "code action : extract highlighted text to method / function"
+  },
+  "clangd/clangd/issues/820": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "\"Expand macro one level\" code action"
+  },
+  "clangd/clangd/issues/830": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "\"fix all occurrences\" code action"
+  },
+  "clangd/clangd/issues/872": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Modifiers are wrong in semantic token for destructor"
+  },
+  "clangd/clangd/issues/89": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "Code completion missing some of c++ keyword"
+  },
+  "clangd/clangd/issues/924": {
+    "type": "issue",
+    "state": "open",
+    "reason": null,
+    "title": "extract subexpression does not replace all occurrences"
+  },
+  "clice-io/clice/issues/90": {
+    "type": "issue",
+    "state": "closed",
+    "reason": "completed",
+    "title": "To-do list for the next phase"
+  },
+  "clice-io/clice/pull/452": {
+    "type": "pull",
+    "state": "merged",
+    "reason": null,
+    "title": "feat(hover): port clangd hover implementation"
+  },
+  "clice-io/clice/pull/460": {
+    "type": "pull",
+    "state": "open",
+    "reason": null,
+    "title": "feat(completion): trigger import completion on space"
+  },
+  "llvm/llvm-project/pull/66462": {
+    "type": "pull",
+    "state": "merged",
+    "reason": null,
+    "title": "[clangd] [C++20] [Modules] Introduce initial support for C++20 Modules"
+  },
+  "microsoft/vscode/issues/67714": {
+    "type": "issue",
+    "state": "closed",
+    "reason": "completed",
+    "title": "Discuss the use of space as IntelliSense trigger character"
+  }
+}
