@@ -28,17 +28,17 @@ design:
   items:
     - overview
     - compilation-context
-    - command
-    - index-design
+    - command-resolve
+    - symbol-index
     - multi-process
-    - module
-    - incremental
+    - module-graph
+    - incremental-parse
     - template-resolver
     - dependency-scanning
 
 dev:
   label: 开发
-  collapsed: true
+  collapsed: false
   items:
     - build
     - contribution
