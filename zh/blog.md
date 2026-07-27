@@ -8,6 +8,13 @@ outline: false
 <script setup lang="ts">
 const posts = [
   {
+    publishedAt: "2026-05-05",
+    author: "ykiko",
+    title: "agent 时代的 clice",
+    summary: "记录 structured concurrency、kotatsu、多进程架构、agent 编程实践，以及 agent-native 语言服务器方向的思考。",
+    href: "https://www.ykiko.me/zh-cn/articles/2034883949630059124/"
+  },
+  {
     publishedAt: "2025-12-21",
     author: "ykiko",
     title: "打造优雅的 C++ 跨平台开发与构建 Workflow",

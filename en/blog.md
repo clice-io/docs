@@ -8,6 +8,13 @@ outline: false
 <script setup lang="ts">
 const posts = [
   {
+    publishedAt: "2026-05-05",
+    author: "ykiko",
+    title: "clice in the Age of Agents",
+    summary: "Progress on structured concurrency, kotatsu, multi-process architecture, agent-assisted development, and the path toward an agent-native language server.",
+    href: "https://www.ykiko.me/zh-cn/articles/2034883949630059124/"
+  },
+  {
     publishedAt: "2025-12-21",
     author: "ykiko",
     title: "Building an Elegant C++ Cross-Platform Development and Build Workflow",
