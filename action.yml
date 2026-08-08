@@ -48,6 +48,8 @@ runs:
 
           Source: [`${{ github.repository }}@${{ github.sha }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
         commit-message: "docs: sync ${{ inputs.project }}"
+        author: "clice-bot <306533837+clice-bot@users.noreply.github.com>"
+        committer: "clice-bot <306533837+clice-bot@users.noreply.github.com>"
         delete-branch: true
 
     - name: Enable auto-merge

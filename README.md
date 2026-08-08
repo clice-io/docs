@@ -26,7 +26,7 @@ jobs:
       - uses: clice-io/docs@main
         with:
           project: your-project-name
-          token: ${{ secrets.PUBLISH_DOCS }}
+          token: ${{ secrets.CLICE_DOCS }}
 ```
 
 ## Doc layout convention
