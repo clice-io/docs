@@ -238,3 +238,61 @@
   border-color: var(--vp-c-divider);
   background-color: var(--vp-c-bg-soft);
 }
+
+/**
+ * Component: GitHub Issue/PR Links
+ * Bare GitHub issue/PR links render the way GitHub renders a pasted reference:
+ * a leading state icon, the issue/PR title, and a muted `owner/repo#number`.
+ * -------------------------------------------------------------------------- */
+
+/* Leading state icon, sized to the surrounding text and colored by state. */
+.gh-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.25em;
+  vertical-align: text-bottom;
+  color: var(--gh-color);
+}
+
+.gh-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+/* Muted, non-breaking reference shorthand trailing the title. */
+.gh-num {
+  color: var(--vp-c-text-2);
+  white-space: nowrap;
+}
+
+/* State colors (light). The color cascades to the inline icon. */
+.gh-open {
+  --gh-color: #1a7f37;
+}
+.gh-completed,
+.gh-merged {
+  --gh-color: #8250df;
+}
+.gh-closed-pr {
+  --gh-color: #cf222e;
+}
+.gh-not-planned {
+  --gh-color: #59636e;
+}
+
+.dark .gh-open {
+  --gh-color: #3fb950;
+}
+.dark .gh-completed,
+.dark .gh-merged {
+  --gh-color: #a371f7;
+}
+.dark .gh-closed-pr {
+  --gh-color: #f85149;
+}
+.dark .gh-not-planned {
+  --gh-color: #9198a1;
+}

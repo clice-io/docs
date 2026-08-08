@@ -2,9 +2,15 @@ import { defineConfig } from "vitepress";
 import { withMermaid } from "vitepress-plugin-mermaid";
 import footnote from "markdown-it-footnote";
 import taskLists from "markdown-it-task-lists";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 import { genSidebar } from "./sidebar";
+import { loadGithubState, githubLinksPlugin } from "./github-links";
 
 const projects = ["clice", "catter", "clore"];
+
+const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const githubState = await loadGithubState(rootDir);
 
 export default withMermaid(defineConfig({
     title: "Project Clice",
@@ -14,6 +20,7 @@ export default withMermaid(defineConfig({
         config: (md) => {
             md.use(footnote);
             md.use(taskLists);
+            githubLinksPlugin(md, githubState);
             // Override caption only (display text) so repeated refs show [1] not [1:1]; leaves id/href intact.
             md.renderer.rules.footnote_caption = (tokens, idx) =>
                 `[${Number(tokens[idx].meta.id + 1)}]`;
