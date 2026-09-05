@@ -41,6 +41,13 @@ runs:
           cp -rf "${src}/public/." "__docs_repo/public/"
         fi
 
+
+        # The snapshot corpus the feature pages' example cards read at build time.
+        rm -rf "__docs_repo/sources/${project}"
+        if [ -d "tests/snap" ]; then
+          mkdir -p "__docs_repo/sources/${project}/tests"
+          cp -rf "tests/snap" "__docs_repo/sources/${project}/tests/snap"
+        fi
     - name: Create Pull Request
       id: create-pr
       uses: peter-evans/create-pull-request@v7
