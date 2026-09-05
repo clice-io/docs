@@ -44,7 +44,7 @@ export default withMermaid(defineConfig({
             link: "/",
             themeConfig: {
                 nav: [
-                    { text: "Blog", link: "/blog/" },
+                    { text: "blog", link: "/blog/" },
                     { text: "clice", link: "/clice/" },
                     { text: "catter", link: "/catter/" },
                     { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
