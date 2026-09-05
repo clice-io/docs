@@ -3,8 +3,11 @@ import { computed } from 'vue'
 
 type Locale = 'en' | 'zh'
 
+type Face = 'surprised' | 'skeptical' | 'smiling'
+
 type Project = {
   id: string
+  face: Face
   title: string
   label: string
   summary: string
@@ -13,8 +16,9 @@ type Project = {
   accent: 'bow' | 'aqua' | 'straw'
 }
 
-type Strip = {
-  face: 'surprised' | 'skeptical' | 'smiling'
+type QA = {
+  face: Face
+  question: string
   title: string
   lines: string[]
 }
@@ -33,6 +37,7 @@ const content = {
     projects: [
       {
         id: 'clice',
+        face: 'smiling',
         title: 'clice',
         label: 'language server · scheduler',
         summary:
@@ -42,6 +47,7 @@ const content = {
       },
       {
         id: 'catter',
+        face: 'surprised',
         title: 'catter',
         label: 'build interceptor',
         summary:
@@ -51,6 +57,7 @@ const content = {
       },
       {
         id: 'kotatsu',
+        face: 'skeptical',
         title: 'kotatsu',
         label: 'C++23 toolkit',
         summary:
@@ -60,32 +67,35 @@ const content = {
         accent: 'straw'
       }
     ] satisfies Project[],
-    stripTitle: 'Why Another One?',
-    strip: [
+    qaTitle: 'Why Another One?',
+    qa: [
       {
-        face: 'surprised',
-        title: 'One Engine, Many Tools',
+        face: 'skeptical',
+        question: 'Isn\u2019t clangd good enough?',
+        title: 'It never solved the hard ones.',
         lines: [
-          'Clang exposes a compiler, not the act of compiling a project. clice adds that missing piece: a scheduler that knows every translation unit, its context and its dependencies.',
-          'clice lint, index, query, doc and format are all consumers of the same engine, and a cross-TU cache lets them skip work clang-tidy repeats for every header.'
+          'A file with several compile commands, a header that only makes sense inside its includer, a Clang crash taking the whole server down: clangd has carried these since day one.',
+          'clice answers them with compilation contexts, a multi-process design that keeps serving queries while a worker restarts, a dynamic module graph with shared PCH and PCM caches, and a pseudo-instantiator that keeps completion useful inside templates.'
         ]
       },
       {
-        face: 'skeptical',
-        title: 'The Problems clangd Never Solved',
+        face: 'surprised',
+        question: 'Why put a scheduler inside a language server?',
+        title: 'Because Clang never had one.',
         lines: [
-          'Compilation contexts for files with several commands and headers that are not self-contained. A multi-process design that survives Clang crashes without dropping a query.',
-          'A dynamic module graph with shared, on-disk PCH and PCM caches, and a pseudo-instantiator that keeps completion useful inside templates.'
+          'Clang exposes a compiler, not the act of compiling a project. The language server is only the first consumer of clice\u2019s scheduler.',
+          'clice lint, index, query, doc and format run on the same engine, and a cross-TU cache lets them skip the work clang-tidy repeats for every header.'
         ]
       },
       {
         face: 'smiling',
-        title: 'Ready to Try Today',
+        question: 'Can I use it today?',
+        title: 'Install the extension and go.',
         lines: [
-          'Install the VS Code extension and you are done: the binary ships inside it for Windows, Linux and macOS on x64 and arm64. Nightlies roll out every day; Neovim and Zed have first-party clients too.'
+          'The binary ships inside the VS Code extension for Windows, Linux and macOS on x64 and arm64. Nightlies roll out every day, and Neovim and Zed have first-party clients too.'
         ]
       }
-    ] satisfies Strip[]
+    ] satisfies QA[]
   },
   zh: {
     kicker: 'clice.io',
@@ -98,6 +108,7 @@ const content = {
     projects: [
       {
         id: 'clice',
+        face: 'smiling',
         title: 'clice',
         label: '语言服务器 · 调度器',
         summary:
@@ -107,6 +118,7 @@ const content = {
       },
       {
         id: 'catter',
+        face: 'surprised',
         title: 'catter',
         label: '构建拦截器',
         summary:
@@ -116,6 +128,7 @@ const content = {
       },
       {
         id: 'kotatsu',
+        face: 'skeptical',
         title: 'kotatsu',
         label: 'C++23 工具箱',
         summary:
@@ -125,32 +138,35 @@ const content = {
         accent: 'straw'
       }
     ] satisfies Project[],
-    stripTitle: '为什么还要再写一个？',
-    strip: [
+    qaTitle: '为什么还要再写一个？',
+    qa: [
       {
-        face: 'surprised',
-        title: '一个引擎，一串工具',
+        face: 'skeptical',
+        question: 'clangd 不是够用了吗？',
+        title: '难的它一个都没解决。',
         lines: [
-          'Clang 提供了编译器，却没有提供「编译一个项目」这件事本身的抽象。clice 补上了这一块：一个知道每个翻译单元、它的上下文和依赖的调度器。',
-          'clice lint、index、query、doc、format 都是同一个引擎的消费者，跨 TU 缓存让它们跳过 clang-tidy 对每个头文件重复做的工作。'
+          '一个文件对应多条编译命令、头文件只有在包含它的地方才有意义、Clang 一崩整个服务器跟着没，这些 clangd 从第一天起就背着。',
+          'clice 用编译上下文、worker 重启时查询照常回答的多进程架构、落盘共享 PCH / PCM 缓存的动态模块图、以及让模板内部补全依然好用的伪实例化器，把它们一个个解决掉。'
         ]
       },
       {
-        face: 'skeptical',
-        title: 'clangd 一直没解决的问题',
+        face: 'surprised',
+        question: '语言服务器里为什么要塞一个调度器？',
+        title: '因为 Clang 从来没有过。',
         lines: [
-          '一个文件对应多条编译命令、头文件非自包含，用编译上下文彻底解决。多进程架构让 Clang 崩溃时查询照常回答。',
-          '动态的模块编译图、落盘共享的 PCH / PCM 缓存，以及让模板内部补全依然好用的伪实例化器。'
+          'Clang 提供了编译器，却没有提供「编译一个项目」这件事本身的抽象。语言服务器只是 clice 调度器的第一个消费者。',
+          'clice lint、index、query、doc、format 跑在同一个引擎上，跨 TU 缓存让它们跳过 clang-tidy 对每个头文件重复做的工作。'
         ]
       },
       {
         face: 'smiling',
-        title: '现在就能用',
+        question: '现在能用了吗？',
+        title: '装上插件就能用。',
         lines: [
-          '装上 VS Code 插件就完事：二进制随插件打包，覆盖 Windows / Linux / macOS 的 x64 和 arm64。每天发 nightly，Neovim 和 Zed 也有官方客户端。'
+          '二进制随 VS Code 插件打包，覆盖 Windows / Linux / macOS 的 x64 和 arm64。每天发 nightly，Neovim 和 Zed 也有官方客户端。'
         ]
       }
-    ] satisfies Strip[]
+    ] satisfies QA[]
   }
 }
 
@@ -188,6 +204,7 @@ const page = computed(() => content[props.locale])
         :rel="project.external ? 'noopener noreferrer' : undefined"
       >
         <div class="project-head">
+          <img class="avatar" :src="`/mascot/face-${project.face}.png`" :alt="project.face" />
           <h3>{{ project.title }}</h3>
           <span class="tag">{{ project.label }}</span>
         </div>
@@ -196,16 +213,20 @@ const page = computed(() => content[props.locale])
       </a>
     </section>
 
-    <h2 class="section-title">{{ page.stripTitle }}</h2>
-    <section class="strip">
-      <div v-for="(panel, i) in page.strip" :key="panel.face" class="koma strip-panel">
-        <div class="face">
-          <img :src="`/mascot/face-${panel.face}.png`" :alt="panel.face" />
+    <h2 class="section-title">{{ page.qaTitle }}</h2>
+    <section class="qa">
+      <div v-for="(item, i) in page.qa" :key="item.face" class="qa-row" :class="{ flip: i % 2 === 1 }">
+        <div class="caption">
+          <span class="q">Q</span>
+          <p>{{ item.question }}</p>
+        </div>
+        <div class="koma face">
+          <img :src="`/mascot/face-${item.face}.png`" :alt="item.face" />
           <span class="num">{{ i + 1 }}</span>
         </div>
-        <div class="speech">
-          <h3>{{ panel.title }}</h3>
-          <p v-for="line in panel.lines" :key="line">{{ line }}</p>
+        <div class="answer">
+          <h3>{{ item.title }}</h3>
+          <p v-for="line in item.lines" :key="line">{{ line }}</p>
         </div>
       </div>
     </section>
@@ -486,6 +507,16 @@ const page = computed(() => content[props.locale])
   margin-left: 8px;
 }
 
+.avatar {
+  width: 40px;
+  height: 40px;
+  border: var(--line) solid var(--line-color);
+  border-radius: 999px;
+  background: #ffffff;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
 .project h3 {
   margin: 0;
   font-family: var(--clice-font-display);
@@ -529,35 +560,72 @@ const page = computed(() => content[props.locale])
   transform: translateX(4px);
 }
 
-/* strip */
+/* q&a comic */
 
-.strip {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
-
-@media (min-width: 900px) {
-  .strip {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-.strip-panel {
+.qa {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  gap: 28px;
 }
 
-.face {
+.qa-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    'caption'
+    'face'
+    'answer';
+  gap: 14px;
+}
+
+.caption {
+  grid-area: caption;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border: var(--line) solid var(--line-color);
+  border-radius: 2px;
+  background: var(--paper-3);
+  box-shadow: var(--hard-shadow-sm);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.caption .q {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border: var(--line) solid var(--line-color);
+  border-radius: 999px;
+  background: var(--ribbon);
+  font-family: var(--clice-font-display);
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 22px;
+  text-align: center;
+  color: #ffffff;
+  transform: rotate(-8deg);
+}
+
+.caption p {
+  margin: 0;
+  font-family: var(--clice-font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.qa-row .face {
+  grid-area: face;
   position: relative;
-  height: 180px;
-  border-bottom: var(--line) solid var(--line-color);
-  background: #ffffff;
+  width: 160px;
+  height: 160px;
   overflow: hidden;
+  background: #ffffff;
 }
 
-.face img {
+.qa-row .face img {
   display: block;
   width: 100%;
   height: 100%;
@@ -569,41 +637,136 @@ const page = computed(() => content[props.locale])
   position: absolute;
   left: 0;
   top: 0;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-right: var(--line) solid var(--line-color);
   border-bottom: var(--line) solid var(--line-color);
   border-radius: 0 0 var(--radius) 0;
   background: var(--straw);
   font-family: var(--clice-font-display);
   font-weight: 900;
-  font-size: 14px;
-  line-height: 30px;
+  font-size: 13px;
+  line-height: 26px;
   text-align: center;
   color: #2b3040;
 }
 
-.speech {
-  padding: 18px 22px 24px;
+.answer {
+  grid-area: answer;
+  position: relative;
+  padding: 18px 22px 20px;
+  border: var(--line) solid var(--line-color);
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: var(--hard-shadow);
 }
 
-.speech h3 {
-  margin: 0 0 10px;
+.dark .answer {
+  background: var(--paper-2);
+}
+
+.answer::before,
+.answer::after {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 28px;
+  border-style: solid;
+  border-width: 0 0 14px 14px;
+  border-color: transparent transparent var(--line-color) transparent;
+}
+
+.answer::after {
+  top: -9px;
+  left: 30px;
+  border-width: 0 0 10px 10px;
+  border-color: transparent transparent var(--panel) transparent;
+}
+
+.dark .answer::after {
+  border-bottom-color: var(--paper-2);
+}
+
+.answer h3 {
+  margin: 0 0 8px;
   font-family: var(--clice-font-display);
   font-weight: 900;
-  font-size: 19px;
+  font-size: 20px;
   color: var(--ink);
 }
 
-.speech p {
+.answer p {
   margin: 0;
   font-size: 14px;
   line-height: 1.7;
   color: var(--ink-2);
 }
 
-.speech p + p {
-  margin-top: 10px;
+.answer p + p {
+  margin-top: 8px;
+}
+
+@media (min-width: 768px) {
+  .qa-row {
+    grid-template-columns: 160px 1fr;
+    grid-template-areas:
+      '. caption'
+      'face answer';
+    column-gap: 28px;
+    row-gap: 12px;
+    align-items: start;
+  }
+
+  .qa-row.flip {
+    grid-template-columns: 1fr 160px;
+    grid-template-areas:
+      'caption .'
+      'answer face';
+  }
+
+  .qa-row.flip .caption {
+    justify-self: end;
+  }
+
+  .answer::before,
+  .answer::after {
+    top: 26px;
+    left: -14px;
+    border-width: 0 14px 12px 0;
+    border-color: transparent var(--line-color) transparent transparent;
+  }
+
+  .answer::after {
+    top: 28px;
+    left: -9px;
+    border-width: 0 10px 8px 0;
+    border-color: transparent var(--panel) transparent transparent;
+  }
+
+  .dark .answer::after {
+    border-right-color: var(--paper-2);
+    border-bottom-color: transparent;
+  }
+
+  .qa-row.flip .answer::before,
+  .qa-row.flip .answer::after {
+    left: auto;
+    right: -14px;
+    border-width: 12px 0 0 14px;
+    border-color: transparent transparent transparent var(--line-color);
+  }
+
+  .qa-row.flip .answer::after {
+    right: -9px;
+    top: 28px;
+    border-width: 8px 0 0 10px;
+    border-color: transparent transparent transparent var(--panel);
+  }
+
+  .dark .qa-row.flip .answer::after {
+    border-left-color: var(--paper-2);
+    border-right-color: transparent;
+  }
 }
 
 /* motion */
