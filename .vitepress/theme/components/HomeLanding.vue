@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import BrandIcon from './BrandIcon.vue'
 
 type Locale = 'en' | 'zh'
 
@@ -33,6 +34,8 @@ const content = {
       'A language server on the surface, a real-time compilation scheduler underneath. It drives Clang over your whole project and serves editors, linters, indexers and agents from the same engine.',
     primary: { text: 'Start with clice', href: '/clice/guide/what-is-clice' },
     secondary: { text: 'Read the Blog', href: '/blog/' },
+    worksWith: 'Works with',
+    runsOn: 'Runs on',
     projectsTitle: 'Projects',
     projects: [
       {
@@ -104,6 +107,8 @@ const content = {
       '表面上是一个语言服务器，内核是一个实时的编译调度器。它在整个项目上驱动 Clang，用同一个引擎服务编辑器、静态检查、索引和 Agent。',
     primary: { text: '从 clice 开始', href: '/zh/clice/guide/what-is-clice' },
     secondary: { text: '读博客', href: '/zh/blog/' },
+    worksWith: '支持的编辑器',
+    runsOn: '运行平台',
     projectsTitle: '项目',
     projects: [
       {
@@ -171,6 +176,18 @@ const content = {
 }
 
 const page = computed(() => content[props.locale])
+
+const editors = [
+  { name: 'VS Code', icon: 'visualstudiocode', href: 'https://marketplace.visualstudio.com/items?itemName=clice-io.clice' },
+  { name: 'Neovim', icon: 'neovim', href: 'https://github.com/clice-io/clice/tree/main/editors/nvim' },
+  { name: 'Zed', icon: 'zedindustries', href: 'https://github.com/clice-io/clice/tree/main/editors/zed' }
+]
+
+const platforms = [
+  { name: 'Windows', icon: 'windows' },
+  { name: 'Linux', icon: 'linux' },
+  { name: 'macOS', icon: 'apple' }
+]
 </script>
 
 <template>
@@ -188,6 +205,22 @@ const page = computed(() => content[props.locale])
         <div class="actions">
           <a class="btn brand" :href="page.primary.href">{{ page.primary.text }}</a>
           <a class="btn alt" :href="page.secondary.href">{{ page.secondary.text }}</a>
+        </div>
+        <div class="support">
+          <div class="support-row">
+            <span class="support-label">{{ page.worksWith }}</span>
+            <a v-for="e in editors" :key="e.name" class="chip link" :href="e.href" target="_blank" rel="noopener noreferrer">
+              <BrandIcon :name="e.icon" :size="15" />{{ e.name }}
+            </a>
+          </div>
+          <div class="support-row">
+            <span class="support-label">{{ page.runsOn }}</span>
+            <span v-for="pl in platforms" :key="pl.name" class="chip">
+              <BrandIcon :name="pl.icon" :size="15" />{{ pl.name }}
+            </span>
+            <span class="chip arch">x64</span>
+            <span class="chip arch">arm64</span>
+          </div>
         </div>
       </div>
     </section>
@@ -420,6 +453,57 @@ const page = computed(() => content[props.locale])
   .bubble h1 {
     font-size: 38px;
   }
+}
+
+/* works with / runs on */
+
+.support {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: var(--line-thin) dashed var(--line-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.support-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.support-label {
+  min-width: 78px;
+  font-family: var(--clice-font-display);
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 24px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.chip.arch {
+  background: var(--straw-soft);
+}
+
+.chip.link:hover {
+  border-color: var(--bow);
+  color: var(--bow);
 }
 
 /* section titles */

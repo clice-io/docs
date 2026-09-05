@@ -5,12 +5,44 @@ import taskLists from "markdown-it-task-lists";
 import { genSidebar } from "./sidebar";
 import { statusStickers } from "./status";
 
+const SITE = "https://docs.clice.io";
 const projects = ["clice", "catter"];
 
 export default withMermaid(defineConfig({
     title: "clice.io",
     description: "Next generation C++ tooling",
     cleanUrls: true,
+    lastUpdated: true,
+    sitemap: { hostname: SITE },
+    head: [
+        ["link", { rel: "icon", type: "image/png", href: "/mascot/logo.png" }],
+        ["meta", { property: "og:type", content: "website" }],
+        ["meta", { property: "og:site_name", content: "clice.io" }],
+        ["meta", { name: "twitter:card", content: "summary_large_image" }],
+        ["meta", { name: "theme-color", content: "#4568a7" }],
+    ],
+    transformPageData(pageData) {
+        const path = pageData.relativePath.replace(/(^|\/)index\.md$/, "$1").replace(/\.md$/, "");
+        const isZh = path === "zh" || path.startsWith("zh/");
+        const en = isZh ? path.replace(/^zh\/?/, "") : path;
+        const url = (p: string) => `${SITE}/${p}`;
+        const title = pageData.frontmatter.title ?? pageData.title;
+        const description = pageData.frontmatter.description ?? pageData.description;
+        const head = [
+            ["meta", { property: "og:title", content: title ? `${title} | clice.io` : "clice.io" }],
+            ["meta", { property: "og:url", content: url(isZh ? path : en) }],
+            ["meta", { property: "og:image", content: `${SITE}/mascot/portrait.png` }],
+            ["meta", { property: "og:locale", content: isZh ? "zh_CN" : "en_US" }],
+            ["link", { rel: "canonical", href: url(isZh ? path : en) }],
+            ["link", { rel: "alternate", hreflang: "en", href: url(en) }],
+            ["link", { rel: "alternate", hreflang: "zh-CN", href: url(en ? `zh/${en}` : "zh") }],
+            ["link", { rel: "alternate", hreflang: "x-default", href: url(en) }],
+        ];
+        if (description) {
+            head.push(["meta", { property: "og:description", content: description }]);
+        }
+        pageData.frontmatter.head = [...(pageData.frontmatter.head ?? []), ...head];
+    },
     markdown: {
         config: (md) => {
             md.use(footnote);
@@ -34,9 +66,6 @@ export default withMermaid(defineConfig({
             { icon: "github", link: "https://github.com/clice-io" },
             { icon: "discord", link: "https://discord.gg/UgnwYqXWqT" },
         ],
-        footer: {
-            copyright: "Copyright © 2024-2026"
-        }
     },
     locales: {
         root: {

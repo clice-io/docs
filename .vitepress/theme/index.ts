@@ -5,6 +5,7 @@ import DefaultTheme from 'vitepress/theme'
 import BlogPostList from './components/BlogPostList.vue'
 import HomeHeroProjects from './components/HomeHeroProjects.vue'
 import HomeLanding from './components/HomeLanding.vue'
+import SiteFooter from './components/SiteFooter.vue'
 import '@fontsource/m-plus-rounded-1c/400.css'
 import '@fontsource/m-plus-rounded-1c/500.css'
 import '@fontsource/m-plus-rounded-1c/700.css'
@@ -23,7 +24,8 @@ export default {
   Layout: () => {
     return h(DefaultTheme.Layout, null, {
       // https://vitepress.dev/guide/extending-default-theme#layout-slots
-      'home-hero-image': () => h(HomeHeroProjects)
+      'home-hero-image': () => h(HomeHeroProjects),
+      'layout-bottom': () => h(SiteFooter)
     })
   },
   enhanceApp({ app }) {
