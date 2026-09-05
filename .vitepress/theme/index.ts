@@ -12,6 +12,10 @@ import '@fontsource/m-plus-rounded-1c/800.css'
 import '@fontsource/m-plus-rounded-1c/900.css'
 import '@fontsource/zen-kaku-gothic-new/700.css'
 import '@fontsource/zen-kaku-gothic-new/900.css'
+import '@fontsource/noto-sans-sc/400.css'
+import '@fontsource/noto-sans-sc/500.css'
+import '@fontsource/noto-sans-sc/700.css'
+import '@fontsource/noto-sans-sc/900.css'
 import './style.css'
 
 export default {

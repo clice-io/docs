@@ -811,3 +811,424 @@
 .dark .VPSidebarItem.level-1.is-active > .item > .link > .text {
   --straw: rgba(242, 216, 141, 0.28);
 }
+
+/* ---------------------------------------------------------------------------
+ * Chinese pages: the display face has no simplified-only glyphs, so the
+ * whole heading falls back to Noto Sans SC rather than mixing two faces.
+ * ------------------------------------------------------------------------ */
+
+html[lang^="zh"] {
+  --clice-font-display:
+    "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans CJK SC", system-ui, sans-serif;
+  --vp-font-family-base:
+    "M PLUS Rounded 1c", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------------------------
+ * Inline code: quiet paper chips, not stickers
+ * ------------------------------------------------------------------------ */
+
+.vp-doc :not(pre) > code {
+  background: var(--paper-3);
+  border: var(--line-thin) solid var(--line-color);
+  color: var(--ink);
+  font-size: 0.9em;
+}
+
+.dark .vp-doc :not(pre) > code {
+  background: var(--paper-3);
+  border-color: var(--line-color);
+}
+
+/* ---------------------------------------------------------------------------
+ * Status stickers (see .vitepress/status.ts)
+ * ------------------------------------------------------------------------ */
+
+.status-badge {
+  display: inline-block;
+  padding: 1px 10px;
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 999px;
+  font-family: var(--clice-font-display);
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 20px;
+  color: #2b3040;
+  white-space: nowrap;
+}
+
+.status-badge.ok {
+  background: var(--aqua);
+}
+
+.status-badge.warn {
+  background: var(--straw);
+}
+
+.status-badge.no {
+  background: #f0b9b3;
+}
+
+.status-badge.note {
+  background: var(--paper-3);
+  color: var(--ink);
+}
+
+.status-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 180px;
+}
+
+.status-bar .track {
+  display: flex;
+  height: 10px;
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--paper-3);
+}
+
+.status-bar .track i {
+  display: block;
+  height: 100%;
+}
+
+.status-bar .track i + i {
+  border-left: var(--line-thin) solid var(--line-color);
+}
+
+.status-bar .track .ok {
+  background: var(--aqua);
+}
+
+.status-bar .track .warn {
+  background: var(--straw);
+}
+
+.status-bar .track .no {
+  background: #f0b9b3;
+}
+
+.status-bar .counts {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ink-2);
+}
+
+.status-bar .counts b {
+  font-weight: 700;
+  position: relative;
+  padding-left: 12px;
+}
+
+.status-bar .counts b::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: var(--line-thin) solid var(--line-color);
+}
+
+.status-bar .counts .ok::before {
+  background: var(--aqua);
+}
+
+.status-bar .counts .warn::before {
+  background: var(--straw);
+}
+
+.status-bar .counts .no::before {
+  background: #f0b9b3;
+}
+
+/* ---------------------------------------------------------------------------
+ * Corners: search, 404, code groups, details, local nav
+ * ------------------------------------------------------------------------ */
+
+.VPLocalSearchBox .backdrop {
+  background: rgba(43, 48, 64, 0.55);
+}
+
+.VPLocalSearchBox .shell {
+  background: var(--paper) !important;
+}
+
+.VPLocalSearchBox .search-bar {
+  border: var(--line) solid var(--line-color);
+  border-radius: 999px;
+  background: var(--panel);
+}
+
+.dark .VPLocalSearchBox .search-bar {
+  background: var(--paper-2);
+}
+
+.VPLocalSearchBox .result {
+  border: var(--line-thin) solid transparent;
+  border-radius: var(--radius);
+}
+
+.VPLocalSearchBox .result.selected {
+  border-color: var(--line-color);
+  background: var(--straw-soft);
+  --vp-c-brand-1: var(--ink);
+}
+
+.VPLocalSearchBox .result .title,
+.VPLocalSearchBox .result .titles {
+  color: var(--ink);
+}
+
+.VPLocalSearchBox .result .excerpt-wrapper {
+  border-top: var(--line-thin) dashed var(--line-color);
+}
+
+.VPLocalSearchBox .toggle-modal,
+.VPLocalSearchBox .search-keyboard-shortcuts kbd {
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 4px;
+  background: var(--paper-2);
+}
+
+.NotFound {
+  text-align: center;
+}
+
+.NotFound .code {
+  font-family: var(--clice-font-display);
+  font-weight: 900;
+  font-size: 96px;
+  color: var(--bow);
+  line-height: 1;
+}
+
+.NotFound .title {
+  font-family: var(--clice-font-display);
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.NotFound .divider {
+  width: 96px;
+  height: 6px;
+  margin: 24px auto;
+  background-image: var(--hatch);
+  border-radius: 0;
+}
+
+.NotFound .link {
+  border: var(--line) solid var(--line-color) !important;
+  border-radius: 999px !important;
+  padding: 6px 20px;
+  background: var(--straw);
+  color: #2b3040 !important;
+  font-weight: 700;
+  box-shadow: var(--hard-shadow-sm);
+}
+
+.NotFound::before {
+  content: "";
+  display: block;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 8px;
+  border: var(--line) solid var(--line-color);
+  border-radius: var(--radius);
+  background: var(--panel) url("/mascot/face-skeptical.png") center/cover no-repeat;
+  box-shadow: var(--hard-shadow);
+}
+
+.vp-code-group .tabs {
+  background: var(--paper-3);
+  border-bottom: var(--line) solid var(--line-color);
+}
+
+.vp-code-group .tabs::after {
+  display: none;
+}
+
+.vp-code-group .tabs label {
+  font-family: var(--clice-font-display);
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.vp-code-group .tabs input:checked + label {
+  color: var(--ink);
+  background: var(--paper-2);
+  border: var(--line) solid var(--line-color);
+  border-bottom: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+  margin-bottom: calc(-1 * var(--line));
+}
+
+.vp-code-group .tabs label::after {
+  display: none;
+}
+
+.vp-doc .custom-block.details {
+  position: relative;
+}
+
+.vp-doc .custom-block.details summary {
+  font-family: var(--clice-font-display);
+  font-weight: 700;
+  padding-left: 22px;
+  position: relative;
+}
+
+.vp-doc .custom-block.details summary::before {
+  content: "▶";
+  position: absolute;
+  left: 2px;
+  top: 1px;
+  font-size: 10px;
+  color: var(--bow);
+  transition: transform 0.15s ease;
+}
+
+.vp-doc .custom-block.details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.vp-doc .custom-block.details::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(225deg, var(--paper) 50%, var(--line-color) 50%, var(--line-color) calc(50% + 2px), var(--paper-3) calc(50% + 2px));
+}
+
+.custom-block .custom-block-title::before {
+  content: "◆";
+  color: var(--ribbon);
+  font-size: 10px;
+  margin-right: 6px;
+  vertical-align: 2px;
+}
+
+.VPLocalNav {
+  border-bottom: var(--line) solid var(--line-color) !important;
+}
+
+.VPLocalNav .menu,
+.VPLocalNav .VPLocalNavOutlineDropdown button {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.VPLocalNavOutlineDropdown .items {
+  border: var(--line) solid var(--line-color);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: var(--hard-shadow);
+}
+
+.VPNavScreen {
+  background: var(--paper);
+}
+
+.VPNavScreenMenuLink,
+.VPNavScreenMenuGroup {
+  border-bottom: var(--line-thin) dashed var(--line-color) !important;
+  font-family: var(--clice-font-display);
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------------------
+ * Margins: reaction strokes by the section heads, a face in the footer
+ * ------------------------------------------------------------------------ */
+
+.vp-doc h2 > .header-anchor {
+  font-family: var(--vp-font-family-base);
+}
+
+.vp-doc h2 span.reaction,
+.vp-doc h2 .reaction {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .vp-doc h2::before {
+    box-shadow: -14px 0 0 -4px transparent;
+  }
+
+  .vp-doc h2 > .header-anchor::before {
+    content: "";
+    position: absolute;
+    left: -46px;
+    top: 4px;
+    width: 22px;
+    height: 22px;
+    background:
+      linear-gradient(var(--line-color), var(--line-color)) 4px 12px / 2px 10px no-repeat,
+      linear-gradient(var(--line-color), var(--line-color)) 11px 6px / 2px 10px no-repeat,
+      linear-gradient(var(--line-color), var(--line-color)) 18px 12px / 2px 10px no-repeat;
+    transform: rotate(-12deg);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .vp-doc h2:hover > .header-anchor::before {
+    opacity: 1;
+  }
+}
+
+.VPFooter .container {
+  position: relative;
+}
+
+.VPFooter .copyright::before {
+  content: "";
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin: -12px 10px -12px 0;
+  border: var(--line) solid var(--line-color);
+  border-radius: 999px;
+  background: var(--panel) url("/mascot/face-smiling.png") center 20% / 150% no-repeat;
+  vertical-align: middle;
+}
+
+/* ---------------------------------------------------------------------------
+ * Narrow screens: thinner shadows, no side rules
+ * ------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  :root,
+  .dark {
+    --hard-shadow: 3px 3px 0 var(--shadow-color);
+    --hard-shadow-sm: 2px 2px 0 var(--shadow-color);
+  }
+
+  .vp-doc h1 {
+    font-size: 30px;
+  }
+
+  .VPHero .image-container {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 959px) {
+  .VPHero .image {
+    margin: 0 0 24px;
+  }
+
+  .VPHero .image-container {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+}
