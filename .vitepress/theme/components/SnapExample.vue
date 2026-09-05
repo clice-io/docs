@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useData } from 'vitepress'
 
 type Result = { name: string; meta: string; html: string }
@@ -10,7 +10,7 @@ type Payload = {
   markers: string[]
   files: File[]
   results: Result[]
-  layout: 'split' | 'single'
+  layout: 'split' | 'single' | 'tooltip'
   legend: { label: string; cls: string }[]
   source: string
 }
@@ -28,6 +28,7 @@ const payload = computed<Payload | null>(() => {
 })
 
 const open = ref(false)
+const codeEl = ref<HTMLElement | null>(null)
 
 const indexOf = (name: string): number => payload.value?.markers.indexOf(name) ?? -1
 const results = computed(() =>
@@ -37,9 +38,79 @@ const results = computed(() =>
     return (ia < 0 ? 1e9 : ia) - (ib < 0 ? 1e9 : ib)
   })
 )
+const byName = computed(() => new Map(results.value.map((r) => [r.name, r])))
 const sourceUrl = computed(() =>
   payload.value ? `https://github.com/clice-io/clice/blob/main/${payload.value.source}` : ''
 )
+
+// Tooltip mode: the result of a marker pops up over its pin.
+const tip = ref<{ result: Result; left: number; top: number; flip: boolean } | null>(null)
+const pinned = ref(false)
+
+function showFor(pin: HTMLElement, sticky: boolean): void {
+  const name = pin.dataset.name ?? ''
+  const result = byName.value.get(name)
+  const host = codeEl.value
+  if (!result || !host) return
+  const hostRect = host.getBoundingClientRect()
+  const rect = pin.getBoundingClientRect()
+  const left = rect.left - hostRect.left + host.scrollLeft
+  const top = rect.bottom - hostRect.top + host.scrollTop + 6
+  const flip = left > hostRect.width * 0.55
+  tip.value = { result, left, top, flip }
+  pinned.value = sticky
+}
+
+function onOver(event: MouseEvent): void {
+  if (pinned.value) return
+  const pin = (event.target as HTMLElement).closest('.pin') as HTMLElement | null
+  if (pin) showFor(pin, false)
+}
+
+function onOut(event: MouseEvent): void {
+  if (pinned.value) return
+  const to = event.relatedTarget as HTMLElement | null
+  if (to && (to.closest('.snap-tip') || to.closest('.pin'))) return
+  tip.value = null
+}
+
+function onClick(event: MouseEvent): void {
+  const pin = (event.target as HTMLElement).closest('.pin') as HTMLElement | null
+  if (pin) {
+    if (pinned.value && tip.value?.result.name === pin.dataset.name) {
+      tip.value = null
+      pinned.value = false
+    } else {
+      showFor(pin, true)
+    }
+    event.stopPropagation()
+    return
+  }
+  if (!(event.target as HTMLElement).closest('.snap-tip')) {
+    tip.value = null
+    pinned.value = false
+  }
+}
+
+function onDocClick(): void {
+  if (pinned.value) {
+    tip.value = null
+    pinned.value = false
+  }
+}
+
+watch(open, async (value) => {
+  tip.value = null
+  pinned.value = false
+  if (value) {
+    await nextTick()
+    document.addEventListener('click', onDocClick)
+  } else {
+    document.removeEventListener('click', onDocClick)
+  }
+})
+
+onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 </script>
 
 <template>
@@ -52,7 +123,13 @@ const sourceUrl = computed(() =>
       {{ open ? (zh ? '收起示例' : 'Hide example') : (zh ? '查看示例' : 'Show example') }}
     </button>
     <div v-if="open" class="snap-body" :class="payload.layout">
-      <div class="snap-code">
+      <div
+        ref="codeEl"
+        class="snap-code"
+        @mouseover="payload.layout === 'tooltip' && onOver($event)"
+        @mouseout="payload.layout === 'tooltip' && onOut($event)"
+        @click="payload.layout === 'tooltip' && onClick($event)"
+      >
         <div class="snap-source" v-html="payload.code" />
         <div v-for="file in payload.files" :key="file.name" class="snap-file">
           <span class="snap-file-name">{{ file.name }}</span>
@@ -61,7 +138,23 @@ const sourceUrl = computed(() =>
         <div v-if="payload.legend.length" class="snap-legend">
           <span v-for="item in payload.legend" :key="item.label" :class="item.cls">{{ item.label }}</span>
         </div>
-        <a class="snap-link" :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ payload.source }}</a>
+        <div class="snap-foot">
+          <span v-if="payload.layout === 'tooltip'" class="snap-hint">{{ zh ? '悬停或点击编号查看结果' : 'Hover or tap a number for the result' }}</span>
+          <a class="snap-link" :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ payload.source }}</a>
+        </div>
+        <div
+          v-if="tip"
+          class="snap-tip"
+          :class="{ flip: tip.flip, pinned }"
+          :style="{ left: tip.flip ? 'auto' : tip.left + 'px', right: tip.flip ? 'calc(100% - ' + tip.left + 'px)' : 'auto', top: tip.top + 'px' }"
+        >
+          <div class="snap-result-head">
+            <i v-if="indexOf(tip.result.name) >= 0">{{ indexOf(tip.result.name) + 1 }}</i>
+            <span class="snap-result-name">{{ tip.result.name }}</span>
+            <span v-if="tip.result.meta" class="snap-meta">{{ tip.result.meta }}</span>
+          </div>
+          <div class="snap-card" v-html="tip.result.html" />
+        </div>
       </div>
       <div v-if="payload.layout === 'split'" class="snap-results">
         <template v-if="results.length > 0">
@@ -121,8 +214,32 @@ const sourceUrl = computed(() =>
   margin-top: 12px;
   border: var(--line) solid var(--line-color);
   border-radius: var(--radius);
-  overflow: hidden;
   box-shadow: var(--hard-shadow);
+}
+
+.snap-code {
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.single .snap-code,
+.tooltip .snap-code {
+  border-radius: var(--radius);
+}
+
+@media (min-width: 900px) {
+  .split .snap-code {
+    border-radius: var(--radius) 0 0 var(--radius);
+  }
+}
+
+.snap-results {
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+@media (min-width: 900px) {
+  .split .snap-results {
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
 }
 
 @media (min-width: 900px) {
@@ -132,8 +249,72 @@ const sourceUrl = computed(() =>
 }
 
 .snap-code {
+  position: relative;
   background: var(--paper-2);
   border-bottom: var(--line) solid var(--line-color);
+}
+
+.single .snap-code,
+.tooltip .snap-code {
+  border-bottom: none;
+}
+
+.snap-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 6px 16px 10px;
+}
+
+.snap-hint {
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.tooltip .snap-source :deep(.pin) {
+  cursor: pointer;
+}
+
+.tooltip .snap-source :deep(.pin:hover i) {
+  background: var(--bow);
+  color: #ffffff;
+}
+
+.snap-tip {
+  position: absolute;
+  z-index: 20;
+  width: max-content;
+  max-width: min(460px, calc(100% - 32px));
+  padding: 8px 10px 10px;
+  border: var(--line) solid var(--line-color);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--hard-shadow);
+  text-align: left;
+}
+
+.dark .snap-tip {
+  background: var(--paper-2);
+}
+
+.snap-tip::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  border-style: solid;
+  border-width: 0 7px 8px 7px;
+  border-color: transparent transparent var(--line-color) transparent;
+}
+
+.snap-tip.flip::before {
+  left: auto;
+  right: 12px;
+}
+
+.snap-tip .snap-card {
+  padding: 8px 10px;
 }
 
 @media (min-width: 900px) {
@@ -239,7 +420,6 @@ const sourceUrl = computed(() =>
 
 .snap-link {
   display: block;
-  padding: 6px 16px 10px;
   font-family: var(--vp-font-family-mono);
   font-size: 11px;
   color: var(--ink-3) !important;
@@ -312,10 +492,10 @@ const sourceUrl = computed(() =>
   background: var(--paper-2);
 }
 
-.snap-result :deep(h1),
-.snap-result :deep(h2),
-.snap-result :deep(h3),
-.snap-result :deep(h4) {
+.snap-card :deep(h1),
+.snap-card :deep(h2),
+.snap-card :deep(h3),
+.snap-card :deep(h4) {
   margin: 0 0 4px;
   padding: 0;
   font-family: var(--vp-font-family-base);
@@ -326,23 +506,23 @@ const sourceUrl = computed(() =>
   background: none;
 }
 
-.snap-result :deep(h2::before),
-.snap-result :deep(h2::after),
-.snap-result :deep(h3::before) {
+.snap-card :deep(h2::before),
+.snap-card :deep(h2::after),
+.snap-card :deep(h3::before) {
   display: none;
 }
 
-.snap-result :deep(p) {
+.snap-card :deep(p) {
   margin: 4px 0;
 }
 
-.snap-result :deep(hr) {
+.snap-card :deep(hr) {
   margin: 8px 0;
   border: none;
   border-top: var(--line-thin) dashed var(--line-color);
 }
 
-.snap-result :deep(div[class*='language-']) {
+.snap-card :deep(div[class*='language-']) {
   margin: 6px 0 0;
   border: none !important;
   border-radius: 0 !important;
@@ -350,12 +530,12 @@ const sourceUrl = computed(() =>
   background: transparent !important;
 }
 
-.snap-result :deep(div[class*='language-'] > span.lang),
-.snap-result :deep(div[class*='language-'] > button.copy) {
+.snap-card :deep(div[class*='language-'] > span.lang),
+.snap-card :deep(div[class*='language-'] > button.copy) {
   display: none;
 }
 
-.snap-result :deep(pre) {
+.snap-card :deep(pre) {
   margin: 0;
   padding: 6px 0 0;
   background: transparent !important;
@@ -363,18 +543,18 @@ const sourceUrl = computed(() =>
   overflow-x: auto;
 }
 
-.snap-result :deep(:not(pre) > code) {
+.snap-card :deep(:not(pre) > code) {
   padding: 0 4px;
   border: none;
   background: var(--paper-3);
   font-size: 12.5px;
 }
 
-.snap-result :deep(code) {
+.snap-card :deep(code) {
   font-family: var(--vp-font-family-mono);
 }
 
-.snap-result :deep(.snap-raw) {
+.snap-card :deep(.snap-raw) {
   white-space: pre-wrap;
 }
 

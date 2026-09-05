@@ -21,8 +21,9 @@ export interface Rendered {
     code: string;
     /** Result panels, empty for features whose result lives in the code. */
     results: Result[];
-    /** `split` shows the results column, `single` only the code. */
-    layout: "split" | "single";
+    /** `split` shows the results column, `single` only the code, and
+     *  `tooltip` pops each marker's result up over its pin. */
+    layout: "split" | "single" | "tooltip";
     /** Small legend under the code (token kinds, hint kinds, …). */
     legend: { label: string; cls: string }[];
 }
@@ -233,7 +234,7 @@ function renderHover(md: MarkdownIt, code: string, markers: Marker[], body: stri
     return {
         code: decorate(md, code, pinInserts(code, markers)),
         results: results.length > 0 ? results : rawResult(body),
-        layout: "split",
+        layout: results.length > 0 ? "tooltip" : "split",
         legend: [],
     };
 }
@@ -395,7 +396,7 @@ function renderNavigation(md: MarkdownIt, code: string, markers: Marker[], body:
         }
         results.push({ name, meta: "", html: rows.join("") });
     }
-    return { code: decorate(md, code, inserts), results, layout: "split", legend: [] };
+    return { code: decorate(md, code, inserts), results, layout: "tooltip", legend: [] };
 }
 
 function shiftRange(range: string, skipped: number): string {
@@ -437,7 +438,7 @@ function renderCompletion(md: MarkdownIt, code: string, markers: Marker[], body:
         });
         results.push({ name, meta: `${items.length} items`, html: `<ul class="cmp-list">${rows.join("")}</ul>` });
     }
-    return { code: decorate(md, code, pinInserts(code, markers)), results, layout: "split", legend: [] };
+    return { code: decorate(md, code, pinInserts(code, markers)), results, layout: "tooltip", legend: [] };
 }
 
 // ---------------------------------------------------------------------------
@@ -460,7 +461,7 @@ function renderSignatureHelp(md: MarkdownIt, code: string, markers: Marker[], bo
         });
         results.push({ name, meta: "", html: `<ul class="sig-list">${rows.join("")}</ul>` });
     }
-    return { code: decorate(md, code, pinInserts(code, markers)), results, layout: "split", legend: [] };
+    return { code: decorate(md, code, pinInserts(code, markers)), results, layout: "tooltip", legend: [] };
 }
 
 // ---------------------------------------------------------------------------
