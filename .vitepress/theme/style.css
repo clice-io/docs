@@ -1946,8 +1946,8 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::after {
   background: var(--straw-soft);
 }
 
-.snap-source .line.folded {
-  display: none;
+.snap-source .block-lines .line.folded {
+  display: none !important;
 }
 
 .snap-source .line.collapsed-line::after {
