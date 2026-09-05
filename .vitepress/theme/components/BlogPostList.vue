@@ -118,12 +118,15 @@ const regularPosts = computed<BlogPostItem[]>(() => sortedPosts.value.slice(1))
 }
 
 .blog-header h1 {
+  display: inline-block;
   margin: 0;
+  padding: 0 16px;
+  font-family: var(--clice-font-display);
   font-size: 32px;
   line-height: 40px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--vp-c-text-1);
+  font-weight: 900;
+  color: var(--ink);
+  background: linear-gradient(transparent 62%, var(--straw) 62%, var(--straw) 92%, transparent 92%);
 }
 
 @media (min-width: 768px) {
@@ -134,57 +137,72 @@ const regularPosts = computed<BlogPostItem[]>(() => sortedPosts.value.slice(1))
 }
 
 .blog-featured-slot {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+}
+
+.featured-card,
+.post-card {
+  display: block;
+  border: var(--line) solid var(--line-color);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--hard-shadow);
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.dark .featured-card,
+.dark .post-card {
+  background: var(--paper-2);
+}
+
+.featured-card:hover,
+.post-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--shadow-color);
 }
 
 .featured-card {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
-  border: 1px solid var(--vp-c-bg-soft);
-  border-radius: 12px;
-  background-color: var(--vp-c-bg-soft);
-  transition: border-color 0.25s, background-color 0.25s;
-  text-decoration: none;
-  color: inherit;
-  overflow: hidden;
-}
-
-.featured-card:hover {
-  border-color: var(--vp-c-brand-1);
 }
 
 .copy {
   display: flex;
   flex-direction: column;
   padding: 32px;
-  flex: 1;
 }
 
 .meta {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--vp-c-text-2);
-  margin-bottom: 12px;
+  display: inline-block;
+  align-self: flex-start;
+  margin-bottom: 14px;
+  padding: 0 10px;
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 999px;
+  background: var(--straw-soft);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 20px;
+  color: var(--ink);
 }
 
 .copy h2 {
-  margin: 0;
-  font-size: clamp(2rem, 3.4vw, 3rem);
+  margin: 0 0 16px;
+  font-family: var(--clice-font-display);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
   line-height: 1.25;
-  font-weight: 600;
-  color: var(--vp-c-text-1);
-  margin-bottom: 16px;
-  transition: color 0.25s;
-}
-
-.featured-card:hover h2 {
-  color: var(--vp-c-brand-1);
+  font-weight: 900;
+  color: var(--ink);
 }
 
 .summary {
   margin: 0;
-  color: var(--vp-c-text-2);
+  color: var(--ink-2);
   flex-grow: 1;
 }
 
@@ -195,11 +213,8 @@ const regularPosts = computed<BlogPostItem[]>(() => sortedPosts.value.slice(1))
 
 .art {
   min-height: 220px;
-  background:
-    radial-gradient(circle at 30% 75%, rgba(255, 142, 56, 0.2), transparent 44%),
-    radial-gradient(circle at 68% 25%, rgba(255, 175, 72, 0.24), transparent 35%),
-    linear-gradient(145deg, #fff8ea 0%, #fff3dd 100%);
-  border-radius: 0 12px 12px 0;
+  border-left: var(--line) solid var(--line-color);
+  background: #ffffff url("/mascot/featured-reading.webp") center / cover no-repeat;
 }
 
 @media (max-width: 899px) {
@@ -210,13 +225,7 @@ const regularPosts = computed<BlogPostItem[]>(() => sortedPosts.value.slice(1))
 
 @media (min-width: 900px) {
   .featured-card {
-    grid-template-columns: minmax(0, 1.24fr) minmax(280px, 0.78fr);
-    padding: 0;
-  }
-
-  .art {
-    min-height: 100%;
-    border-radius: 0 12px 12px 0;
+    grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.6fr);
   }
 }
 
@@ -239,19 +248,7 @@ const regularPosts = computed<BlogPostItem[]>(() => sortedPosts.value.slice(1))
 }
 
 .post-card {
-  display: flex;
-  flex-direction: column;
   height: 100%;
-  border: 1px solid var(--vp-c-bg-soft);
-  border-radius: 12px;
-  background-color: var(--vp-c-bg-soft);
-  transition: border-color 0.25s, background-color 0.25s;
-  text-decoration: none;
-  color: inherit;
-}
-
-.post-card:hover {
-  border-color: var(--vp-c-brand-1);
 }
 
 .content {
@@ -262,21 +259,22 @@ const regularPosts = computed<BlogPostItem[]>(() => sortedPosts.value.slice(1))
 }
 
 .post-card .meta {
-  font-size: 13px;
-  margin-bottom: 8px;
+  font-size: 12px;
+  margin-bottom: 10px;
 }
 
 .title {
   margin: 0 0 12px;
+  font-family: var(--clice-font-display);
   font-size: 20px;
   line-height: 1.4;
-  font-weight: 600;
-  color: var(--vp-c-text-1);
-  transition: color 0.25s;
+  font-weight: 900;
+  color: var(--ink);
 }
 
-.post-card:hover .title {
-  color: var(--vp-c-brand-1);
+.post-card:hover .title,
+.featured-card:hover h2 {
+  color: var(--bow);
 }
 
 .post-card .summary {

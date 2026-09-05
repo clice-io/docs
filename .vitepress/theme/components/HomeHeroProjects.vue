@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vitepress'
-import ProjectShowcase from './ProjectShowcase.vue'
+import { useData } from 'vitepress'
+import { VPImage } from 'vitepress/theme'
 
-const route = useRoute()
-
-const isRoot = computed(() => route.path === '/' || route.path === '/zh/' || route.path === '/zh')
-const locale = computed(() => (route.path.startsWith('/zh') ? 'zh' : 'en'))
+const { frontmatter } = useData()
 </script>
 
 <template>
-  <ProjectShowcase v-if="isRoot" :locale="locale" />
+  <VPImage v-if="frontmatter.hero?.image" class="image-src" :image="frontmatter.hero.image" />
 </template>

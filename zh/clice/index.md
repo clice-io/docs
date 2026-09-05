@@ -16,7 +16,7 @@ hero:
       text: 参与贡献
       link: ./dev/contribution
   image:
-    src: /image.png
+    src: /mascot/portrait.png
     alt: clice
 
 features:
