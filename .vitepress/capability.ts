@@ -94,27 +94,18 @@ function parseMarkers(text: string): { code: string; markers: Marker[] } {
     return { code, markers };
 }
 
-/** The fixture's example: the source after its prologue — an optional
- *  plain `//` block (licence notes), the `///` doc header, and an
- *  optional `// snap:` maintainer block. A fixture without a `///`
- *  header keeps everything. */
+/** The fixture's example: the source after its `///` doc header and the
+ *  `// snap:` maintainer block that may follow it. Nothing precedes the
+ *  header in a doc fixture (the corpus validator enforces that), so the
+ *  prologue is exactly: `///` lines, blank lines, an optional `// snap:`
+ *  block, blank lines. */
 function exampleOf(source: string): { example: string; skipped: number } {
     const lines = source.replaceAll("\r\n", "\n").split("\n");
     let i = 0;
-    const hasHeader = lines.some((line, at) => {
-        if (line.startsWith("///")) return true;
-        return false && at;
-    });
-    if (hasHeader) {
-        // Skip the plain prologue up to the header.
-        while (i < lines.length && !lines[i]!.startsWith("///")) i += 1;
-        // The header itself and the blank lines after it.
-        while (i < lines.length && (lines[i]!.startsWith("///") || lines[i]!.trim() === "")) i += 1;
-        // A `// snap:` block right after the header.
-        if ((lines[i] ?? "").trim().startsWith("// snap:")) {
-            while (i < lines.length && lines[i]!.trim().startsWith("//")) i += 1;
-            while (i < lines.length && lines[i]!.trim() === "") i += 1;
-        }
+    while (i < lines.length && (lines[i]!.startsWith("///") || lines[i]!.trim() === "")) i += 1;
+    if ((lines[i] ?? "").trim().startsWith("// snap:")) {
+        while (i < lines.length && lines[i]!.trim().startsWith("// snap:")) i += 1;
+        while (i < lines.length && lines[i]!.trim() === "") i += 1;
     }
     const body = lines.slice(i);
     while (body.length > 0 && body[body.length - 1]!.trim() === "") body.pop();
