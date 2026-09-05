@@ -13,6 +13,7 @@ export default withMermaid(defineConfig({
     title: "clice.io",
     description: "Next generation C++ tooling",
     cleanUrls: true,
+    srcExclude: ["output/**", "sources/**"],
     lastUpdated: true,
     sitemap: { hostname: SITE },
     head: [
