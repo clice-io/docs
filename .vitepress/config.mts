@@ -15,7 +15,10 @@ export default withMermaid(defineConfig({
     lastUpdated: true,
     sitemap: { hostname: SITE },
     head: [
-        ["link", { rel: "icon", type: "image/png", href: "/mascot/logo.png" }],
+        ["link", { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" }],
+        ["link", { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" }],
+        ["link", { rel: "icon", type: "image/png", sizes: "48x48", href: "/favicon-48.png" }],
+        ["link", { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" }],
         ["meta", { property: "og:type", content: "website" }],
         ["meta", { property: "og:site_name", content: "clice.io" }],
         ["meta", { name: "twitter:card", content: "summary_large_image" }],
@@ -31,7 +34,9 @@ export default withMermaid(defineConfig({
         const head = [
             ["meta", { property: "og:title", content: title ? `${title} | clice.io` : "clice.io" }],
             ["meta", { property: "og:url", content: url(isZh ? path : en) }],
-            ["meta", { property: "og:image", content: `${SITE}/mascot/portrait.png` }],
+            ["meta", { property: "og:image", content: `${SITE}/og.png` }],
+            ["meta", { property: "og:image:width", content: "1200" }],
+            ["meta", { property: "og:image:height", content: "630" }],
             ["meta", { property: "og:locale", content: isZh ? "zh_CN" : "en_US" }],
             ["link", { rel: "canonical", href: url(isZh ? path : en) }],
             ["link", { rel: "alternate", hreflang: "en", href: url(en) }],
@@ -57,7 +62,7 @@ export default withMermaid(defineConfig({
         "en/:rest*": ":rest*",
     },
     themeConfig: {
-        logo: "/mascot/logo.png",
+        logo: "/mascot/logo-mark.webp",
         outline: "deep",
         search: {
             provider: "local"

@@ -34,6 +34,7 @@ runs:
 
         [ -d "${src}/en" ] && cp -rf "${src}/en" "__docs_repo/en/${project}"
         [ -d "${src}/zh" ] && cp -rf "${src}/zh" "__docs_repo/zh/${project}"
+        [ -d "${src}/public" ] && cp -rf "${src}/public/." "__docs_repo/public/"
 
     - name: Create Pull Request
       id: create-pr

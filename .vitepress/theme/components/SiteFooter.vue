@@ -46,7 +46,7 @@ const other = computed(() => (zh.value ? { text: 'English', href: '/' } : { text
   <footer class="site-footer" :class="{ 'has-sidebar': hasSidebar }">
     <div class="inner">
       <div class="brand">
-        <img class="face" src="/mascot/face-smiling.png" alt="" />
+        <img class="face" src="/mascot/avatar.webp" alt="" />
         <div>
           <p class="name">clice.io</p>
           <p class="line">{{ zh ? '下一代 C++ 工具链' : 'Next generation C++ tooling' }}</p>
@@ -122,7 +122,7 @@ const other = computed(() => (zh.value ? { text: 'English', href: '/' } : { text
   border-radius: 999px;
   background: #ffffff;
   object-fit: cover;
-  object-position: center 22%;
+  object-position: center 30%;
 }
 
 .brand p {

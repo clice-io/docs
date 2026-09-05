@@ -1038,12 +1038,12 @@ html[lang^="zh"] {
 .NotFound::before {
   content: "";
   display: block;
-  width: 180px;
-  height: 180px;
+  width: 220px;
+  height: 300px;
   margin: 0 auto 8px;
   border: var(--line) solid var(--line-color);
   border-radius: var(--radius);
-  background: var(--panel) url("/mascot/face-skeptical.png") center/cover no-repeat;
+  background: var(--panel) url("/mascot/not-found.webp") center / contain no-repeat;
   box-shadow: var(--hard-shadow);
 }
 
@@ -1197,7 +1197,7 @@ html[lang^="zh"] {
   margin: -12px 10px -12px 0;
   border: var(--line) solid var(--line-color);
   border-radius: 999px;
-  background: var(--panel) url("/mascot/face-smiling.png") center 20% / 150% no-repeat;
+  background: var(--panel) url("/mascot/avatar.webp") center 30% / 130% no-repeat;
   vertical-align: middle;
 }
 
@@ -1417,4 +1417,96 @@ html[lang^="zh"] {
 
 .dark .vp-doc tr:nth-child(2n) td {
   background: var(--paper-2);
+}
+
+/* ---------------------------------------------------------------------------
+ * Illustrated corners: chapter icons, sticker faces on callouts, empty
+ * search, feature icons on the sub-site home pages
+ * ------------------------------------------------------------------------ */
+
+.VPSidebarItem.level-0 > .item > .text::before {
+  display: none;
+}
+
+.VPSidebarItem.level-0 > .item > .text .chapter-icon {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  margin: -4px 8px 0 0;
+  vertical-align: middle;
+}
+
+.custom-block {
+  position: relative;
+  padding-right: 72px;
+}
+
+.custom-block::after {
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  width: 56px;
+  height: 56px;
+  border: var(--line) solid var(--line-color);
+  border-radius: 999px;
+  background: #ffffff center 20% / 150% no-repeat;
+}
+
+.custom-block.tip::after {
+  background-image: url("/mascot/sticker-tip.webp");
+}
+
+.custom-block.warning::after {
+  background-image: url("/mascot/sticker-warning.webp");
+}
+
+.custom-block.danger::after,
+.custom-block.caution::after {
+  background-image: url("/mascot/sticker-danger.webp");
+}
+
+.custom-block.info::after,
+.custom-block.note::after,
+.custom-block.important::after {
+  background-image: url("/mascot/sticker-note.webp");
+}
+
+.custom-block.details {
+  padding-right: 18px;
+}
+
+.custom-block.details::after {
+  border: none;
+  border-radius: 0;
+  background: linear-gradient(225deg, var(--paper) 50%, var(--line-color) 50%, var(--line-color) calc(50% + 2px), var(--paper-3) calc(50% + 2px));
+  width: 18px;
+  height: 18px;
+  right: -2px;
+  top: auto;
+  bottom: -2px;
+}
+
+.VPLocalSearchBox .no-results {
+  padding-top: 200px;
+  background: url("/mascot/search-empty.webp") center 16px / 170px no-repeat;
+  color: var(--ink-2);
+  font-weight: 700;
+}
+
+.VPFeature .icon {
+  width: 64px;
+  height: 64px;
+  padding: 6px;
+  background: #ffffff !important;
+}
+
+.VPFeature .icon .VPImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.VPHero .image-container {
+  max-width: 480px;
 }

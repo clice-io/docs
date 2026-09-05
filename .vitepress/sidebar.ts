@@ -28,6 +28,21 @@ function titleCase(name: string): string {
     return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
+// Chapter icons drawn for the four common sections; other directories get
+// no icon. The sidebar renders item text as HTML.
+const CHAPTER_ICONS: Record<string, string> = {
+    guide: "guide",
+    features: "features",
+    design: "design",
+    dev: "development",
+};
+
+function groupLabel(dir: string, label: string): string {
+    const icon = CHAPTER_ICONS[dir];
+    if (icon === undefined) return label;
+    return `<img class="chapter-icon" src="/icons/chapter-${icon}.webp" alt="" />${label}`;
+}
+
 function loadConfig(lang: "en" | "zh", project: string): SidebarConfig | null {
     const configPath = path.resolve(process.cwd(), lang, project, "sidebar.yaml");
     if (!fs.existsSync(configPath)) return null;
@@ -90,7 +105,7 @@ export function genProjectSidebar(project: string, lang: "en" | "zh"): DefaultTh
                 }));
 
             const result: DefaultTheme.SidebarItem = {
-                text: group?.label || titleCase(dir),
+                text: groupLabel(dir, group?.label || titleCase(dir)),
                 items,
             };
 

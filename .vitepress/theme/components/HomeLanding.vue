@@ -194,7 +194,7 @@ const platforms = [
   <div class="landing">
     <section class="hero koma">
       <div class="hero-figure">
-        <img src="/mascot/full-body.png" alt="clice mascot" />
+        <img src="/mascot/hero-welcome.webp" alt="clice mascot" />
       </div>
       <div class="hero-copy">
         <p class="kicker">{{ page.kicker }}</p>
@@ -236,8 +236,10 @@ const platforms = [
         :target="project.external ? '_blank' : undefined"
         :rel="project.external ? 'noopener noreferrer' : undefined"
       >
+        <div class="art">
+          <img :src="`/mascot/project-${project.id}.webp`" :alt="project.title" />
+        </div>
         <div class="project-head">
-          <img class="avatar" :src="`/mascot/face-${project.face}.png`" :alt="project.face" />
           <h3>{{ project.title }}</h3>
           <span class="tag">{{ project.label }}</span>
         </div>
@@ -254,7 +256,7 @@ const platforms = [
           <p>{{ item.question }}</p>
         </div>
         <div class="koma face">
-          <img :src="`/mascot/face-${item.face}.png`" :alt="item.face" />
+          <img :src="`/mascot/face-${item.face}.webp`" :alt="item.face" />
           <span class="num">{{ i + 1 }}</span>
         </div>
         <div class="answer">
@@ -315,7 +317,7 @@ const platforms = [
 
 .hero-figure img {
   display: block;
-  width: 180px;
+  width: 240px;
   animation: sway 6s ease-in-out infinite;
   transform-origin: 50% 100%;
 }
@@ -430,7 +432,7 @@ const platforms = [
 
 @media (min-width: 768px) {
   .hero {
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 340px 1fr;
   }
 
   .hero-figure {
@@ -440,7 +442,7 @@ const platforms = [
   }
 
   .hero-figure img {
-    width: 220px;
+    width: 280px;
   }
 
   .hero-copy {
@@ -583,22 +585,37 @@ const platforms = [
   box-shadow: 6px 6px 0 var(--shadow-color);
 }
 
+.project .art {
+  margin: -22px -22px 16px -22px;
+  padding-left: 10px;
+  height: 170px;
+  border-bottom: var(--line) solid var(--line-color);
+  background:
+    var(--screentone) 0 0 / 10px 10px,
+    #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.project .art img {
+  display: block;
+  height: 150px;
+  width: auto;
+  transition: transform 0.15s ease;
+}
+
+.project:hover .art img {
+  transform: translateY(-4px);
+}
+
 .project-head {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 10px;
   margin-left: 8px;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border: var(--line) solid var(--line-color);
-  border-radius: 999px;
-  background: #ffffff;
-  object-fit: cover;
-  object-position: center 22%;
 }
 
 .project h3 {

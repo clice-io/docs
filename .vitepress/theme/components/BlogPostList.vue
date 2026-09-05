@@ -214,7 +214,7 @@ const regularPosts = computed<BlogPostItem[]>(() => sortedPosts.value.slice(1))
 .art {
   min-height: 220px;
   border-left: var(--line) solid var(--line-color);
-  background: #ffffff url("/mascot/face-smiling.png") center 30% / cover no-repeat;
+  background: #ffffff url("/mascot/featured-reading.webp") center / cover no-repeat;
 }
 
 @media (max-width: 899px) {
