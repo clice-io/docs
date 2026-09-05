@@ -23,7 +23,7 @@ const props = withDefaults(defineProps<{ locale?: Locale }>(), { locale: 'en' })
 
 const content = {
   en: {
-    kicker: 'Project Clice',
+    kicker: 'clice.io',
     bubble: 'Next Generation C++ Tooling',
     lead:
       'A language server on the surface, a real-time compilation scheduler underneath. It drives Clang over your whole project and serves editors, linters, indexers and agents from the same engine.',
@@ -88,7 +88,7 @@ const content = {
     ] satisfies Strip[]
   },
   zh: {
-    kicker: 'Project Clice',
+    kicker: 'clice.io',
     bubble: '下一代 C++ 工具链',
     lead:
       '表面上是一个语言服务器，内核是一个实时的编译调度器。它在整个项目上驱动 Clang，用同一个引擎服务编辑器、静态检查、索引和 Agent。',

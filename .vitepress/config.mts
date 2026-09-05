@@ -8,7 +8,7 @@ import { statusStickers } from "./status";
 const projects = ["clice", "catter"];
 
 export default withMermaid(defineConfig({
-    title: "Project Clice",
+    title: "clice.io",
     description: "Next generation C++ tooling",
     cleanUrls: true,
     markdown: {
