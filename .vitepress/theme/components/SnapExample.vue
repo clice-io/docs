@@ -104,7 +104,7 @@ function onFoldClick(event: MouseEvent): void {
   const end = Number(mark.dataset.end)
   const collapsed = mark.classList.toggle('collapsed')
   mark.textContent = collapsed ? '▸' : '▾'
-  mark.parentElement?.classList.toggle('collapsed-line', collapsed)
+  mark.closest('.line')?.classList.toggle('collapsed-line', collapsed)
   foldRegion(mark, 'fold-hl', false)
   const lines = mainLines()
   for (let l = start + 1; l <= end; l += 1) {
