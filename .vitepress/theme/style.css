@@ -1232,3 +1232,136 @@ html[lang^="zh"] {
     margin: 0 auto;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Nav bar: a face in an ink ring, a quiet search field, no fences
+ * ------------------------------------------------------------------------ */
+
+.VPNavBarTitle .logo {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  border: var(--line) solid var(--line-color);
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.VPNavBarTitle .title {
+  font-size: 17px;
+}
+
+.VPNavBar .menu + .translations::before,
+.VPNavBar .menu + .appearance::before,
+.VPNavBar .menu + .social-links::before,
+.VPNavBar .translations + .appearance::before,
+.VPNavBar .appearance + .social-links::before {
+  display: none;
+}
+
+.VPNavBar .translations,
+.VPNavBar .appearance,
+.VPNavBar .social-links {
+  margin-left: 4px;
+}
+
+.VPNavBarSearchButton,
+.DocSearch-Button {
+  height: 34px;
+  padding: 0 12px 0 10px;
+  border: var(--line-thin) solid var(--line-color) !important;
+  background: var(--paper-2) !important;
+  box-shadow: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.VPNavBarSearchButton:hover,
+.DocSearch-Button:hover {
+  border-color: var(--bow) !important;
+  background: var(--panel) !important;
+}
+
+.dark .VPNavBarSearchButton:hover,
+.dark .DocSearch-Button:hover {
+  background: var(--paper-3) !important;
+}
+
+.DocSearch-Button .DocSearch-Search-Icon {
+  width: 16px;
+  height: 16px;
+  color: var(--ink-2);
+}
+
+.DocSearch-Button-Placeholder {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
+  padding: 0 14px 0 6px;
+}
+
+.DocSearch-Button-Keys {
+  min-width: auto;
+}
+
+.DocSearch-Button-Key {
+  height: 20px;
+  min-width: 20px;
+  padding: 0 5px;
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 4px;
+  background: var(--paper);
+  box-shadow: none;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  color: var(--ink-2);
+}
+
+.VPNavBarMenuLink {
+  font-weight: 700;
+  color: var(--ink-2) !important;
+}
+
+.VPNavBarMenuLink:hover,
+.VPNavBarMenuLink.active {
+  color: var(--ink) !important;
+}
+
+.VPNavBarMenuLink.active {
+  background: linear-gradient(transparent 58%, var(--straw) 58%, var(--straw) 82%, transparent 82%);
+}
+
+.VPSwitch {
+  border: var(--line-thin) solid var(--line-color) !important;
+  background: var(--paper-2) !important;
+}
+
+.VPSwitch .check {
+  border: var(--line-thin) solid var(--line-color);
+  background: var(--panel) !important;
+  box-shadow: none;
+}
+
+.dark .VPSwitch .check {
+  background: var(--paper) !important;
+}
+
+.VPSwitch .icon {
+  color: var(--ink);
+}
+
+.VPNavBarTranslations .text,
+.VPSocialLink {
+  color: var(--ink-2) !important;
+}
+
+.VPNavBarTranslations:hover .text,
+.VPSocialLink:hover {
+  color: var(--ink) !important;
+}
+
+.VPFlyout .menu {
+  border: var(--line) solid var(--line-color);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: var(--hard-shadow);
+}

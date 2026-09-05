@@ -25,6 +25,7 @@ export default withMermaid(defineConfig({
         "en/:rest*": ":rest*",
     },
     themeConfig: {
+        logo: "/mascot/logo.png",
         outline: "deep",
         search: {
             provider: "local"
