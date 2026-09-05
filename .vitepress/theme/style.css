@@ -56,9 +56,9 @@
 }
 
 .dark {
-  --ink: #e2dccb;
-  --ink-2: #b3ad9d;
-  --ink-3: #7c7768;
+  --ink: #cdc7b6;
+  --ink-2: #9d9788;
+  --ink-3: #6f6a5e;
   --paper: #23222a;
   --paper-2: #1d1c22;
   --paper-3: #17161b;
@@ -374,6 +374,11 @@
 
 .VPSidebar {
   border-right: var(--line) solid var(--line-color);
+  scrollbar-width: none;
+}
+
+.VPSidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .VPSidebar .group + .group {
@@ -401,10 +406,17 @@
   color: var(--bow) !important;
 }
 
+.VPSidebarItem.level-1.is-active > .item > .link {
+  flex-grow: 0;
+}
+
 .VPSidebarItem.level-1.is-active > .item > .link > .text {
+  flex-grow: 0;
   color: var(--ink) !important;
   font-weight: 700;
-  background: linear-gradient(transparent 50%, var(--straw) 50%, var(--straw) 88%, transparent 88%);
+  padding: 4px 4px;
+  margin-left: -4px;
+  background: linear-gradient(transparent 55%, var(--straw) 55%, var(--straw) 85%, transparent 85%);
 }
 
 .VPSidebarItem .indicator {
