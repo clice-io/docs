@@ -1595,3 +1595,104 @@ html[lang^="zh"] {
 .vp-doc .capability > p:nth-of-type(n + 3) {
   color: var(--ink-2);
 }
+
+/* ---------------------------------------------------------------------------
+ * Task lists as gap cards: an unchecked item is a planned capability, a
+ * checked one is done. Same frame as the generated capability cards.
+ * ------------------------------------------------------------------------ */
+
+.vp-doc ul:has(> li.task-list-item) {
+  list-style: none;
+  margin: 16px 0;
+  padding: 0;
+}
+
+.vp-doc li.task-list-item {
+  position: relative;
+  margin: 10px 0;
+  padding: 10px 110px 10px 24px;
+  border: var(--line) solid var(--line-color);
+  border-radius: var(--radius);
+  background: var(--panel);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.dark .vp-doc li.task-list-item {
+  background: var(--paper-2);
+}
+
+.vp-doc li.task-list-item::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  bottom: -2px;
+  width: 8px;
+  border-radius: var(--radius) 0 0 var(--radius);
+  border-right: var(--line) solid var(--line-color);
+  background: var(--paper-3);
+}
+
+.vp-doc li.task-list-item:has(input:checked)::before {
+  background: var(--aqua);
+}
+
+.vp-doc li.task-list-item input[type="checkbox"] {
+  display: none;
+}
+
+.vp-doc li.task-list-item::after {
+  content: "Planned";
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  padding: 1px 10px;
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 999px;
+  background: var(--paper-3);
+  font-family: var(--clice-font-display);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--ink);
+}
+
+.vp-doc li.task-list-item:has(input:checked)::after {
+  content: "Supported";
+  background: var(--aqua);
+  color: #2b3040;
+}
+
+html[lang^="zh"] .vp-doc li.task-list-item::after {
+  content: "计划中";
+}
+
+html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::after {
+  content: "支持";
+}
+
+.vp-doc li.task-list-item > ul,
+.vp-doc li.task-list-item > ol {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.vp-doc li.task-list-item > ul > li {
+  margin: 2px 0;
+}
+
+.vp-doc li.task-list-item > p {
+  margin: 0;
+}
+
+.vp-doc li.task-list-item > p + p,
+.vp-doc li.task-list-item > div[class*="language-"] {
+  margin-top: 8px;
+}
+
+.vp-doc li.task-list-item > div[class*="language-"] {
+  margin-right: -90px;
+}
