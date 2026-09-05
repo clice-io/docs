@@ -1552,8 +1552,17 @@ html[lang^="zh"] {
   float: right;
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 8px;
+  max-width: 45%;
   margin: 0 0 8px 12px;
+}
+
+.vp-doc .capability::after {
+  content: "";
+  display: table;
+  clear: both;
 }
 
 .vp-doc .capability-issues {

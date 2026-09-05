@@ -1,6 +1,7 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 import type MarkdownIt from "markdown-it";
 import type { Token } from "markdown-it/index.js";
-import yaml from "js-yaml";
 
 /**
  * Capability cards for the generated feature pages.
@@ -10,18 +11,18 @@ import yaml from "js-yaml";
  *     <!-- BEGIN CAPABILITY: supported clangd#710 -->
  *     **Name**
  *     details / description paragraphs
- *     ```snap-hover
- *     feature: hover
- *     code: |   (example with § markers)
- *     snapshot: | (recorded result)
+ *     ```snap
+ *     tests/snap/hover/symbol_information/01_qualified_name.cpp
  *     ```
  *     <!-- END CAPABILITY -->
  *
  * The comments and the fence are byte-identical across the en and zh
  * trees; the paragraphs are translated. Here the comments become the card
  * frame with a status sticker and issue links, the first paragraph becomes
- * the card title, and the fence becomes a <SnapExample> component fed
- * with the parsed, pre-rendered example.
+ * the card title, and the fence names a fixture in the project's synced
+ * test corpus (`sources/<project>/…`): its source (doc header stripped,
+ * `§` markers turned into pins) and its `.snap.yml` are read at build
+ * time and handed to the <SnapExample> component, pre-rendered.
  */
 
 const BEGIN = /^<!-- BEGIN CAPABILITY: ([^>]*?) -->\s*$/;
@@ -210,32 +211,79 @@ function pinLine(
     return out;
 }
 
-interface SnapData {
-    feature?: string;
-    code?: string;
-    snapshot?: string;
-    [key: string]: unknown;
+/** The fixture's example: the source after its `///` doc header and an
+ *  optional `// snap:` maintainer comment block. */
+function exampleOf(source: string): string {
+    const lines = source.replaceAll("\r\n", "\n").split("\n");
+    let i = 0;
+    while (i < lines.length && (lines[i]!.startsWith("//") || lines[i]!.trim() === "")) {
+        // A `///` doc header, then blank lines; a plain `//` line that is
+        // not a `// snap:` block ends the prologue (it is example code).
+        const line = lines[i]!;
+        if (line.startsWith("///") || line.trim() === "") {
+            i += 1;
+            continue;
+        }
+        if (line.trim().startsWith("// snap:")) {
+            while (i < lines.length && lines[i]!.trim().startsWith("//")) i += 1;
+            continue;
+        }
+        break;
+    }
+    const body = lines.slice(i);
+    while (body.length > 0 && body[body.length - 1]!.trim() === "") body.pop();
+    return body.join("\n");
 }
 
-/** Render one `snap-<feature>` fence into a SnapExample component. */
-function renderSnap(md: MarkdownIt, info: string, content: string): string {
-    const feature = info.slice("snap-".length).trim();
-    const data = (yaml.load(content) as SnapData) ?? {};
-    const { code, markers } = parseMarkers(data.code ?? "");
-    const files: { name: string; html: string }[] = [];
-    for (const [key, value] of Object.entries(data)) {
-        if (key.startsWith("file ") && typeof value === "string") {
-            const parsed = parseMarkers(value);
-            files.push({ name: key.slice(5), html: highlightWithPins(md, parsed.code, parsed.markers) });
-        }
+function snapshotOf(fixture: string): string {
+    const snapPath = fixture.replace(/\.cpp$/, ".snap.yml");
+    if (!fs.existsSync(snapPath)) return "";
+    const text = fs.readFileSync(snapPath, "utf8").replaceAll("\r\n", "\n");
+    const match = /^---\n[\s\S]*?\n---\n/.exec(text);
+    const lines = (match ? text.slice(match[0].length) : text).trim().split("\n");
+    // Two trailing spaces are markdown hard breaks; keep the ones that
+    // still break something as backslash breaks.
+    return lines
+        .map((line, i) => {
+            const trimmed = line.trimEnd();
+            const breaks =
+                / {2,}$/.test(line) && !trimmed.startsWith("#") && (lines[i + 1] ?? "").trim() !== "";
+            return breaks ? `${trimmed}\\` : trimmed;
+        })
+        .join("\n");
+}
+
+/** Render one `snap` fence: the named fixture into a SnapExample component. */
+function renderSnap(md: MarkdownIt, env: { relativePath?: string }, content: string): string {
+    const rel = content.trim();
+    const project = String(env.relativePath ?? "").replace(/^zh\//, "").split("/")[0] ?? "";
+    const fixture = path.resolve(process.cwd(), "sources", project, rel);
+    const feature = rel.split("/")[2] ?? "";
+    if (!fs.existsSync(fixture)) {
+        return `<SnapExample missing="${escapeHtml(rel)}" />\n`;
     }
+    const { code, markers } = parseMarkers(exampleOf(fs.readFileSync(fixture, "utf8")));
+    const files: { name: string; html: string }[] = [];
+    if (path.basename(fixture) === "main.cpp") {
+        const dir = path.dirname(fixture);
+        for (const name of fs.readdirSync(dir, { recursive: true, encoding: "utf8" })) {
+            const abs = path.join(dir, name);
+            if (name === "main.cpp" || !/\.(cpp|cc|h|hpp|cppm|ixx)$/.test(name) || !fs.statSync(abs).isFile()) {
+                continue;
+            }
+            const parsed = parseMarkers(exampleOf(fs.readFileSync(abs, "utf8")));
+            files.push({ name: name.split(path.sep).join("/"), html: highlightWithPins(md, parsed.code, parsed.markers) });
+        }
+        files.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    const snapshot = snapshotOf(fixture);
     const payload = {
         feature,
         code: highlightWithPins(md, code, markers),
         markers: markers.map((m) => m.name),
         files,
-        results: parseSnapshot(md, feature, data.snapshot ?? ""),
-        raw: data.snapshot ?? "",
+        results: parseSnapshot(md, feature, snapshot),
+        source: rel,
     };
     const encoded = Buffer.from(JSON.stringify(payload), "utf8").toString("base64");
     return `<SnapExample data="${encoded}" />\n`;
@@ -287,8 +335,8 @@ export function capabilityCards(md: MarkdownIt): void {
     const fence = md.renderer.rules.fence!;
     md.renderer.rules.fence = (tokens, idx, options, env, self) => {
         const token = tokens[idx]!;
-        if (token.info.trim().startsWith("snap-")) {
-            return renderSnap(md, token.info.trim(), token.content);
+        if (token.info.trim() === "snap") {
+            return renderSnap(md, env as { relativePath?: string }, token.content);
         }
         return fence(tokens, idx, options, env, self);
     };

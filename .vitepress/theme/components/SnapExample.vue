@@ -10,40 +10,44 @@ type Payload = {
   markers: string[]
   files: File[]
   results: Result[]
-  raw: string
+  source: string
 }
 
-const props = defineProps<{ data: string }>()
+const props = defineProps<{ data?: string; missing?: string }>()
 
 const { lang } = useData()
 const zh = computed(() => lang.value.startsWith('zh'))
 
-const payload = computed<Payload>(() => {
+const payload = computed<Payload | null>(() => {
+  if (!props.data) return null
   const json = typeof atob === 'function' ? atob(props.data) : Buffer.from(props.data, 'base64').toString('utf8')
   const bytes = Uint8Array.from(json, (c) => c.charCodeAt(0))
   return JSON.parse(new TextDecoder().decode(bytes)) as Payload
 })
 
 const open = ref(false)
-const active = ref(0)
 
-const indexOf = (name: string): number => payload.value.markers.indexOf(name)
+const indexOf = (name: string): number => payload.value?.markers.indexOf(name) ?? -1
 const results = computed(() =>
-  [...payload.value.results].sort((a, b) => {
+  [...(payload.value?.results ?? [])].sort((a, b) => {
     const ia = indexOf(a.name)
     const ib = indexOf(b.name)
     return (ia < 0 ? 1e9 : ia) - (ib < 0 ? 1e9 : ib)
   })
 )
-const single = computed(() => results.value.length === 1 && results.value[0]?.name === '')
+const sourceUrl = computed(() =>
+  payload.value ? `https://github.com/clice-io/clice/blob/main/${payload.value.source}` : ''
+)
 </script>
 
 <template>
-  <div class="snap" :class="{ open }">
+  <div v-if="!payload" class="snap snap-missing">
+    {{ zh ? '示例尚未同步' : 'Example not synced yet' }} <code>{{ missing }}</code>
+  </div>
+  <div v-else class="snap" :class="{ open }">
     <button class="snap-toggle" type="button" @click="open = !open">
       <span class="chev" aria-hidden="true">▶</span>
       {{ open ? (zh ? '收起示例' : 'Hide example') : (zh ? '查看示例' : 'Show example') }}
-      <span class="snap-feature">{{ payload.feature }}</span>
     </button>
     <div v-if="open" class="snap-body">
       <div class="snap-code">
@@ -52,27 +56,17 @@ const single = computed(() => results.value.length === 1 && results.value[0]?.na
           <span class="snap-file-name">{{ file.name }}</span>
           <div class="snap-source" v-html="file.html" />
         </div>
+        <a class="snap-link" :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ payload.source }}</a>
       </div>
       <div class="snap-results">
-        <template v-if="single">
-          <div class="snap-result" v-html="results[0]!.html" />
-        </template>
-        <template v-else-if="results.length > 0">
-          <div class="snap-tabs">
-            <button
-              v-for="(r, i) in results"
-              :key="r.name"
-              type="button"
-              class="snap-tab"
-              :class="{ on: i === active }"
-              @click="active = i"
-            >
-              <i v-if="indexOf(r.name) >= 0">{{ indexOf(r.name) + 1 }}</i>{{ r.name }}
-            </button>
-          </div>
-          <div class="snap-result">
-            <div v-if="results[active]!.meta" class="snap-meta">{{ results[active]!.meta }}</div>
-            <div v-html="results[active]!.html" />
+        <template v-if="results.length > 0">
+          <div v-for="r in results" :key="r.name" class="snap-result">
+            <div v-if="r.name" class="snap-result-head">
+              <i v-if="indexOf(r.name) >= 0">{{ indexOf(r.name) + 1 }}</i>
+              <span class="snap-result-name">{{ r.name }}</span>
+              <span v-if="r.meta" class="snap-meta">{{ r.meta }}</span>
+            </div>
+            <div class="snap-card" v-html="r.html" />
           </div>
         </template>
         <p v-else class="snap-empty">{{ zh ? '尚未记录快照' : 'No snapshot recorded yet' }}</p>
@@ -114,16 +108,6 @@ const single = computed(() => results.value.length === 1 && results.value[0]?.na
 
 .snap.open .chev {
   transform: rotate(90deg);
-}
-
-.snap-feature {
-  padding: 0 8px;
-  border-radius: 999px;
-  background: var(--straw-soft);
-  font-family: var(--vp-font-family-mono);
-  font-weight: 400;
-  font-size: 11px;
-  color: var(--ink-2);
 }
 
 .snap-body {
@@ -220,40 +204,39 @@ const single = computed(() => results.value.length === 1 && results.value[0]?.na
   background: var(--paper);
 }
 
-.snap-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  padding: 8px 10px 0;
-  border-bottom: var(--line-thin) solid var(--line-color);
+.snap-missing {
+  padding: 8px 12px;
+  border: var(--line-thin) dashed var(--line-color);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--ink-3);
 }
 
-.snap-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 10px;
-  border: var(--line-thin) solid var(--line-color);
-  border-bottom: none;
-  border-radius: var(--radius) var(--radius) 0 0;
-  background: var(--paper-2);
+.snap-link {
+  display: block;
+  padding: 6px 16px 10px;
   font-family: var(--vp-font-family-mono);
-  font-size: 12px;
-  color: var(--ink-2);
-  cursor: pointer;
+  font-size: 11px;
+  color: var(--ink-3) !important;
+  text-decoration: none !important;
 }
 
-.snap-tab.on {
-  background: var(--panel);
-  color: var(--ink);
-  margin-bottom: -1px;
+.snap-link:hover {
+  color: var(--bow) !important;
 }
 
-.dark .snap-tab.on {
-  background: var(--paper);
+.snap-result + .snap-result {
+  border-top: var(--line-thin) dashed var(--line-color);
 }
 
-.snap-tab i {
+.snap-result-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.snap-result-head i {
   display: inline-block;
   min-width: 15px;
   height: 15px;
@@ -270,6 +253,13 @@ const single = computed(() => results.value.length === 1 && results.value[0]?.na
   text-align: center;
 }
 
+.snap-result-name {
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
 .snap-result {
   padding: 12px 16px 16px;
   font-size: 14px;
@@ -278,19 +268,35 @@ const single = computed(() => results.value.length === 1 && results.value[0]?.na
 }
 
 .snap-meta {
-  margin-bottom: 8px;
   font-family: var(--vp-font-family-mono);
   font-size: 11px;
   color: var(--ink-3);
+}
+
+/* the recorded result, drawn like an editor tooltip */
+.snap-card {
+  padding: 10px 12px;
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 4px;
+  background: var(--paper);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.dark .snap-card {
+  background: var(--paper-2);
 }
 
 .snap-result :deep(h1),
 .snap-result :deep(h2),
 .snap-result :deep(h3),
 .snap-result :deep(h4) {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   padding: 0;
-  font-size: 15px;
+  font-family: var(--vp-font-family-base);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0;
   border: none;
   background: none;
 }
@@ -311,14 +317,32 @@ const single = computed(() => results.value.length === 1 && results.value[0]?.na
   border-top: var(--line-thin) dashed var(--line-color);
 }
 
+.snap-result :deep(div[class*='language-']) {
+  margin: 6px 0 0;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.snap-result :deep(div[class*='language-'] > span.lang),
+.snap-result :deep(div[class*='language-'] > button.copy) {
+  display: none;
+}
+
 .snap-result :deep(pre) {
-  margin: 6px 0;
-  padding: 8px 10px;
-  border: var(--line-thin) solid var(--line-color);
-  border-radius: 4px;
-  background: var(--paper-2) !important;
+  margin: 0;
+  padding: 6px 0 0;
+  background: transparent !important;
   font-size: 12.5px;
   overflow-x: auto;
+}
+
+.snap-result :deep(:not(pre) > code) {
+  padding: 0 4px;
+  border: none;
+  background: var(--paper-3);
+  font-size: 12.5px;
 }
 
 .snap-result :deep(code) {
