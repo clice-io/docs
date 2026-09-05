@@ -94,24 +94,27 @@ function parseMarkers(text: string): { code: string; markers: Marker[] } {
     return { code, markers };
 }
 
-/** The fixture's example: the source after its `///` doc header and an
- *  optional `// snap:` maintainer comment block. */
+/** The fixture's example: the source after its prologue — an optional
+ *  plain `//` block (licence notes), the `///` doc header, and an
+ *  optional `// snap:` maintainer block. A fixture without a `///`
+ *  header keeps everything. */
 function exampleOf(source: string): { example: string; skipped: number } {
     const lines = source.replaceAll("\r\n", "\n").split("\n");
     let i = 0;
-    while (i < lines.length && (lines[i]!.startsWith("//") || lines[i]!.trim() === "")) {
-        // A `///` doc header, then blank lines; a plain `//` line that is
-        // not a `// snap:` block ends the prologue (it is example code).
-        const line = lines[i]!;
-        if (line.startsWith("///") || line.trim() === "") {
-            i += 1;
-            continue;
-        }
-        if (line.trim().startsWith("// snap:")) {
+    const hasHeader = lines.some((line, at) => {
+        if (line.startsWith("///")) return true;
+        return false && at;
+    });
+    if (hasHeader) {
+        // Skip the plain prologue up to the header.
+        while (i < lines.length && !lines[i]!.startsWith("///")) i += 1;
+        // The header itself and the blank lines after it.
+        while (i < lines.length && (lines[i]!.startsWith("///") || lines[i]!.trim() === "")) i += 1;
+        // A `// snap:` block right after the header.
+        if ((lines[i] ?? "").trim().startsWith("// snap:")) {
             while (i < lines.length && lines[i]!.trim().startsWith("//")) i += 1;
-            continue;
+            while (i < lines.length && lines[i]!.trim() === "") i += 1;
         }
-        break;
     }
     const body = lines.slice(i);
     while (body.length > 0 && body[body.length - 1]!.trim() === "") body.pop();
@@ -125,12 +128,14 @@ function snapshotOf(fixture: string): string {
     const match = /^---\n[\s\S]*?\n---\n/.exec(text);
     const lines = (match ? text.slice(match[0].length) : text).trim().split("\n");
     // Two trailing spaces are markdown hard breaks; keep the ones that
-    // still break something as backslash breaks.
+    // still break something (the next line continues the paragraph) as
+    // backslash breaks, which survive trimming.
     return lines
         .map((line, i) => {
             const trimmed = line.trimEnd();
-            const breaks =
-                / {2,}$/.test(line) && !trimmed.startsWith("#") && (lines[i + 1] ?? "").trim() !== "";
+            const next = (lines[i + 1] ?? "").trim();
+            const continues = next !== "" && !/^([-*+]|\d+\.)\s|^#|^```|^---/.test(next);
+            const breaks = / {2,}$/.test(line) && !trimmed.startsWith("#") && continues;
             return breaks ? `${trimmed}\\` : trimmed;
         })
         .join("\n");

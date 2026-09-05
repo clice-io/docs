@@ -74,6 +74,54 @@ function onOut(event: MouseEvent): void {
   tip.value = null
 }
 
+// Lines of the main file, for folding and outline highlights.
+function mainLines(): HTMLElement[] {
+  const host = codeEl.value
+  if (!host) return []
+  const source = host.querySelector('.snap-source')
+  return source ? Array.from(source.querySelectorAll<HTMLElement>('.line')) : []
+}
+
+function onFoldClick(event: MouseEvent): void {
+  const mark = (event.target as HTMLElement).closest('.fold-mark') as HTMLElement | null
+  if (!mark) return
+  const start = Number(mark.dataset.start)
+  const end = Number(mark.dataset.end)
+  const collapsed = mark.classList.toggle('collapsed')
+  const lines = mainLines()
+  for (let l = start + 1; l <= end; l += 1) {
+    const line = lines[l]
+    if (!line) continue
+    if (collapsed) {
+      line.dataset.foldedBy = String(Number(line.dataset.foldedBy ?? 0) + 1)
+      line.classList.add('folded')
+    } else {
+      const n = Number(line.dataset.foldedBy ?? 1) - 1
+      line.dataset.foldedBy = String(n)
+      if (n <= 0) line.classList.remove('folded')
+    }
+  }
+  event.stopPropagation()
+}
+
+function highlightLines(spec: string | undefined, sel: string | undefined, on: boolean): void {
+  const lines = mainLines()
+  if (!spec) return
+  const [a, b] = spec.split('-').map(Number)
+  for (let l = a ?? 0; l <= (b ?? a ?? 0); l += 1) lines[l]?.classList.toggle('hl', on)
+  if (sel !== undefined) lines[Number(sel)]?.classList.toggle('hl-sel', on)
+}
+
+function onResultOver(event: MouseEvent): void {
+  const item = (event.target as HTMLElement).closest('[data-lines]') as HTMLElement | null
+  if (item) highlightLines(item.dataset.lines, item.dataset.sel, true)
+}
+
+function onResultOut(event: MouseEvent): void {
+  const item = (event.target as HTMLElement).closest('[data-lines]') as HTMLElement | null
+  if (item) highlightLines(item.dataset.lines, item.dataset.sel, false)
+}
+
 function onClick(event: MouseEvent): void {
   const pin = (event.target as HTMLElement).closest('.pin') as HTMLElement | null
   if (pin) {
@@ -128,7 +176,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
         class="snap-code"
         @mouseover="payload.layout === 'tooltip' && onOver($event)"
         @mouseout="payload.layout === 'tooltip' && onOut($event)"
-        @click="payload.layout === 'tooltip' && onClick($event)"
+        @click="payload.layout === 'tooltip' ? onClick($event) : onFoldClick($event)"
       >
         <div class="snap-source" v-html="payload.code" />
         <div v-for="file in payload.files" :key="file.name" class="snap-file">
@@ -156,7 +204,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
           <div class="snap-card" v-html="tip.result.html" />
         </div>
       </div>
-      <div v-if="payload.layout === 'split'" class="snap-results">
+      <div v-if="payload.layout === 'split'" class="snap-results" @mouseover="onResultOver" @mouseout="onResultOut">
         <template v-if="results.length > 0">
           <div v-for="r in results" :key="r.name" class="snap-result">
             <div v-if="r.name" class="snap-result-head">
@@ -315,6 +363,57 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 
 .snap-tip .snap-card {
   padding: 8px 10px;
+}
+
+.snap-card :deep([class*='language-'] code) {
+  padding: 0;
+}
+
+.snap-source :deep(.block-lines .line) {
+  display: block;
+}
+
+.snap-source :deep(.line.folded) {
+  display: none;
+}
+
+.snap-source :deep(.fold-mark) {
+  cursor: pointer;
+}
+
+.snap-source :deep(.fold-mark.collapsed) {
+  transform: rotate(-90deg);
+}
+
+.snap-source :deep(.line:has(> .fold-mark.collapsed))::after {
+  content: " ⋯";
+  color: var(--ink-3);
+}
+
+.snap-source :deep(.line.hl) {
+  background: var(--straw-soft);
+}
+
+.snap-source :deep(.line.hl-sel) {
+  background: var(--straw);
+}
+
+.snap-results :deep([data-lines]) {
+  cursor: default;
+  border-radius: 4px;
+}
+
+.snap-results :deep([data-lines]:hover) {
+  background: var(--straw-soft);
+}
+
+.snap-results :deep(.link-file) {
+  margin: 6px 0 2px;
+  padding: 0 8px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  list-style: none;
 }
 
 @media (min-width: 900px) {

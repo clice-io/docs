@@ -1912,11 +1912,6 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::after {
 }
 
 /* folding: rails in the gutter */
-.snap-source .line {
-  display: inline-block;
-  width: 100%;
-}
-
 .snap-source .line.fold-start,
 .snap-source .line.fold-in,
 .snap-source .line.fold-end {
@@ -1924,7 +1919,7 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::after {
 }
 
 .snap-source .line.fold-end {
-  box-shadow: inset 3px 0 0 var(--pinafore), inset 0 -1px 0 var(--pinafore);
+  box-shadow: inset 3px 0 0 var(--pinafore);
 }
 
 .snap-source .fold-mark {

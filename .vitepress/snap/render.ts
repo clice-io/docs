@@ -52,10 +52,11 @@ export function escapeHtml(text: string): string {
 
 function decodeHtml(text: string): string {
     return text
+        .replaceAll(/&#x([0-9a-fA-F]+);/g, (_, hex: string) => String.fromCodePoint(parseInt(hex, 16)))
+        .replaceAll(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
         .replaceAll("&lt;", "<")
         .replaceAll("&gt;", ">")
         .replaceAll("&quot;", '"')
-        .replaceAll("&#39;", "'")
         .replaceAll("&amp;", "&");
 }
 
@@ -135,6 +136,7 @@ export function decorate(
     code: string,
     inserts: Insert[],
     lineClasses: Map<number, string[]> = new Map(),
+    blockLines = false,
 ): string {
     const highlight = md.options.highlight;
     const html = highlight ? highlight(code, "cpp", "") : `<pre><code>${escapeHtml(code)}</code></pre>`;
@@ -145,7 +147,7 @@ export function decorate(
         byLine.set(ins.line, list);
     }
     let lineNo = -1;
-    return html.replace(/<span class="line">([\s\S]*?)<\/span>(?=\n|<\/code>)/g, (whole, inner: string) => {
+    const out = html.replace(/<span class="line">([\s\S]*?)<\/span>(?=\n|<\/code>)/g, (whole, inner: string) => {
         lineNo += 1;
         const here = byLine.get(lineNo);
         const classes = lineClasses.get(lineNo);
@@ -153,6 +155,10 @@ export function decorate(
         const cls = ["line", ...(classes ?? [])].join(" ");
         return `<span class="${cls}">${here ? applyInserts(inner, here) : inner}</span>`;
     });
+    if (!blockLines) return out;
+    // Lines as blocks (no newline text between them), so a folded line
+    // can be hidden without leaving a blank one behind.
+    return out.replace(/<\/span>\n(?=<span class="line)/g, "</span>").replace(/<pre class="shiki/, '<pre class="shiki block-lines');
 }
 
 function applyInserts(inner: string, inserts: Insert[]): string {
@@ -221,9 +227,12 @@ function renderHover(md: MarkdownIt, code: string, markers: Marker[], body: stri
         }
         buffer = [];
     };
+    const names = new Set(markers.map((m) => m.name));
     for (const line of body.split("\n")) {
         const m = header.exec(line);
-        if (m && !line.startsWith(" ")) {
+        // A result header names a marker (or carries its `{ range }`); a
+        // bare `Word:` line inside a card body is prose.
+        if (m && !line.startsWith(" ") && (m[2] !== undefined || names.has(m[1]!))) {
             flush();
             current = { name: m[1]!, meta: m[2] ?? "", html: "" };
             continue;
@@ -337,7 +346,7 @@ function renderFolding(md: MarkdownIt, code: string, body: string, skipped: numb
         inserts.push({
             line: l1,
             col: 0,
-            html: `<span class="fold-mark fold-${fold.kind}" title="${escapeHtml(fold.kind)}">▾</span>`,
+            html: `<span class="fold-mark fold-${fold.kind}" data-start="${l1}" data-end="${Math.min(l2, total - 1)}" title="${escapeHtml(fold.kind)}">▾</span>`,
             order: 3,
         });
         for (let l = l1; l <= Math.min(l2, total - 1); l += 1) {
@@ -345,7 +354,7 @@ function renderFolding(md: MarkdownIt, code: string, body: string, skipped: numb
         }
     }
     const legend = [...kinds].sort().map((kind) => ({ label: kind, cls: `fold-legend fold-${kind}` }));
-    return { code: decorate(md, code, inserts, lineClasses), results: [], layout: "single", legend };
+    return { code: decorate(md, code, inserts, lineClasses, true), results: [], layout: "single", legend };
 }
 
 // ---------------------------------------------------------------------------
@@ -478,8 +487,10 @@ function renderDocumentSymbols(md: MarkdownIt, code: string, body: string, skipp
         const kind = String(item.kind ?? "");
         const detail = item.detail ? `<span class="sym-detail">${escapeHtml(String(item.detail))}</span>` : "";
         const range = item.selection_range ? `<span class="sym-range">${escapeHtml(shiftRange(String(item.selection_range), skipped).split("-")[0] ?? "")}</span>` : "";
+        const [[l1], [l2]] = parseRange(String(item.range ?? "0:0-0:0"), skipped);
+        const [[sel]] = parseRange(String(item.selection_range ?? item.range ?? "0:0"), skipped);
         rows.push(
-            `<li class="sym-item" style="--depth:${depth}"><span class="sym-kind sym-${kind}" title="${escapeHtml(kind)}">${escapeHtml(kind.slice(0, 1))}</span><span class="sym-name">${escapeHtml(String(item.name ?? ""))}</span>${detail}${range}</li>`,
+            `<li class="sym-item" style="--depth:${depth}" data-lines="${l1}-${l2}" data-sel="${sel}"><span class="sym-kind sym-${kind}" title="${escapeHtml(kind)}">${escapeHtml(kind.slice(0, 1))}</span><span class="sym-name">${escapeHtml(String(item.name ?? ""))}</span>${detail}${range}</li>`,
         );
     }
     const results: Result[] = rows.length > 0 ? [{ name: "", meta: "", html: `<ul class="sym-list">${rows.join("")}</ul>` }] : rawResult(body);
@@ -489,16 +500,35 @@ function renderDocumentSymbols(md: MarkdownIt, code: string, body: string, skipp
 // ---------------------------------------------------------------------------
 // document links: ranges become links in the code, targets listed beside
 
-function renderDocumentLinks(md: MarkdownIt, code: string, body: string, skipped: number): Rendered {
-    const links = (loadYaml(body) as { range: string; target?: string }[] | null) ?? [];
+function renderDocumentLinks(md: MarkdownIt, code: string, body: string, skipped: number, self: string): Rendered {
+    // A multi-file unit records one `--- <file>` section per file.
+    const sections: { file: string; body: string }[] = [];
+    let current = { file: "", body: "" };
+    for (const line of body.split("\n")) {
+        const m = /^--- (.+)$/.exec(line);
+        if (m) {
+            if (current.body.trim()) sections.push(current);
+            current = { file: m[1]!.trim(), body: "" };
+            continue;
+        }
+        current.body += `${line}\n`;
+    }
+    if (current.body.trim()) sections.push(current);
     const inserts: Insert[] = [];
     const rows: string[] = [];
-    links.forEach((link, i) => {
-        if (!link || typeof link.range !== "string") return;
-        const target = stripWs(link.target);
-        inserts.push(...rangeInserts(code, parseRange(link.range, skipped), "doc-link", target));
-        rows.push(`<li class="link-item"><span class="nav-chip nav-${i % 6}">${escapeHtml(shiftRange(link.range, skipped))}</span><span class="link-target">${escapeHtml(target || "—")}</span></li>`);
-    });
+    let i = 0;
+    for (const section of sections) {
+        const local = section.file === "" || section.file === self || section.file.endsWith(`/${self}`);
+        if (section.file && sections.length > 1) rows.push(`<li class="link-file">${escapeHtml(section.file)}</li>`);
+        const links = (loadYaml(section.body) as { range: string; target?: string }[] | null) ?? [];
+        for (const link of links) {
+            if (!link || typeof link.range !== "string") continue;
+            const target = stripWs(link.target);
+            if (local) inserts.push(...rangeInserts(code, parseRange(link.range, skipped), "doc-link", target));
+            rows.push(`<li class="link-item"><span class="nav-chip nav-${i % 6}">${escapeHtml(shiftRange(link.range, local ? skipped : 0))}</span><span class="link-target">${escapeHtml(target || "—")}</span></li>`);
+            i += 1;
+        }
+    }
     return {
         code: decorate(md, code, inserts),
         results: rows.length > 0 ? [{ name: "", meta: "", html: `<ul class="link-list">${rows.join("")}</ul>` }] : rawResult(body),
@@ -563,7 +593,7 @@ export function renderFeature(
         case "document_symbol":
             return renderDocumentSymbols(md, code, snapshot, skipped);
         case "document_links":
-            return renderDocumentLinks(md, code, snapshot, skipped);
+            return renderDocumentLinks(md, code, snapshot, skipped, self);
         case "workspace_symbol":
             return renderWorkspaceSymbols(md, code, snapshot, skipped);
         default:
