@@ -32,9 +32,14 @@ runs:
         rm -rf "__docs_repo/en/${project}"
         rm -rf "__docs_repo/zh/${project}"
 
-        [ -d "${src}/en" ] && cp -rf "${src}/en" "__docs_repo/en/${project}"
-        [ -d "${src}/zh" ] && cp -rf "${src}/zh" "__docs_repo/zh/${project}"
-        [ -d "${src}/public" ] && cp -rf "${src}/public/." "__docs_repo/public/"
+        for tree in en zh; do
+          if [ -d "${src}/${tree}" ]; then
+            cp -rf "${src}/${tree}" "__docs_repo/${tree}/${project}"
+          fi
+        done
+        if [ -d "${src}/public" ]; then
+          cp -rf "${src}/public/." "__docs_repo/public/"
+        fi
 
     - name: Create Pull Request
       id: create-pr
