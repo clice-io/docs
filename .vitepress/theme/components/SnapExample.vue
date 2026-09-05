@@ -82,12 +82,30 @@ function mainLines(): HTMLElement[] {
   return source ? Array.from(source.querySelectorAll<HTMLElement>('.line')) : []
 }
 
+function foldRegion(mark: HTMLElement, cls: string, on: boolean): void {
+  const lines = mainLines()
+  for (let l = Number(mark.dataset.start); l <= Number(mark.dataset.end); l += 1) lines[l]?.classList.toggle(cls, on)
+}
+
+function onFoldOver(event: MouseEvent): void {
+  const mark = (event.target as HTMLElement).closest('.fold-mark') as HTMLElement | null
+  if (mark) foldRegion(mark, 'fold-hl', true)
+}
+
+function onFoldOut(event: MouseEvent): void {
+  const mark = (event.target as HTMLElement).closest('.fold-mark') as HTMLElement | null
+  if (mark) foldRegion(mark, 'fold-hl', false)
+}
+
 function onFoldClick(event: MouseEvent): void {
   const mark = (event.target as HTMLElement).closest('.fold-mark') as HTMLElement | null
   if (!mark) return
   const start = Number(mark.dataset.start)
   const end = Number(mark.dataset.end)
   const collapsed = mark.classList.toggle('collapsed')
+  mark.textContent = collapsed ? '▸' : '▾'
+  mark.parentElement?.classList.toggle('collapsed-line', collapsed)
+  foldRegion(mark, 'fold-hl', false)
   const lines = mainLines()
   for (let l = start + 1; l <= end; l += 1) {
     const line = lines[l]
@@ -174,8 +192,8 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
       <div
         ref="codeEl"
         class="snap-code"
-        @mouseover="payload.layout === 'tooltip' && onOver($event)"
-        @mouseout="payload.layout === 'tooltip' && onOut($event)"
+        @mouseover="payload.layout === 'tooltip' ? onOver($event) : onFoldOver($event)"
+        @mouseout="payload.layout === 'tooltip' ? onOut($event) : onFoldOut($event)"
         @click="payload.layout === 'tooltip' ? onClick($event) : onFoldClick($event)"
       >
         <div class="snap-source" v-html="payload.code" />
@@ -313,6 +331,12 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
   justify-content: space-between;
   gap: 4px 12px;
   padding: 6px 16px 10px;
+  min-width: 0;
+}
+
+.snap-foot > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .snap-hint {
@@ -371,23 +395,6 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 
 .snap-source :deep(.block-lines .line) {
   display: block;
-}
-
-.snap-source :deep(.line.folded) {
-  display: none;
-}
-
-.snap-source :deep(.fold-mark) {
-  cursor: pointer;
-}
-
-.snap-source :deep(.fold-mark.collapsed) {
-  transform: rotate(-90deg);
-}
-
-.snap-source :deep(.line:has(> .fold-mark.collapsed))::after {
-  content: " ⋯";
-  color: var(--ink-3);
 }
 
 .snap-source :deep(.line.hl) {
@@ -568,7 +575,8 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
   padding: 12px 16px 16px;
   font-size: 14px;
   line-height: 1.6;
-  overflow-x: auto;
+  overflow-x: hidden;
+  min-width: 0;
 }
 
 .snap-meta {

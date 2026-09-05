@@ -1911,23 +1911,53 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::after {
   background: var(--straw-soft);
 }
 
-/* folding: rails in the gutter */
-.snap-source .line.fold-start,
-.snap-source .line.fold-in,
-.snap-source .line.fold-end {
-  box-shadow: inset 3px 0 0 var(--pinafore);
-}
-
-.snap-source .line.fold-end {
-  box-shadow: inset 3px 0 0 var(--pinafore);
+/* folding: an editor gutter with chevrons; hovering one lights its region */
+.snap-source .block-lines .line {
+  position: relative;
+  padding-left: 22px;
 }
 
 .snap-source .fold-mark {
-  display: inline-block;
-  width: 14px;
-  margin-left: 4px;
+  position: absolute;
+  left: 2px;
+  top: 0;
+  width: 16px;
+  height: 100%;
   color: var(--bow);
-  font-size: 10px;
+  font-size: 13px;
+  line-height: inherit;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  opacity: 0.85;
+}
+
+.snap-source .fold-mark:hover {
+  opacity: 1;
+  color: var(--ribbon);
+}
+
+.snap-source .fold-mark.collapsed {
+  transform: none;
+  color: var(--ribbon);
+}
+
+.snap-source .line.fold-hl {
+  background: var(--straw-soft);
+}
+
+.snap-source .line.folded {
+  display: none;
+}
+
+.snap-source .line.collapsed-line::after {
+  content: "⋯";
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--straw);
+  color: #2b3040;
+  font-size: 11px;
 }
 
 .snap-legend .fold-legend {
@@ -2095,6 +2125,20 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::after {
   padding: 2px 8px 2px calc(8px + var(--depth, 0) * 16px);
   font-family: var(--vp-font-family-mono);
   font-size: 12.5px;
+  min-width: 0;
+}
+
+.sym-name {
+  flex: 0 0 auto;
+}
+
+.sym-item .sym-detail {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sym-range {
+  flex: 0 0 auto;
 }
 
 .sym-range {
