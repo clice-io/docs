@@ -24,11 +24,11 @@ const props = withDefaults(defineProps<{ locale?: Locale }>(), { locale: 'en' })
 const content = {
   en: {
     kicker: 'Project Clice',
-    bubble: 'Next generation C++ tooling.',
+    bubble: 'Next Generation C++ Tooling',
     lead:
       'A language server on the surface, a real-time compilation scheduler underneath. It drives Clang over your whole project and serves editors, linters, indexers and agents from the same engine.',
     primary: { text: 'Start with clice', href: '/clice/guide/what-is-clice' },
-    secondary: { text: 'Read the blog', href: '/blog/' },
+    secondary: { text: 'Read the Blog', href: '/blog/' },
     projectsTitle: 'Projects',
     projects: [
       {
@@ -60,11 +60,11 @@ const content = {
         accent: 'straw'
       }
     ] satisfies Project[],
-    stripTitle: 'Why another one?',
+    stripTitle: 'Why Another One?',
     strip: [
       {
         face: 'surprised',
-        title: 'One engine, many tools',
+        title: 'One Engine, Many Tools',
         lines: [
           'Clang exposes a compiler, not the act of compiling a project. clice adds that missing piece: a scheduler that knows every translation unit, its context and its dependencies.',
           'clice lint, index, query, doc and format are all consumers of the same engine, and a cross-TU cache lets them skip work clang-tidy repeats for every header.'
@@ -72,7 +72,7 @@ const content = {
       },
       {
         face: 'skeptical',
-        title: 'The problems clangd never solved',
+        title: 'The Problems clangd Never Solved',
         lines: [
           'Compilation contexts for files with several commands and headers that are not self-contained. A multi-process design that survives Clang crashes without dropping a query.',
           'A dynamic module graph with shared, on-disk PCH and PCM caches, and a pseudo-instantiator that keeps completion useful inside templates.'
@@ -80,7 +80,7 @@ const content = {
       },
       {
         face: 'smiling',
-        title: 'Ready to try today',
+        title: 'Ready to Try Today',
         lines: [
           'Install the VS Code extension and you are done: the binary ships inside it for Windows, Linux and macOS on x64 and arm64. Nightlies roll out every day; Neovim and Zed have first-party clients too.'
         ]
@@ -89,7 +89,7 @@ const content = {
   },
   zh: {
     kicker: 'Project Clice',
-    bubble: '下一代 C++ 工具链。',
+    bubble: '下一代 C++ 工具链',
     lead:
       '表面上是一个语言服务器，内核是一个实时的编译调度器。它在整个项目上驱动 Clang，用同一个引擎服务编辑器、静态检查、索引和 Agent。',
     primary: { text: '从 clice 开始', href: '/zh/clice/guide/what-is-clice' },
@@ -275,8 +275,7 @@ const page = computed(() => content[props.locale])
   font-family: var(--clice-font-display);
   font-weight: 900;
   font-size: 14px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--bow);
 }
 
