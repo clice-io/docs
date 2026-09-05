@@ -10,6 +10,8 @@ type Payload = {
   markers: string[]
   files: File[]
   results: Result[]
+  layout: 'split' | 'single'
+  legend: { label: string; cls: string }[]
   source: string
 }
 
@@ -49,16 +51,19 @@ const sourceUrl = computed(() =>
       <span class="chev" aria-hidden="true">▶</span>
       {{ open ? (zh ? '收起示例' : 'Hide example') : (zh ? '查看示例' : 'Show example') }}
     </button>
-    <div v-if="open" class="snap-body">
+    <div v-if="open" class="snap-body" :class="payload.layout">
       <div class="snap-code">
         <div class="snap-source" v-html="payload.code" />
         <div v-for="file in payload.files" :key="file.name" class="snap-file">
           <span class="snap-file-name">{{ file.name }}</span>
           <div class="snap-source" v-html="file.html" />
         </div>
+        <div v-if="payload.legend.length" class="snap-legend">
+          <span v-for="item in payload.legend" :key="item.label" :class="item.cls">{{ item.label }}</span>
+        </div>
         <a class="snap-link" :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ payload.source }}</a>
       </div>
-      <div class="snap-results">
+      <div v-if="payload.layout === 'split'" class="snap-results">
         <template v-if="results.length > 0">
           <div v-for="r in results" :key="r.name" class="snap-result">
             <div v-if="r.name" class="snap-result-head">
@@ -121,7 +126,7 @@ const sourceUrl = computed(() =>
 }
 
 @media (min-width: 900px) {
-  .snap-body {
+  .snap-body.split {
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   }
 }
@@ -132,10 +137,30 @@ const sourceUrl = computed(() =>
 }
 
 @media (min-width: 900px) {
-  .snap-code {
+  .split .snap-code {
     border-bottom: none;
     border-right: var(--line) solid var(--line-color);
   }
+}
+
+.single .snap-code {
+  border-bottom: none;
+}
+
+.snap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 16px 0;
+  border-top: var(--line-thin) dashed var(--line-color);
+}
+
+.snap-legend > span {
+  padding: 0 8px;
+  border-radius: 4px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+  line-height: 20px;
 }
 
 .snap-source :deep(pre) {
