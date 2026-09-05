@@ -5,11 +5,11 @@ import taskLists from "markdown-it-task-lists";
 import { genSidebar } from "./sidebar";
 import { statusStickers } from "./status";
 
-const projects = ["clice", "catter", "clore"];
+const projects = ["clice", "catter"];
 
 export default withMermaid(defineConfig({
     title: "Project Clice",
-    description: "新一代 C++ 工具链",
+    description: "Next generation C++ tooling",
     cleanUrls: true,
     markdown: {
         config: (md) => {
@@ -47,8 +47,7 @@ export default withMermaid(defineConfig({
                     { text: "Blog", link: "/blog/" },
                     { text: "clice", link: "/clice/" },
                     { text: "catter", link: "/catter/" },
-                    { text: "clore", link: "/clore/" },
-                    { text: "cxx-toolchains", link: "https://github.com/clice-io/cxx-toolchains" },
+                    { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
                 ],
                 sidebar: genSidebar(projects, "en"),
             },
@@ -62,8 +61,7 @@ export default withMermaid(defineConfig({
                     { text: "博客", link: "/zh/blog/" },
                     { text: "clice", link: "/zh/clice/" },
                     { text: "catter", link: "/zh/catter/" },
-                    { text: "clore", link: "/zh/clore/" },
-                    { text: "cxx-toolchains", link: "https://github.com/clice-io/cxx-toolchains" },
+                    { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
                 ],
                 sidebar: genSidebar(projects, "zh"),
             },

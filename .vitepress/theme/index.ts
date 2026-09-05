@@ -4,7 +4,7 @@ import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import BlogPostList from './components/BlogPostList.vue'
 import HomeHeroProjects from './components/HomeHeroProjects.vue'
-import ProjectShowcase from './components/ProjectShowcase.vue'
+import HomeLanding from './components/HomeLanding.vue'
 import '@fontsource/m-plus-rounded-1c/400.css'
 import '@fontsource/m-plus-rounded-1c/500.css'
 import '@fontsource/m-plus-rounded-1c/700.css'
@@ -28,6 +28,6 @@ export default {
   },
   enhanceApp({ app }) {
     app.component('BlogPostList', BlogPostList)
-    app.component('ProjectShowcase', ProjectShowcase)
+    app.component('HomeLanding', HomeLanding)
   }
 } satisfies Theme
