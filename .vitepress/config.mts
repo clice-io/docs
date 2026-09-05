@@ -4,6 +4,7 @@ import footnote from "markdown-it-footnote";
 import taskLists from "markdown-it-task-lists";
 import { genSidebar } from "./sidebar";
 import { statusStickers } from "./status";
+import { capabilityCards } from "./capability";
 
 const SITE = "https://docs.clice.io";
 const projects = ["clice", "catter"];
@@ -53,6 +54,7 @@ export default withMermaid(defineConfig({
             md.use(footnote);
             md.use(taskLists);
             md.use(statusStickers);
+            md.use(capabilityCards);
             // Override caption only (display text) so repeated refs show [1] not [1:1]; leaves id/href intact.
             md.renderer.rules.footnote_caption = (tokens, idx) =>
                 `[${Number(tokens[idx].meta.id + 1)}]`;

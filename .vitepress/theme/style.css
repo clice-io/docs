@@ -1510,3 +1510,79 @@ html[lang^="zh"] {
 .VPHero .image-container {
   max-width: 480px;
 }
+
+/* ---------------------------------------------------------------------------
+ * Capability cards (see .vitepress/capability.ts)
+ * ------------------------------------------------------------------------ */
+
+.vp-doc .capability {
+  position: relative;
+  margin: 20px 0;
+  padding: 16px 20px 18px 24px;
+  border: var(--line) solid var(--line-color);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.dark .vp-doc .capability {
+  background: var(--paper-2);
+}
+
+.vp-doc .capability::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  bottom: -2px;
+  width: 8px;
+  border-radius: var(--radius) 0 0 var(--radius);
+  border-right: var(--line) solid var(--line-color);
+  background: var(--aqua);
+}
+
+.vp-doc .capability.warn::before {
+  background: var(--straw);
+}
+
+.vp-doc .capability.no::before {
+  background: #f0b9b3;
+}
+
+.vp-doc .capability-meta {
+  float: right;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px 12px;
+}
+
+.vp-doc .capability-issues {
+  font-size: 12px;
+}
+
+.vp-doc .capability-issues a {
+  font-family: var(--vp-font-family-mono);
+}
+
+.vp-doc .capability-title {
+  margin: 0 !important;
+  font-family: var(--clice-font-display);
+  font-weight: 900;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.vp-doc .capability > p {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.vp-doc .capability > p:nth-of-type(2) {
+  color: var(--ink);
+}
+
+.vp-doc .capability > p:nth-of-type(n + 3) {
+  color: var(--ink-2);
+}

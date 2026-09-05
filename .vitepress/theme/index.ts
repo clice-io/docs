@@ -6,6 +6,7 @@ import BlogPostList from './components/BlogPostList.vue'
 import HomeHeroProjects from './components/HomeHeroProjects.vue'
 import HomeLanding from './components/HomeLanding.vue'
 import SiteFooter from './components/SiteFooter.vue'
+import SnapExample from './components/SnapExample.vue'
 import '@fontsource/m-plus-rounded-1c/400.css'
 import '@fontsource/m-plus-rounded-1c/500.css'
 import '@fontsource/m-plus-rounded-1c/700.css'
@@ -33,5 +34,6 @@ export default {
   enhanceApp({ app }) {
     app.component('BlogPostList', BlogPostList)
     app.component('HomeLanding', HomeLanding)
+    app.component('SnapExample', SnapExample)
   }
 } satisfies Theme
