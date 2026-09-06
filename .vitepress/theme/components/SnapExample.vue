@@ -276,7 +276,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 
 .snap-body {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   margin-top: 12px;
   border: var(--line) solid var(--line-color);
   border-radius: var(--radius);
@@ -316,6 +316,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 
 .snap-code {
   position: relative;
+  min-width: 0;
   background: var(--paper-2);
   border-bottom: var(--line) solid var(--line-color);
 }
