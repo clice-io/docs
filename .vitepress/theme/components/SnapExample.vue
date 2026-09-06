@@ -44,27 +44,35 @@ const sourceUrl = computed(() =>
 )
 
 // Tooltip mode: the result of a marker pops up over its pin.
-const tip = ref<{ result: Result; left: number; top: number; flip: boolean } | null>(null)
+const tip = ref<{ result: Result; left: number; top: number; arrow: number } | null>(null)
+const tipEl = ref<HTMLElement | null>(null)
 const pinned = ref(false)
 
-function showFor(pin: HTMLElement, sticky: boolean): void {
+// The tip hangs below its pin and slides sideways as far as needed to stay
+// inside the code pane; the arrow keeps pointing at the pin.
+async function showFor(pin: HTMLElement, sticky: boolean): Promise<void> {
   const name = pin.dataset.name ?? ''
   const result = byName.value.get(name)
   const host = codeEl.value
   if (!result || !host) return
   const hostRect = host.getBoundingClientRect()
   const rect = pin.getBoundingClientRect()
-  const left = rect.left - hostRect.left + host.scrollLeft
-  const top = rect.bottom - hostRect.top + host.scrollTop + 6
-  const flip = left > hostRect.width * 0.55
-  tip.value = { result, left, top, flip }
+  const anchor = rect.left - hostRect.left + rect.width / 2
+  const top = rect.bottom - hostRect.top + 6
+  tip.value = { result, left: 0, top, arrow: 12 }
   pinned.value = sticky
+  await nextTick()
+  const width = tipEl.value?.offsetWidth ?? 0
+  const margin = 8
+  const left = Math.max(margin, Math.min(anchor - 24, hostRect.width - width - margin))
+  const arrow = Math.max(10, Math.min(anchor - left - 7, width - 24))
+  tip.value = { result, left, top, arrow }
 }
 
 function onOver(event: MouseEvent): void {
   if (pinned.value) return
   const pin = (event.target as HTMLElement).closest('.pin') as HTMLElement | null
-  if (pin) showFor(pin, false)
+  if (pin) void showFor(pin, false)
 }
 
 function onOut(event: MouseEvent): void {
@@ -147,7 +155,7 @@ function onClick(event: MouseEvent): void {
       tip.value = null
       pinned.value = false
     } else {
-      showFor(pin, true)
+      void showFor(pin, true)
     }
     event.stopPropagation()
     return
@@ -165,18 +173,36 @@ function onDocClick(): void {
   }
 }
 
+// The tip's position is measured once, so any layout change dismisses it.
+function onLayoutChange(): void {
+  tip.value = null
+  pinned.value = false
+}
+
+function scrollers(): Element[] {
+  return Array.from(codeEl.value?.querySelectorAll('pre') ?? [])
+}
+
+function unlisten(): void {
+  document.removeEventListener('click', onDocClick)
+  window.removeEventListener('resize', onLayoutChange)
+  for (const pre of scrollers()) pre.removeEventListener('scroll', onLayoutChange)
+}
+
 watch(open, async (value) => {
   tip.value = null
   pinned.value = false
   if (value) {
     await nextTick()
     document.addEventListener('click', onDocClick)
+    window.addEventListener('resize', onLayoutChange)
+    for (const pre of scrollers()) pre.addEventListener('scroll', onLayoutChange, { passive: true })
   } else {
-    document.removeEventListener('click', onDocClick)
+    unlisten()
   }
 })
 
-onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
+onBeforeUnmount(unlisten)
 </script>
 
 <template>
@@ -210,9 +236,10 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
         </div>
         <div
           v-if="tip"
+          ref="tipEl"
           class="snap-tip"
-          :class="{ flip: tip.flip, pinned }"
-          :style="{ left: tip.flip ? 'auto' : tip.left + 'px', right: tip.flip ? 'calc(100% - ' + tip.left + 'px)' : 'auto', top: tip.top + 'px' }"
+          :class="{ pinned }"
+          :style="{ left: tip.left + 'px', top: tip.top + 'px', '--arrow': tip.arrow + 'px' }"
         >
           <div class="snap-result-head">
             <i v-if="indexOf(tip.result.name) >= 0">{{ indexOf(tip.result.name) + 1 }}</i>
@@ -358,7 +385,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
   position: absolute;
   z-index: 20;
   width: max-content;
-  max-width: min(460px, calc(100% - 32px));
+  max-width: min(460px, calc(100% - 16px));
   padding: 8px 10px 10px;
   border: var(--line) solid var(--line-color);
   border-radius: var(--radius);
@@ -375,15 +402,10 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
   content: "";
   position: absolute;
   top: -8px;
-  left: 12px;
+  left: var(--arrow);
   border-style: solid;
   border-width: 0 7px 8px 7px;
   border-color: transparent transparent var(--line-color) transparent;
-}
-
-.snap-tip.flip::before {
-  left: auto;
-  right: 12px;
 }
 
 .snap-tip .snap-card {
