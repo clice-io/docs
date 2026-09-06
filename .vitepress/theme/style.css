@@ -2146,7 +2146,11 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
 }
 
 .sym-name {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sym-item .sym-detail {
