@@ -501,8 +501,12 @@
 }
 
 .vp-doc :not(pre) > code {
+  display: inline-block;
+  max-width: 100%;
   border-radius: 4px;
   padding: 2px 6px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
   color: var(--ink);
   background: var(--straw-soft);
   border: var(--line-thin) solid var(--straw-dark);
@@ -536,10 +540,10 @@
 }
 
 .vp-doc table {
-  display: table;
+  display: block;
   border-collapse: separate;
   border-spacing: 0;
-  overflow: hidden;
+  overflow-x: auto;
   width: fit-content;
   max-width: 100%;
   background: var(--panel) !important;
@@ -555,6 +559,13 @@
   border-bottom: var(--line-thin) solid var(--line-color);
 }
 
+.vp-doc th > code,
+.vp-doc td > code {
+  max-width: none;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
 .vp-doc th + th,
 .vp-doc td + td {
   border-left: var(--line-thin) solid var(--line-color);
@@ -565,6 +576,7 @@
   color: var(--ink);
   font-family: var(--clice-font-display);
   font-weight: 900;
+  white-space: nowrap;
   border-bottom-width: var(--line);
 }
 
@@ -1219,6 +1231,20 @@ html[lang^="zh"] {
   .VPHero .image-container {
     max-width: 280px;
     margin: 0 auto;
+  }
+
+  .vp-doc th,
+  .vp-doc td {
+    padding: 8px 10px;
+  }
+
+  .status-bar {
+    min-width: 120px;
+  }
+
+  .status-bar .counts {
+    flex-wrap: wrap;
+    gap: 2px 8px;
   }
 }
 
