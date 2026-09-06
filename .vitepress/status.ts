@@ -29,7 +29,7 @@ const WORDS: Record<string, Tone> = {
 
 const COUNTS = [
     /^(?:(\d+) supported)?(?: · )?(?:(\d+) partial)?(?: · )?(?:(\d+) unsupported)?$/,
-    /^(?:(\d+) 项支持)?(?: · )?(?:(\d+) 项部分支持)?(?: · )?(?:(\d+) 项不支持)?$/,
+    /^(?:支持 (\d+) 项)?(?: · )?(?:部分支持 (\d+) 项)?(?: · )?(?:不支持 (\d+) 项)?$/,
 ];
 
 function badge(label: string, tone: Tone): string {
