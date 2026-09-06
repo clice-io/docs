@@ -173,18 +173,36 @@ function onDocClick(): void {
   }
 }
 
+// The tip's position is measured once, so any layout change dismisses it.
+function onLayoutChange(): void {
+  tip.value = null
+  pinned.value = false
+}
+
+function scrollers(): Element[] {
+  return Array.from(codeEl.value?.querySelectorAll('pre') ?? [])
+}
+
+function unlisten(): void {
+  document.removeEventListener('click', onDocClick)
+  window.removeEventListener('resize', onLayoutChange)
+  for (const pre of scrollers()) pre.removeEventListener('scroll', onLayoutChange)
+}
+
 watch(open, async (value) => {
   tip.value = null
   pinned.value = false
   if (value) {
     await nextTick()
     document.addEventListener('click', onDocClick)
+    window.addEventListener('resize', onLayoutChange)
+    for (const pre of scrollers()) pre.addEventListener('scroll', onLayoutChange, { passive: true })
   } else {
-    document.removeEventListener('click', onDocClick)
+    unlisten()
   }
 })
 
-onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
+onBeforeUnmount(unlisten)
 </script>
 
 <template>
