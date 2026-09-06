@@ -1636,10 +1636,13 @@ html[lang^="zh"] {
 .vp-doc li.task-list-item {
   position: relative;
   margin: 10px 0;
-  padding: 10px 110px 10px 24px;
+  padding: 10px 14px 10px 24px;
   border: var(--line) solid var(--line-color);
   border-radius: var(--radius);
   background: var(--panel);
+  box-shadow:
+    inset 8px 0 0 var(--paper-3),
+    inset 10px 0 0 var(--line-color);
   font-size: 15px;
   line-height: 1.6;
 }
@@ -1648,31 +1651,20 @@ html[lang^="zh"] {
   background: var(--paper-2);
 }
 
-.vp-doc li.task-list-item::before {
-  content: "";
-  position: absolute;
-  left: -2px;
-  top: -2px;
-  bottom: -2px;
-  width: 8px;
-  border-radius: var(--radius) 0 0 var(--radius);
-  border-right: var(--line) solid var(--line-color);
-  background: var(--paper-3);
-}
-
-.vp-doc li.task-list-item:has(input:checked)::before {
-  background: var(--aqua);
+.vp-doc li.task-list-item:has(input:checked) {
+  box-shadow:
+    inset 8px 0 0 var(--aqua),
+    inset 10px 0 0 var(--line-color);
 }
 
 .vp-doc li.task-list-item input[type="checkbox"] {
   display: none;
 }
 
-.vp-doc li.task-list-item::after {
+.vp-doc li.task-list-item::before {
   content: "Planned";
-  position: absolute;
-  right: 12px;
-  top: 10px;
+  float: right;
+  margin: 1px 0 0 12px;
   padding: 1px 10px;
   border: var(--line-thin) solid var(--line-color);
   border-radius: 999px;
@@ -1684,17 +1676,17 @@ html[lang^="zh"] {
   color: var(--ink);
 }
 
-.vp-doc li.task-list-item:has(input:checked)::after {
+.vp-doc li.task-list-item:has(input:checked)::before {
   content: "Supported";
   background: var(--aqua);
   color: #2b3040;
 }
 
-html[lang^="zh"] .vp-doc li.task-list-item::after {
+html[lang^="zh"] .vp-doc li.task-list-item::before {
   content: "计划中";
 }
 
-html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::after {
+html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   content: "支持";
 }
 
@@ -1714,13 +1706,12 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::after {
   margin: 0;
 }
 
-.vp-doc li.task-list-item > p + p,
-.vp-doc li.task-list-item > div[class*="language-"] {
+.vp-doc li.task-list-item > p + p {
   margin-top: 8px;
 }
 
 .vp-doc li.task-list-item > div[class*="language-"] {
-  margin-right: -90px;
+  margin: 8px 0 0;
 }
 
 /* ---------------------------------------------------------------------------
