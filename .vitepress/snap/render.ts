@@ -34,6 +34,13 @@ export interface Result {
     html: string;
 }
 
+/** One recording of a config fixture: its label (HTML), and whether the
+ *  server answered in plain text rather than markdown. */
+export interface Variant {
+    label: string;
+    plain?: boolean;
+}
+
 export interface Insert {
     line: number;
     col: number;
@@ -213,16 +220,20 @@ function rawResult(body: string): Result[] {
 }
 
 // ---------------------------------------------------------------------------
-// hover: `name: { range }` headers followed by markdown bodies
+// hover: `name: { range }` headers followed by markdown bodies, or
+// `name: NO HOVER` where the position has no card
 
-function renderHover(md: MarkdownIt, code: string, markers: Marker[], body: string): Rendered {
-    const header = /^([A-Za-z0-9_]+):\s*(\{.*\})?\s*$/;
+const NO_HOVER = "NO HOVER";
+
+function renderHover(md: MarkdownIt, code: string, markers: Marker[], body: string, plain: boolean): Rendered {
+    const header = /^([A-Za-z0-9_]+):\s*(\{.*\}|NO HOVER)?\s*$/;
     const results: Result[] = [];
     let current: Result | null = null;
     let buffer: string[] = [];
     const flush = (): void => {
         if (current) {
-            current.html = md.render(buffer.join("\n").trim(), {});
+            const text = buffer.join("\n").trim();
+            current.html = plain ? `<pre class="snap-raw"><code>${escapeHtml(text)}</code></pre>` : md.render(text, {});
             results.push(current);
         }
         buffer = [];
@@ -234,7 +245,12 @@ function renderHover(md: MarkdownIt, code: string, markers: Marker[], body: stri
         // bare `Word:` line inside a card body is prose.
         if (m && !line.startsWith(" ") && (m[2] !== undefined || names.has(m[1]!))) {
             flush();
-            current = { name: m[1]!, meta: m[2] ?? "", html: "" };
+            if (m[2] === NO_HOVER) {
+                results.push({ name: m[1]!, meta: "", html: `<p class="snap-none">${NO_HOVER}</p>` });
+                current = null;
+            } else {
+                current = { name: m[1]!, meta: m[2] ?? "", html: "" };
+            }
             continue;
         }
         buffer.push(line);
@@ -562,7 +578,54 @@ function renderWorkspaceSymbols(md: MarkdownIt, code: string, body: string, skip
 }
 
 // ---------------------------------------------------------------------------
+// config variants: a fixture with a `config:` line is recorded twice, under
+// `default:` and `configured:`, each body indented one level
 
+const VARIANT = /^(default|configured):\s*$/;
+
+function variantSections(snapshot: string): { key: string; body: string }[] | null {
+    const lines = snapshot.split("\n");
+    if (!VARIANT.test(lines[0] ?? "")) return null;
+    const sections: { key: string; lines: string[] }[] = [];
+    for (const line of lines) {
+        const m = VARIANT.exec(line);
+        if (m) {
+            sections.push({ key: m[1]!, lines: [] });
+            continue;
+        }
+        sections[sections.length - 1]!.lines.push(line.replace(/^ {2}/, ""));
+    }
+    return sections.map((s) => ({ key: s.key, body: s.lines.join("\n") }));
+}
+
+/** One result per name, holding each variant's card under its label. */
+function mergeVariants(
+    sections: { key: string }[],
+    rendered: Rendered[],
+    variants: Record<string, Variant>,
+): Rendered {
+    const names = [...new Set(rendered.flatMap((r) => r.results.map((x) => x.name)))];
+    const results = names.map((name) => {
+        const hits = rendered.map((r) => r.results.find((x) => x.name === name));
+        const metas = new Set(hits.map((hit) => hit?.meta ?? ""));
+        const html = hits
+            .map((hit, i) => {
+                if (!hit) return "";
+                const key = sections[i]!.key;
+                // Metas that differ per variant (completion's item count) go on the label.
+                const meta = metas.size > 1 && hit.meta ? ` · ${escapeHtml(hit.meta)}` : "";
+                return `<div class="snap-variant"><span class="snap-variant-label">${variants[key]?.label ?? escapeHtml(key)}${meta}</span>${hit.html}</div>`;
+            })
+            .join("");
+        return { name, meta: metas.size === 1 ? [...metas][0]! : "", html };
+    });
+    const first = rendered[0]!;
+    return { ...first, results, layout: rendered.some((r) => r.layout === "tooltip") ? "tooltip" : first.layout };
+}
+
+// ---------------------------------------------------------------------------
+
+/** `variants` describes a config fixture's `default` and `configured` recordings. */
 export function renderFeature(
     md: MarkdownIt,
     feature: string,
@@ -571,13 +634,34 @@ export function renderFeature(
     snapshot: string,
     skipped: number,
     self: string,
+    variants: Record<string, Variant> = {},
+): Rendered {
+    const sections = variantSections(snapshot);
+    if (sections) {
+        const rendered = sections.map((s) =>
+            renderSnapshot(md, feature, code, markers, s.body, skipped, self, variants[s.key]?.plain ?? false),
+        );
+        return mergeVariants(sections, rendered, variants);
+    }
+    return renderSnapshot(md, feature, code, markers, snapshot, skipped, self, false);
+}
+
+function renderSnapshot(
+    md: MarkdownIt,
+    feature: string,
+    code: string,
+    markers: Marker[],
+    snapshot: string,
+    skipped: number,
+    self: string,
+    plain: boolean,
 ): Rendered {
     if (!snapshot.trim()) {
         return { code: decorate(md, code, pinInserts(code, markers)), results: [], layout: "single", legend: [] };
     }
     switch (feature) {
         case "hover":
-            return renderHover(md, code, markers, snapshot);
+            return renderHover(md, code, markers, snapshot, plain);
         case "semantic_tokens":
             return renderSemanticTokens(md, code, snapshot, skipped);
         case "inlay_hint":

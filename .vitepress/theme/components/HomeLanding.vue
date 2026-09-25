@@ -33,7 +33,7 @@ const content = {
     lead:
       'A language server on the surface, a real-time compilation scheduler underneath. It drives Clang over your whole project and serves editors, linters, indexers and agents from the same engine.',
     primary: { text: 'Start with clice', href: '/clice/guide/what-is-clice' },
-    secondary: { text: 'Read the Blog', href: '/blog/' },
+    secondary: { text: 'Read the Blog', href: '/blog' },
     worksWith: 'Works with',
     runsOn: 'Runs on',
     projectsTitle: 'Projects',
@@ -106,7 +106,7 @@ const content = {
     lead:
       '表面上是一个语言服务器，内核是一个实时的编译调度器。它在整个项目上驱动 Clang，用同一个引擎服务编辑器、静态检查、索引和 Agent。',
     primary: { text: '从 clice 开始', href: '/zh/clice/guide/what-is-clice' },
-    secondary: { text: '读博客', href: '/zh/blog/' },
+    secondary: { text: '读博客', href: '/zh/blog' },
     worksWith: '支持的编辑器',
     runsOn: '运行平台',
     projectsTitle: '项目',

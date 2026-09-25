@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import type MarkdownIt from "markdown-it";
 import type { Token } from "markdown-it/index.js";
-import { escapeHtml, renderFeature, type Marker } from "./snap/render";
+import { escapeHtml, renderFeature, type Marker, type Variant } from "./snap/render";
 
 /**
  * Capability cards for the generated feature pages.
@@ -41,6 +41,11 @@ const LABELS: Record<string, Record<string, string>> = {
 };
 
 const TONE: Record<string, string> = { supported: "ok", partial: "warn", unsupported: "no" };
+
+const VARIANTS: Record<string, Record<string, string>> = {
+    en: { default: "Default", configured: "Configured" },
+    zh: { default: "默认", configured: "配置后" },
+};
 
 function issueLink(ref: string): string {
     const hash = ref.indexOf("#");
@@ -132,18 +137,56 @@ function snapshotOf(fixture: string): string {
         .join("\n");
 }
 
+/** A config fixture's two recordings: the default run, and the run under
+ *  the header's `- config: {…}` settings, labelled `key = value`. With
+ *  comment markdown off, hover answers in plain text. */
+function variantsOf(source: string, lang: string): Record<string, Variant> {
+    const names = VARIANTS[lang]!;
+    const variants: Record<string, Variant> = {
+        default: { label: names.default! },
+        configured: { label: names.configured! },
+    };
+    const line = /^\/\/\/ - config: (.*)$/m.exec(source);
+    if (!line) return variants;
+    try {
+        const config = JSON.parse(line[1]!) as Record<string, unknown>;
+        variants.configured = {
+            label: escapeHtml(
+                Object.entries(config)
+                    .map(([key, value]) => `${key} = ${JSON.stringify(value)}`)
+                    .join(", "),
+            ),
+            plain: config.parse_comment_as_markdown === false,
+        };
+    } catch {
+        // Not JSON: keep the generic label.
+    }
+    return variants;
+}
+
 /** Render one `snap` fence: the named fixture into a SnapExample component. */
 function renderSnap(md: MarkdownIt, env: { relativePath?: string }, content: string): string {
     const rel = content.trim();
+    const lang = String(env.relativePath ?? "").startsWith("zh/") ? "zh" : "en";
     const project = String(env.relativePath ?? "").replace(/^zh\//, "").split("/")[0] ?? "";
     const fixture = path.resolve(process.cwd(), "sources", project, rel);
     const feature = rel.split("/")[2] ?? "";
     if (!fs.existsSync(fixture)) {
         return `<SnapExample missing="${escapeHtml(rel)}" />\n`;
     }
-    const { example, skipped } = exampleOf(fs.readFileSync(fixture, "utf8"));
+    const source = fs.readFileSync(fixture, "utf8");
+    const { example, skipped } = exampleOf(source);
     const { code, markers } = parseMarkers(example);
-    const rendered = renderFeature(md, feature, code, markers, snapshotOf(fixture), skipped, path.basename(fixture));
+    const rendered = renderFeature(
+        md,
+        feature,
+        code,
+        markers,
+        snapshotOf(fixture),
+        skipped,
+        path.basename(fixture),
+        variantsOf(source, lang),
+    );
     const files: { name: string; html: string }[] = [];
     if (path.basename(fixture) === "main.cpp") {
         const dir = path.dirname(fixture);

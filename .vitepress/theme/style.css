@@ -352,6 +352,21 @@
   border-bottom: var(--line) solid var(--line-color) !important;
 }
 
+/* Beside a sidebar the bar's opaque 64px content body (stacked at z-index 1)
+ * paints over that border; redraw the rule on top, across the full width. */
+@media (min-width: 960px) {
+  .VPNavBar.has-sidebar::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: calc(-1 * var(--line));
+    height: var(--line);
+    background: var(--line-color);
+  }
+}
+
 .VPNavBar .divider-line {
   background: var(--ink) !important;
 }
@@ -1513,7 +1528,8 @@ html[lang^="zh"] {
   bottom: -2px;
 }
 
-.VPLocalSearchBox .no-results {
+/* `.results` outranks the box's own scoped `padding: 12px`, which loads later */
+.VPLocalSearchBox .results .no-results {
   padding-top: 200px;
   background: url("/mascot/search-empty.webp") center 16px / 170px no-repeat;
   color: var(--ink-2);
@@ -2044,6 +2060,22 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   font-family: var(--vp-font-family-mono);
   font-size: 12px;
   color: var(--ink-3);
+}
+
+/* a config fixture's default and configured recordings, stacked */
+.snap-variant + .snap-variant {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: var(--line-thin) dashed var(--line-color);
+}
+
+.snap-variant-label {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bow);
 }
 
 /* completion popup */

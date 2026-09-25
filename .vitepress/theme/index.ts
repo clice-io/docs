@@ -5,12 +5,12 @@ import DefaultTheme from 'vitepress/theme'
 import BlogPostList from './components/BlogPostList.vue'
 import HomeHeroProjects from './components/HomeHeroProjects.vue'
 import HomeLanding from './components/HomeLanding.vue'
+import Mermaid from './components/Mermaid.vue'
 import SiteFooter from './components/SiteFooter.vue'
 import SnapExample from './components/SnapExample.vue'
 import '@fontsource/m-plus-rounded-1c/400.css'
 import '@fontsource/m-plus-rounded-1c/500.css'
 import '@fontsource/m-plus-rounded-1c/700.css'
-import '@fontsource/m-plus-rounded-1c/800.css'
 import '@fontsource/m-plus-rounded-1c/900.css'
 import '@fontsource/zen-kaku-gothic-new/700.css'
 import '@fontsource/zen-kaku-gothic-new/900.css'
@@ -34,6 +34,7 @@ export default {
   enhanceApp({ app }) {
     app.component('BlogPostList', BlogPostList)
     app.component('HomeLanding', HomeLanding)
+    app.component('Mermaid', Mermaid)
     app.component('SnapExample', SnapExample)
   }
 } satisfies Theme

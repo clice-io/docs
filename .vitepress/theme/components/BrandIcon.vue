@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import icons from '@iconify-json/simple-icons/icons.json'
+import { data as icons } from '../brand-icons.data'
 
 const props = defineProps<{ name: string; size?: number }>()
 
-const body = computed(() => {
-  const icon = (icons as { icons: Record<string, { body: string }> }).icons[props.name]
-  return icon ? icon.body : ''
-})
+const body = computed(() => icons[props.name] ?? '')
 </script>
 
 <template>
