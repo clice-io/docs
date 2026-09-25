@@ -17,7 +17,7 @@ const columns = computed<Column[]>(() => [
     links: [
       { text: 'clice', href: `${p.value}/clice/guide/what-is-clice` },
       { text: 'catter', href: `${p.value}/catter/guide/what-is-catter` },
-      { text: zh.value ? '博客' : 'Blog', href: `${p.value}/blog/` }
+      { text: zh.value ? '博客' : 'Blog', href: `${p.value}/blog` }
     ]
   },
   {

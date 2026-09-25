@@ -1,19 +1,20 @@
 import { defineConfig } from "vitepress";
-import { withMermaid } from "vitepress-plugin-mermaid";
+import cjkFriendly from "markdown-it-cjk-friendly";
 import footnote from "markdown-it-footnote";
 import taskLists from "markdown-it-task-lists";
 import { genSidebar } from "./sidebar";
 import { statusStickers } from "./status";
 import { capabilityCards } from "./capability";
+import { mermaidFences } from "./mermaid";
 
 const SITE = "https://docs.clice.io";
 const projects = ["clice", "catter"];
 
-export default withMermaid(defineConfig({
+export default defineConfig({
     title: "clice.io",
     description: "Next generation C++ tooling",
     cleanUrls: true,
-    srcExclude: ["output/**", "sources/**"],
+    srcExclude: ["README.md", "output/**", "sources/**"],
     lastUpdated: true,
     sitemap: { hostname: SITE },
     head: [
@@ -52,10 +53,12 @@ export default withMermaid(defineConfig({
     },
     markdown: {
         config: (md) => {
+            md.use(cjkFriendly);
             md.use(footnote);
             md.use(taskLists);
             md.use(statusStickers);
             md.use(capabilityCards);
+            md.use(mermaidFences);
             // Override caption only (display text) so repeated refs show [1] not [1:1]; leaves id/href intact.
             md.renderer.rules.footnote_caption = (tokens, idx) =>
                 `[${Number(tokens[idx].meta.id + 1)}]`;
@@ -63,6 +66,13 @@ export default withMermaid(defineConfig({
     },
     rewrites: {
         "en/:rest*": ":rest*",
+    },
+    vite: {
+        build: {
+            // Font subsets load per page by unicode-range; inlined into the
+            // stylesheet, every page would download all of them.
+            assetsInlineLimit: (file) => (/\.woff2?$/.test(file) ? false : undefined),
+        },
     },
     themeConfig: {
         logo: "/mascot/logo-mark.webp",
@@ -82,7 +92,7 @@ export default withMermaid(defineConfig({
             link: "/",
             themeConfig: {
                 nav: [
-                    { text: "blog", link: "/blog/" },
+                    { text: "blog", link: "/blog" },
                     { text: "clice", link: "/clice/" },
                     { text: "catter", link: "/catter/" },
                     { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
@@ -96,7 +106,7 @@ export default withMermaid(defineConfig({
             link: "/zh",
             themeConfig: {
                 nav: [
-                    { text: "博客", link: "/zh/blog/" },
+                    { text: "博客", link: "/zh/blog" },
                     { text: "clice", link: "/zh/clice/" },
                     { text: "catter", link: "/zh/catter/" },
                     { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
@@ -105,4 +115,4 @@ export default withMermaid(defineConfig({
             },
         },
     },
-}));
+});
