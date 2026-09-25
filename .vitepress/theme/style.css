@@ -1278,13 +1278,11 @@ html[lang^="zh"] {
  * Nav bar: a face in an ink ring, a quiet search field, no fences
  * ------------------------------------------------------------------------ */
 
+/* The ring is drawn into the image itself. */
 .VPNavBarTitle .logo {
-  width: 30px;
-  height: 30px;
-  margin-right: 10px;
-  border: var(--line) solid var(--line-color);
-  border-radius: 999px;
-  background: #ffffff;
+  width: 34px;
+  height: 34px;
+  margin-right: 8px;
 }
 
 .VPNavBarTitle .title {

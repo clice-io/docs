@@ -14,7 +14,7 @@ export default defineConfig({
     title: "clice.io",
     description: "Next generation C++ tooling",
     cleanUrls: true,
-    srcExclude: ["README.md", "output/**", "sources/**"],
+    srcExclude: ["README.md", "art/**", "output/**", "sources/**"],
     lastUpdated: true,
     sitemap: { hostname: SITE },
     head: [

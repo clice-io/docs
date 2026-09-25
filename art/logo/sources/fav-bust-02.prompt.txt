@@ -1,0 +1,13 @@
+Use case: logo-brand, favicon character layer. This drawing is composited by code into a separate circular frame with a pale blue background (the frame and background are NOT part of this image) and is shown at only 16, 32 and 48 px as a browser-tab favicon.
+Image 1 is the approved detailed character layer of the logo: this exact girl, her colours and her curious slightly surprised expression.
+Image 2 is a previous simplification that was REJECTED: its lines are too black and heavy everywhere (dark line pixels cover a fifth of the figure), which makes it harsh, muddy and not cute. Keep its good idea (few big shapes, no hatching) but fix exactly that.
+
+Redraw the girl from Image 1 as a CUTE icon-scale simplification that stays readable at 16 px:
+- Line colour: colour-traced line art (iro-trace), not black ink. Only the OUTER silhouette uses a soft dark navy #3A4058, medium weight. Interior lines are thinner and tinted by the area they sit in: hair lines deep gold #B8913F, face and neck lines warm brown #9A6A5A, bow lines deep blue #2F4C85, collar lines grey-blue #8A93A8. The upper eyelash line is the only other dark navy line.
+- Hair is a few big soft rounded locks, flat #F2D88D, separated by the thin gold lines, no strand lines, no hatching, no shadow shapes. Keep the outward-flicking tips, the dark navy headband and the single short braid on HER LEFT (viewer's right).
+- Cute face: soft round cheeks and a small rounded chin, big round eyes (dark navy upper lash line, blue #4F86C6 iris with a darker blue #2F4C85 pupil, one big and one small white highlight), small flat pink #F4B6AE blush ovals under the eyes, a tiny open mouth in soft pink-red. No nose line, or at most a tiny dot.
+- The bow is big, rounded and cute: two soft lobes, flat #4568A7 with deep blue lines, a plain warm-gold #C9A04C round knot in the centre (no letter). It sits on HER LEFT (viewer's right).
+- Collar flat #FFF4E8 with thin grey-blue lines, a tiny red #B95D55 knot, blue #4568A7 pinafore straps.
+- Flat fills only, no gradients, gloss, texture or hatching.
+
+Same framing as Image 1: large head, neck and a little of the collar and straps, same head tilt, ending in a straight horizontal cut at the bottom. Canvas square 1024 x 1024, bust centred horizontally, the top of the bow near the top edge with a small margin, the straight body cut touching the bottom edge. Background fully transparent; every area inside her silhouette fully opaque. No frame, circle, background shape, shadow, text or other elements.
