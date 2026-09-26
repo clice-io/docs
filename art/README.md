@@ -25,13 +25,15 @@ can change without regenerating her.
 
 | Source | Used for |
 | --- | --- |
-| `sources/bust-01.png` | Navbar logo (circle), VS Code icon (rounded square), apple-touch icon (full-bleed square) |
+| `sources/bust-01.png` | VS Code icon (rounded square), apple-touch icon (full-bleed square) |
+| `sources/bust-02.png` | Navbar and footer logo (circle): the same girl drawn down to the waist, so a circle drawn around the square framing has body to fill it |
 | `sources/fav-bust-02.png` | Favicons: the same bust simplified, with colour-traced lines, so it survives 16–48 px |
 
-Both layers were generated with Codex `image_gen` (gpt-image-2, reasoning
+All layers were generated with Codex `image_gen` (gpt-image-2, reasoning
 effort xhigh). References: `bust-01` used an earlier framed candidate plus the
-approved original ink portrait and character sheet; `fav-bust-02` used
-`bust-01` and a rejected simplification (lines too black).
+approved original ink portrait and character sheet; `bust-02` used `bust-01`
+and the character sheet; `fav-bust-02` used `bust-01` and a rejected
+simplification (lines too black).
 
 | Output | Path |
 | --- | --- |

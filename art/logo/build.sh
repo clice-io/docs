@@ -8,12 +8,15 @@ cd "$(dirname "$0")"
 FILL='#cfdcf0'
 compose() { python3 compose_icon.py "$@"; }
 
-# Navbar: detailed layer in a circle, eyes centred horizontally.
-compose sources/bust-01.png masters/logo-circle.png --circle --fill "$FILL" \
-    --scale 0.82 --dx -0.0390 --dy -0.0190
-# Favicons: simplified layer, thinner blue ring so it stays soft at 16 px.
+# Navbar and footer: the square icon's framing with a circle 1.12 times its
+# side drawn around it, so the longer-bodied layer fills the extra ring and
+# nothing is cramped; nudged right to balance the bow.
+compose sources/bust-02.png masters/logo-circle.png --circle --fill "$FILL" \
+    --scale 0.7277 --dx 0.0078 --dy 0.1259 --bw 0.04
+# Favicons: simplified layer, thinner blue ring so it stays soft at 16 px;
+# nudged right like the navbar logo to balance the bow.
 compose sources/fav-bust-02.png masters/favicon.png --circle --fill "$FILL" \
-    --scale 0.82 --dx -0.0439 --dy -0.005 --bw 0.05 --border '#2f4c85'
+    --scale 0.82 --dx -0.0239 --dy -0.005 --bw 0.05 --border '#2f4c85'
 # VS Code: rounded square, nothing breaks out of the frame.
 compose sources/bust-01.png masters/vscode-icon.png --contain --fill "$FILL" --scale 0.86
 # apple-touch: opaque full-bleed square; iOS rounds the corners itself.
