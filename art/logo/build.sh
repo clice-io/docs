@@ -32,6 +32,10 @@ for size in (16, 32, 48, 64):
         # A light unsharp mask keeps the eyes from dissolving at tab size.
         im = im.filter(ImageFilter.UnsharpMask(radius=0.6, percent=80, threshold=0))
     im.save(f"{PUBLIC}favicon-{size}.png")
+# Some clients request /favicon.ico regardless of the <link> tags.
+Image.open(f"{PUBLIC}favicon-48.png").save(
+    PUBLIC + "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)],
+    append_images=[Image.open(f"{PUBLIC}favicon-{n}.png") for n in (16, 32)])
 Image.open("masters/apple-touch.png").convert("RGB").resize((180, 180), Image.LANCZOS).save(
     PUBLIC + "apple-touch-icon.png")
 Image.open("masters/vscode-icon.png").resize((256, 256), Image.LANCZOS).save("exports/vscode-icon.png")

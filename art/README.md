@@ -36,8 +36,21 @@ approved original ink portrait and character sheet; `fav-bust-02` used
 | Output | Path |
 | --- | --- |
 | Navbar logo, 128 px | `public/mascot/logo-mark.webp` |
-| Favicons, 16/32/48/64 px | `public/favicon-*.png` |
+| Favicons, 16/32/48/64 px, and a 16/32/48 `.ico` | `public/favicon-*.png`, `public/favicon.ico` |
 | apple-touch icon, 180 px | `public/apple-touch-icon.png` |
 | VS Code extension icon, 256 px | `logo/exports/vscode-icon.png` |
 
 Requires Python 3 with Pillow: `art/logo/build.sh`.
+
+## home/
+
+| Source | Used for |
+| --- | --- |
+| `sources/hero-quiet-01.png` | Homepage hero (`public/mascot/hero-home.webp`): trimmed to the figure and sized 1120 px tall for 2x displays |
+
+Generated with Codex `image_gen` (gpt-image-2, reasoning effort xhigh): a
+redraw of an earlier clasped-hands candidate that kept its head and fixed the
+body (shoulders following the head tilt, narrower skirt), referencing the
+approved full-body illustration, character sheet and colour portrait. The
+homepage's speech-bubble tail aims at her mouth; its position in the image is
+`HERO.mouth` in `HomeLanding.vue` and needs updating if the image changes.
