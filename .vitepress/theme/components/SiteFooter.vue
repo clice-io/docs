@@ -169,25 +169,15 @@ const other = computed(() => (zh.value ? { text: 'English', href: '/' } : { text
   text-underline-offset: 3px;
 }
 
+/* A plain strip: text on screentone turned into a patchwork of paper chips
+   and dots once it wrapped on narrow screens. */
 .bottom {
-  border-top: var(--line-thin) dashed var(--line-color);
-  background-image: var(--screentone);
-  background-size: 8px 8px;
-}
-
-.bottom span,
-.bottom a {
-  display: inline-block;
-  background: var(--paper-2);
-  padding: 0 10px;
-}
-
-.bottom {
-  padding: 14px 24px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px 16px;
+  padding: 14px 24px;
+  border-top: var(--line-thin) dashed var(--line-color);
   font-size: 12px;
   color: var(--ink-3);
 }
@@ -199,9 +189,5 @@ const other = computed(() => (zh.value ? { text: 'English', href: '/' } : { text
 
 .bottom a:hover {
   color: var(--bow);
-}
-
-.dark .bottom {
-  background-image: none;
 }
 </style>

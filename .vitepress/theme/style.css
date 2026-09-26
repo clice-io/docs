@@ -1214,6 +1214,14 @@ html[lang^="zh"] {
   }
 }
 
+/* On pages with no sidebar and no headings (home, blog, 404) VitePress pins a
+   bar holding only "Return to top" once the page scrolls; leave it out. It
+   marks exactly that case with `fixed` (`empty` alone would also match doc
+   pages whose bar still carries the sidebar menu). */
+.VPLocalNav.fixed {
+  display: none;
+}
+
 /* ---------------------------------------------------------------------------
  * Narrow screens: thinner shadows, no side rules
  * ------------------------------------------------------------------------ */
