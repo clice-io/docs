@@ -1,0 +1,15 @@
+Use case: website hero illustration, character layer, a corrected redraw. On the website this figure stands in a tall panel on the LEFT of the hero; the headline is an HTML speech bubble to her RIGHT whose tail points at her mouth. The bubble is NOT part of this image.
+Image 1 is the previous candidate. KEEP HER HEAD EXACTLY: face, eyes, the gentle open smile, the head tilt, hair shape, dark navy headband, the cornflower-blue bow with its small warm-gold C-shaped clasp, and the single short braid on HER LEFT (viewer's right). Also keep the idea of the pose: standing quietly with both hands lightly clasped in front at hip height.
+Image 2 is the approved full-body illustration: authoritative for BODY PROPORTIONS (shoulder width, arm length, skirt flare and length, leg length), the outfit and the pen and colour language.
+Image 3 is the approved character sheet: hair, braid side, headband, bow.
+Image 4 is the approved colour portrait: the bow's centre piece is a small warm-gold C-shaped clasp (the letter c, open on its right side); it must stay clearly readable as a C.
+
+Fix these problems of Image 1, which make her head look pasted onto a stiff body:
+1. The body ignores the head tilt. Make the body respond to it: the shoulders tilt with the head (the shoulder on the side her head leans towards sits a little lower), a slight natural S-curve through the torso, nothing mirror-symmetric.
+2. The shoulders are too narrow. Use the shoulder width of Image 2, with the hair mass only slightly wider than the shoulders. Upper arms hang naturally from the shoulders with the elbows a little away from the body; hands lightly clasped in front at hip height, hands a little smaller than in Image 1.
+3. The skirt is too wide. Use an A-line skirt with moderate flare like Image 2: hem about 1.6 times the shoulder width, ending just above the knee, legs as long as in Image 2.
+4. The skirt pocket is fully visible and clearly reads as a pocket, not hidden behind a wrist.
+5. Let a little of her shoulder show below the hair on the viewer's left, and reduce the sideways hair flick at eye level on the viewer's right.
+Stance: knees close together, one heel lifted slightly off the ground with only the toe touching, a small shy, cute stance.
+The overall impression is CUTE, GENTLE and QUIET. Expression: warm gentle smile with the mouth slightly open as if softly speaking, eyes soft and friendly, looking at the viewer. Pen and colour language of Image 2: confident hand-inked navy lines with thick-thin variation, sparse directional hatching, flat fills (straw-blonde hair, blue eyes, white blouse with thin red neck ribbon, blue pinafore dress, white socks, navy shoes), no gradients, airbrushed blush, glow or glossy highlights. Hands drawn simply and correctly.
+Canvas: portrait 1024 x 1536. The whole figure is visible with small margins, feet near the bottom. Background fully transparent; every area inside her silhouette fully opaque. No text, speech bubble, props, frame, floor shadow or other elements.

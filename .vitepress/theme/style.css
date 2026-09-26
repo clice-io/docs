@@ -139,13 +139,15 @@
   --vp-c-caution-3: var(--ribbon);
   --vp-c-caution-soft: var(--ribbon-soft);
 
+  /* Nunito's soft, rounded Latin keeps the manga warmth and stays legible at
+     body sizes; it has no CJK, so Chinese falls through to one SC font. */
   --vp-font-family-base:
-    "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yuanti SC", "PingFang SC",
-    "Noto Sans CJK SC", "Noto Sans SC", system-ui, sans-serif;
+    "Nunito", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans CJK SC", system-ui, sans-serif;
   --vp-font-family-mono:
     "JetBrains Mono", "Fira Code", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --clice-font-display:
-    "Zen Kaku Gothic New", "M PLUS Rounded 1c", "Hiragino Sans", "PingFang SC",
+    "Zen Kaku Gothic New", "Nunito", "Hiragino Sans", "PingFang SC",
     "Noto Sans CJK SC", system-ui, sans-serif;
 
   --vp-nav-bg-color: var(--paper);
@@ -849,8 +851,8 @@ html[lang^="zh"] {
     "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
     "Noto Sans CJK SC", system-ui, sans-serif;
   --vp-font-family-base:
-    "M PLUS Rounded 1c", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+    "Nunito", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans CJK SC", system-ui, sans-serif;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1210,22 +1212,6 @@ html[lang^="zh"] {
   .vp-doc h2:hover > .header-anchor::before {
     opacity: 1;
   }
-}
-
-.VPFooter .container {
-  position: relative;
-}
-
-.VPFooter .copyright::before {
-  content: "";
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  margin: -12px 10px -12px 0;
-  border: var(--line) solid var(--line-color);
-  border-radius: 999px;
-  background: var(--panel) url("/mascot/avatar.webp") center 30% / 130% no-repeat;
-  vertical-align: middle;
 }
 
 /* ---------------------------------------------------------------------------

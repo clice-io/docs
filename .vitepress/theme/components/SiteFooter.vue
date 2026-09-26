@@ -46,7 +46,7 @@ const other = computed(() => (zh.value ? { text: 'English', href: '/' } : { text
   <footer class="site-footer" :class="{ 'has-sidebar': hasSidebar }">
     <div class="inner">
       <div class="brand">
-        <img class="face" src="/mascot/avatar.webp" alt="" />
+        <img class="face" src="/mascot/logo-mark.webp" alt="" />
         <div>
           <p class="name">clice.io</p>
           <p class="line">{{ zh ? '下一代 C++ 工具链' : 'Next generation C++ tooling' }}</p>
@@ -115,14 +115,10 @@ const other = computed(() => (zh.value ? { text: 'English', href: '/' } : { text
   gap: 14px;
 }
 
+/* The site logo; its ring is part of the image. */
 .face {
-  width: 56px;
-  height: 56px;
-  border: var(--line) solid var(--line-color);
-  border-radius: 999px;
-  background: #ffffff;
-  object-fit: cover;
-  object-position: center 30%;
+  width: 60px;
+  height: 60px;
 }
 
 .brand p {
