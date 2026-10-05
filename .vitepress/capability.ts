@@ -17,6 +17,10 @@ import { escapeHtml, renderFeature, type Marker, type Variant } from "./snap/ren
  *     ```
  *     <!-- END CAPABILITY -->
  *
+ * The status is one of the keys of TONE below (`supported`, `partial`,
+ * `unsupported`, `unreleased`, `planned`, `in-research`, `considered`,
+ * `not-planned`); an unknown one shows as itself on a neutral card.
+ *
  * The comments and the fence are byte-identical across the en and zh
  * trees; the paragraphs are translated. Here the comments become the card
  * frame with a status sticker and issue links, the first paragraph becomes
@@ -36,11 +40,39 @@ const TRACKERS: Record<string, string> = {
 };
 
 const LABELS: Record<string, Record<string, string>> = {
-    en: { supported: "Supported", partial: "Partial", unsupported: "Unsupported" },
-    zh: { supported: "支持", partial: "部分支持", unsupported: "不支持" },
+    en: {
+        supported: "Supported",
+        partial: "Partial",
+        unsupported: "Unsupported",
+        unreleased: "Unreleased",
+        planned: "Planned",
+        "in-research": "In research",
+        considered: "Considered",
+        "not-planned": "Not planned",
+    },
+    zh: {
+        supported: "支持",
+        partial: "部分支持",
+        unsupported: "不支持",
+        unreleased: "未发布",
+        planned: "计划中",
+        "in-research": "研究中",
+        considered: "考虑中",
+        "not-planned": "不计划",
+    },
 };
 
-const TONE: Record<string, string> = { supported: "ok", partial: "warn", unsupported: "no" };
+// Same tones as the table badges in status.ts.
+const TONE: Record<string, string> = {
+    supported: "ok",
+    partial: "warn",
+    unsupported: "no",
+    unreleased: "warn",
+    planned: "note",
+    "in-research": "note",
+    considered: "note",
+    "not-planned": "off",
+};
 
 const VARIANTS: Record<string, Record<string, string>> = {
     en: { default: "Default", configured: "Configured" },

@@ -17,6 +17,8 @@ const columns = computed<Column[]>(() => [
     links: [
       { text: 'clice', href: `${p.value}/clice/guide/what-is-clice` },
       { text: 'catter', href: `${p.value}/catter/guide/what-is-catter` },
+      // English only: the zh footer links to the English pages too.
+      { text: 'xclang', href: '/xclang/guide/what-is-xclang' },
       { text: zh.value ? '博客' : 'Blog', href: `${p.value}/blog` }
     ]
   },
@@ -25,6 +27,7 @@ const columns = computed<Column[]>(() => [
     links: [
       { text: 'clice-io/clice', href: 'https://github.com/clice-io/clice', icon: 'github', external: true },
       { text: 'clice-io/catter', href: 'https://github.com/clice-io/catter', icon: 'github', external: true },
+      { text: 'clice-io/xclang', href: 'https://github.com/clice-io/xclang', icon: 'github', external: true },
       { text: 'clice-io/kotatsu', href: 'https://github.com/clice-io/kotatsu', icon: 'github', external: true }
     ]
   },

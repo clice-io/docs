@@ -7,10 +7,12 @@ import type { Token } from "markdown-it/index.js";
  * A table cell that holds exactly one status word renders as a badge; a
  * cell of the "N supported · N partial · N unsupported" shape renders as a
  * stacked bar with its counts. The vocabulary is shared by the English and
- * Chinese pages; the cell text is kept as the visible label.
+ * Chinese pages; the cell text is kept as the visible label. Multi-word
+ * entries ("Not planned") match only as the whole cell, never inside a
+ * longer one.
  */
 
-type Tone = "ok" | "warn" | "no" | "note";
+type Tone = "ok" | "warn" | "no" | "note" | "off";
 
 const WORDS: Record<string, Tone> = {
     Supported: "ok",
@@ -19,12 +21,20 @@ const WORDS: Record<string, Tone> = {
     Unsupported: "no",
     Stub: "no",
     Planned: "note",
+    Unreleased: "warn",
+    "In research": "note",
+    Considered: "note",
+    "Not planned": "off",
     支持: "ok",
     已实现: "ok",
     部分支持: "warn",
     不支持: "no",
     存根: "no",
     计划中: "note",
+    未发布: "warn",
+    研究中: "note",
+    考虑中: "note",
+    不计划: "off",
 };
 
 const COUNTS = [
@@ -74,7 +84,8 @@ export function statusStickers(md: MarkdownIt): void {
             }
             const inline = tokens[i + 1]!;
             const text = inline.content.trim();
-            const tone = WORDS[text];
+            // Own keys only: a cell reading "constructor" is not a status.
+            const tone = Object.hasOwn(WORDS, text) ? WORDS[text] : undefined;
             const html = tone !== undefined ? badge(text, tone) : bar(text);
             if (html === null) {
                 continue;
