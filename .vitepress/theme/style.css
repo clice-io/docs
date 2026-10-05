@@ -37,6 +37,7 @@
   --iris: #729ebf;
   --aqua: #9bc7d0;
   --aqua-soft: rgba(155, 199, 208, 0.28);
+  --ash: #d3d5dc;
 
   --line: 2px;
   --line-thin: 1px;
@@ -79,6 +80,7 @@
   --iris: #8fb6d4;
   --aqua: #8fb9c2;
   --aqua-soft: rgba(143, 185, 194, 0.16);
+  --ash: #3d3c46;
 }
 
 /* ---------------------------------------------------------------------------
@@ -905,6 +907,13 @@ html[lang^="zh"] {
   color: var(--ink);
 }
 
+/* Not planned: out of scope rather than broken, so greyed out. */
+.status-badge.off {
+  border-style: dashed;
+  background: var(--ash);
+  color: var(--ink-2);
+}
+
 .status-bar {
   display: flex;
   flex-direction: column;
@@ -1587,6 +1596,10 @@ html[lang^="zh"] {
 .vp-doc .capability.note::before {
   border: var(--line) solid var(--line-color);
   background: var(--paper-3);
+}
+
+.vp-doc .capability.off::before {
+  background: var(--ash);
 }
 
 .vp-doc .capability-meta {

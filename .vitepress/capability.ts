@@ -71,7 +71,7 @@ const TONE: Record<string, string> = {
     planned: "note",
     "in-research": "note",
     considered: "note",
-    "not-planned": "no",
+    "not-planned": "off",
 };
 
 const VARIANTS: Record<string, Record<string, string>> = {

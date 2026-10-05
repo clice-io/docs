@@ -12,7 +12,7 @@ import type { Token } from "markdown-it/index.js";
  * longer one.
  */
 
-type Tone = "ok" | "warn" | "no" | "note";
+type Tone = "ok" | "warn" | "no" | "note" | "off";
 
 const WORDS: Record<string, Tone> = {
     Supported: "ok",
@@ -24,7 +24,7 @@ const WORDS: Record<string, Tone> = {
     Unreleased: "warn",
     "In research": "note",
     Considered: "note",
-    "Not planned": "no",
+    "Not planned": "off",
     支持: "ok",
     已实现: "ok",
     部分支持: "warn",
@@ -34,7 +34,7 @@ const WORDS: Record<string, Tone> = {
     未发布: "warn",
     研究中: "note",
     考虑中: "note",
-    不计划: "no",
+    不计划: "off",
 };
 
 const COUNTS = [
