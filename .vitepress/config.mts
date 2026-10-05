@@ -1,3 +1,4 @@
+import * as fs from "node:fs";
 import { defineConfig } from "vitepress";
 import cjkFriendly from "markdown-it-cjk-friendly";
 import footnote from "markdown-it-footnote";
@@ -27,11 +28,17 @@ export default defineConfig({
         ["meta", { name: "twitter:card", content: "summary_large_image" }],
         ["meta", { name: "theme-color", content: "#4568a7" }],
     ],
-    transformPageData(pageData) {
+    transformPageData(pageData, { siteConfig }) {
         const path = pageData.relativePath.replace(/(^|\/)index\.md$/, "$1").replace(/\.md$/, "");
         const isZh = path === "zh" || path.startsWith("zh/");
         const en = isZh ? path.replace(/^zh\/?/, "") : path;
         const url = (p: string) => `${SITE}/${p}`;
+        // The en and zh trees mirror each other file for file, except for
+        // projects that publish one language only (xclang has no zh tree):
+        // link a translation only when its source page exists.
+        const source = pageData.relativePath.replace(/^zh\//, "");
+        const hasEn = fs.existsSync(`${siteConfig.srcDir}/en/${source}`);
+        const hasZh = fs.existsSync(`${siteConfig.srcDir}/zh/${source}`);
         const title = pageData.frontmatter.title ?? pageData.title;
         const description = pageData.frontmatter.description ?? pageData.description;
         const head = [
@@ -42,10 +49,14 @@ export default defineConfig({
             ["meta", { property: "og:image:height", content: "630" }],
             ["meta", { property: "og:locale", content: isZh ? "zh_CN" : "en_US" }],
             ["link", { rel: "canonical", href: url(isZh ? path : en) }],
-            ["link", { rel: "alternate", hreflang: "en", href: url(en) }],
-            ["link", { rel: "alternate", hreflang: "zh-CN", href: url(en ? `zh/${en}` : "zh") }],
-            ["link", { rel: "alternate", hreflang: "x-default", href: url(en) }],
         ];
+        if (hasEn) {
+            head.push(["link", { rel: "alternate", hreflang: "en", href: url(en) }]);
+            head.push(["link", { rel: "alternate", hreflang: "x-default", href: url(en) }]);
+        }
+        if (hasZh) {
+            head.push(["link", { rel: "alternate", hreflang: "zh-CN", href: url(en ? `zh/${en}` : "zh") }]);
+        }
         if (description) {
             head.push(["meta", { property: "og:description", content: description }]);
         }

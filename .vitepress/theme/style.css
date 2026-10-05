@@ -1582,6 +1582,13 @@ html[lang^="zh"] {
   background: #f0b9b3;
 }
 
+/* Planned, in research, considered: a blank stripe, like the note badge.
+   Outlined all round, or on the dark card it reads as a gap in the frame. */
+.vp-doc .capability.note::before {
+  border: var(--line) solid var(--line-color);
+  background: var(--paper-3);
+}
+
 .vp-doc .capability-meta {
   float: right;
   display: flex;
