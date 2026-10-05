@@ -8,7 +8,7 @@ import { capabilityCards } from "./capability";
 import { mermaidFences } from "./mermaid";
 
 const SITE = "https://docs.clice.io";
-const projects = ["clice", "catter"];
+const projects = ["clice", "catter", "xclang"];
 
 export default defineConfig({
     title: "clice.io",
@@ -95,6 +95,7 @@ export default defineConfig({
                     { text: "blog", link: "/blog" },
                     { text: "clice", link: "/clice/" },
                     { text: "catter", link: "/catter/" },
+                    { text: "xclang", link: "/xclang/" },
                     { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
                 ],
                 sidebar: genSidebar(projects, "en"),
@@ -109,6 +110,7 @@ export default defineConfig({
                     { text: "博客", link: "/zh/blog" },
                     { text: "clice", link: "/zh/clice/" },
                     { text: "catter", link: "/zh/catter/" },
+                    { text: "xclang", link: "/xclang/" },
                     { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
                 ],
                 sidebar: genSidebar(projects, "zh"),
