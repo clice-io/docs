@@ -1,29 +1,33 @@
 # CI
 
-xclang on GitHub Actions: getting the toolchain onto a runner, keeping what
-is slow to rebuild between runs, and building for one target on another
-target's runner. The snippets are from workflows that run them:
-xclang's [examples.yml](https://github.com/clice-io/xclang/blob/main/.github/workflows/examples.yml)
-and [bazel.yml](https://github.com/clice-io/xclang/blob/main/.github/workflows/bazel.yml),
-and clice's [native-test.yml](https://github.com/clice-io/clice/blob/main/.github/workflows/native-test.yml).
+xclang on GitHub Actions. This page gets the toolchain onto a runner, and
+keeps what is slow to rebuild between runs. It also builds for a target on
+one runner, and runs the result on a runner of that target.
 
-## Getting the toolchain
+Requires: a GitHub Actions workflow, with the hosted runners of
+[targets](../reference/targets.md#hosts).
+
+## Get the Toolchain
 
 **pixi.** With the workspace of the [quick start](../guide/quick-start.md):
 
+<!-- excerpt: .github/workflows/examples.yml -->
 ```yaml
 - uses: prefix-dev/setup-pixi@v0.10.2
   with:
     pixi-version: v0.71.1
     run-install: false
-- run: pixi install
-- run: pixi run clang++ -O2 --target=x86_64-w64-mingw32 hello.cpp -o hello.exe
+- name: Install
+  run: |
+    pixi install
+    pixi run clang++ --version
 ```
 
 **CMake with FetchContent.** The project downloads the toolchain itself
-([CMake](cmake.md#without-xclang-installed)); keep the download between
+([CMake](cmake.md#without-xclang-installed)). Keep the download between
 runs by putting `XCLANG_CACHE_DIR` in a cache entry keyed on the release:
 
+<!-- excerpt: .github/workflows/examples.yml -->
 ```yaml
 - uses: actions/cache@v6
   with:
@@ -37,20 +41,21 @@ runs by putting `XCLANG_CACHE_DIR` in a cache entry keyed on the release:
     cmake --build build
 ```
 
-**Bazel.** The module downloads the toolchain into Bazel's repository
-cache; keep `--repository_cache` with the disk cache (below).
+**Bazel.** The module downloads the toolchain into the repository cache of
+Bazel. Keep `--repository_cache` with the disk cache (below).
 
-## Caches
+## Keep Caches between Runs
 
-A build's own caches are what makes CI fast, and with xclang they are
-correct to share: in Bazel every toolchain file is an input of every
-action that reads it, so a new release misses the cache and does not get
-the old one's outputs.
+With xclang, the caches of a build are correct to share. In Bazel, every
+toolchain file is an input of every action that reads it. So a new release
+misses the cache, and does not get the outputs of the old one.
 
 **Bazel's disk and repository caches, and the ThinLTO cache.** clice's CI
-restores them on every run and saves them only on `main`, once per merge,
-so pull requests do not churn the repository's cache space:
+([native-test.yml](https://github.com/clice-io/clice/blob/main/.github/workflows/native-test.yml))
+restores them on every run, and saves them only on `main`, once per merge.
+Pull requests then do not churn the cache space of the repository:
 
+<!-- not run: clice's CI, linked above, runs it -->
 ```yaml
 - uses: actions/cache/restore@v6
   with:
@@ -74,15 +79,16 @@ so pull requests do not churn the repository's cache space:
     key: bazel-${{ matrix.target }}-${{ matrix.build_type }}-${{ github.sha }}
 ```
 
-The ThinLTO cache's directory is the project's `.bazelrc`'s
-([Bazel](bazel.md#the-thinlto-cache)). On `main`, clice also prunes the
-disk cache of every file the build did not read (Bazel refreshes an
-entry's time when it uses it), so the entry holds what the current tree
+The ThinLTO cache directory is the one the `.bazelrc` of the project names
+([Bazel](bazel.md#speed-up-libclang-links)). On `main`, clice also prunes
+from the disk cache every file the build did not read. Bazel refreshes the
+time of an entry when it uses it, so the cache holds what the current tree
 needs.
 
-**The ThinLTO cache alone** (CMake, or a project without the disk cache):
-key it on the xclang version.
+**The ThinLTO cache alone**, for CMake, or for a project without the disk
+cache: key it on the xclang release.
 
+<!-- not run: xclang's examples keep no ThinLTO cache between runs -->
 ```yaml
 - uses: actions/cache@v6
   with:
@@ -91,26 +97,68 @@ key it on the xclang version.
     restore-keys: thinlto-${{ runner.os }}-${{ runner.arch }}-xclang-23.1.2.6-
 ```
 
-Restoring sets every file's last access to the time of the restore, so the
-linker's own pruning (entries unread for a week) never fires and the entry
-only grows, by what new code adds (clice and its tests: 350 to 650 MB). A
-new xclang release changes every link's input, so none of the old entries
-can be used; with the version in the key its entry starts empty
+Restoring a cache sets the last access of every file to the time of the
+restore. So the linker never prunes, and the entry only grows, by what new
+code adds: 350 to 650 MB for clice and its tests. A new xclang release
+changes the input of every link, so none of the old entries can be used.
+With the version in the key, its entry starts empty
 ([the ThinLTO cache](../features/thinlto-cache.md)).
 
-**ccache** is safe for code without C++20 modules. With modules, check
-what your ccache version does first
-([C++20 modules](../features/modules.md#build-caches-and-modules)).
+**ccache** is safe for code without C++20 modules. With modules, check what
+your ccache version does first
+([build caches and modules](../features/modules.md#build-caches-and-modules)).
 
-## Building for another target's runner
+## Build on One Runner, Run on Another
 
-A Linux runner builds for every Linux and Windows target; the programs and
-tests run on a runner of the target. xclang's own bazel.yml does this for
-22 host-to-target pairs: one job builds with
-`--platforms=@xclang//platforms:<target>` and uploads the test binaries,
-another, on a runner of the target, downloads and runs them. Linux-built
-Windows programs run on `windows-2025` and `windows-11-arm`, with nothing
-installed there: the programs need nothing but the OS.
+A Linux runner builds for every Linux and Windows target. The programs and
+tests then run on a runner of their target, with nothing installed there:
+they need nothing but the OS. One job builds the program of the
+[quick start](../guide/quick-start.md), in `examples/quickstart`, for
+Windows on Arm, and uploads it:
+
+<!-- excerpt: .github/workflows/examples.yml -->
+```yaml
+build:
+  runs-on: ubuntu-24.04
+  defaults:
+    run:
+      working-directory: examples/quickstart
+  steps:
+    - uses: actions/checkout@v7
+      with:
+        persist-credentials: false
+    - uses: prefix-dev/setup-pixi@v0.10.2
+      with:
+        pixi-version: v0.71.1
+        manifest-path: examples/quickstart/pixi.toml
+    - run: pixi run clang++ -O2 --target=aarch64-w64-mingw32 hello.cpp -o hello.exe
+    - uses: actions/upload-artifact@v7
+      with:
+        name: windows-arm64
+        path: examples/quickstart/hello.exe
+```
+
+Another job, on a runner of the target, downloads and runs it:
+
+<!-- excerpt: .github/workflows/examples.yml -->
+```yaml
+run:
+  needs: build
+  runs-on: windows-11-arm
+  steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: windows-arm64
+    - run: ./hello.exe
+      shell: bash
+```
+
+In Bazel, the build job uses `--platforms=@xclang//platforms:<target>`
+and uploads the test binaries with their runfiles. xclang's own CI runs
+every example of these docs this way: what each host built for another
+target runs on a runner of that target
+([testing](../dev/testing.md#cross-compiling)). The runners for each
+target:
 
 | target | runner |
 |---|---|
@@ -121,4 +169,12 @@ installed there: the programs need nothing but the OS.
 | `aarch64-apple-darwin` | `macos-15` |
 | `x86_64-apple-darwin` | `macos-15-intel` |
 
-These are the runners xclang's own CI tests each host and target on.
+macOS targets build on macOS runners only. x86_64 macOS programs also run
+on arm64 runners through Rosetta, and x86_64 Windows programs on
+`windows-11-arm`.
+
+## See Also
+
+- [CMake](cmake.md) and [Bazel](bazel.md): the builds these jobs run.
+- [Testing](../dev/testing.md): how xclang's own CI tests every host and
+  target.
