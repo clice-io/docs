@@ -1,9 +1,14 @@
-# Targets and tiers
+# Targets and Tiers
+
+The hosts xclang runs on, the targets it builds for, and how each is tested.
+How to build for another target is in
+[cross-compiling](../guide/cross-compiling.md).
 
 ## Hosts
 
 A host is a machine the toolchain runs on. Each has its own archive, and
-every archive carries every target.
+every archive carries every target. The "tested on" column names the
+GitHub-hosted runner.
 
 | host | archive built on | tested on |
 |---|---|---|
@@ -26,20 +31,23 @@ every archive carries every target.
 | `x86_64-apple-darwin` | `x86_64-apple-macos`, `x86_64-apple-macosx` | the SDK's libSystem | macOS 13.0 or later | macOS hosts |
 
 All six are tier 1. The macOS targets build on macOS hosts only, because
-they need Apple's SDK, which comes from Xcode there; macOS from any host,
-with the SDK fetched from Apple by the user, is
-[in research](../design/roadmap.md).
+they need Apple's SDK, which comes from Xcode there
+([macOS](../design/macos.md#the-sdk-is-xcode-s)).
 
-What each target has:
+## What Each Target Has
 
 | | Linux | Windows | macOS |
 |---|---|---|---|
 | libc++, libc++abi | static | static | static (not the system's `libc++.dylib`) |
 | unwinder | libunwind, static | libunwind, static | the system's (libSystem) |
-| compiler-rt builtins, profile | yes | yes | yes |
-| ASan, TSan, LSan, UBSan, libFuzzer | yes | no | yes |
-| libc++'s ASan build | yes | no | yes |
+| compiler-rt builtins, profile | Supported | Supported | Supported |
+| ASan, TSan, LSan, UBSan, libFuzzer | Supported | Considered | Supported |
+| ASan libc++ | Supported | Considered | Supported |
 | linker | ld.lld | ld.lld (MinGW driver) | ld64.lld; `-fuse-ld=ld` for Apple's |
+
+Sanitizers for the MinGW targets are
+[considered](../design/roadmap.md#mingw-sanitizers); those of the MSVC
+targets are part of the [MSVC targets](../design/roadmap.md#msvc).
 
 ## Tiers
 
@@ -47,29 +55,23 @@ Each target has a tier, as Rust's targets do. The tier says how a target
 is tested, and so how much a release promises about it.
 
 - **Tier 1**: built for every release, and its tests run on a
-  GitHub-hosted runner of the target itself (for future targets: Windows
-  x64 runs x86 programs, wasmtime WebAssembly ones); a failure stops the
-  release.
+  GitHub-hosted runner of the target itself; a failure stops the release.
 - **Tier 2**: built for every release, and its tests run under emulation or
   virtualization: qemu, a virtual machine, Android's emulator, Apple's
   simulators.
-- **Tier 3**: built, or buildable on demand; programs are compiled and
-  linked for it, not run.
+- **Tier 3**: programs are compiled and linked for it, not run.
 
-A target marked **SDK** needs a vendor SDK that the user fetches and
-accepts the license of; xclang's tests fetch it the same way.
+For today's six, that means programs built on every host run on a runner of
+their target, with no emulator
+([testing](../dev/testing.md#cross-compiling)).
 
-What "its tests run on the target itself" means for today's six:
+## Not Yet Supported
 
-- tests/smoke.ts builds C and C++ programs for every target on every host,
-  and runs those the machine can run (its own target; x86_64 macOS
-  programs on arm64 macOS through Rosetta; x86_64 Windows programs on
-  Windows on Arm).
-- bazel.yml builds tests/bazel on every host for every other target it
-  builds for, 22 host-to-target pairs, and runs the tests on a machine of
-  the target: Linux-built Windows programs on Windows, Windows-built Linux
-  programs on Linux, and so on. No emulator is involved.
-- examples.yml runs the quick start on every host.
+| | status |
+|---|---|
+| [Sanitizers for MSVC targets](../design/roadmap.md#msvc), with the MSVC targets | Planned |
+| [Sanitizers for MinGW targets](../design/roadmap.md#mingw-sanitizers) | Considered |
+| [macOS targets from Linux and Windows hosts](../design/roadmap.md#macos-any-host) | In research |
 
-The targets planned and considered, with their tiers, are in the
+Every other target, with its planned tier and its status, is in the
 [roadmap](../design/roadmap.md#targets).
