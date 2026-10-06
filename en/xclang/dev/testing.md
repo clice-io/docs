@@ -9,7 +9,10 @@ here instead of naming tests.
 
 - Before a release, each host archive is tested on a machine of that host
   (`tests/smoke.ts`, `tests/libclang.ts`). The CMake package and the Bazel
-  module are tested with the archives (`tests/cmake.ts`, `tests/bazel`).
+  module are tested with the archives (`tests/cmake.ts`, `tests/bazel`),
+  and so are the MSVC targets and the macOS targets from Linux and Windows
+  hosts (`tests/msvc.ts`, `tests/macos.ts`). The `xclang` command is
+  tested on every host (`tests/cli.ts`).
 - On publishing, the Bazel module is checked further (`tests/bazel.ts`),
   and cross-built programs run on a machine of their target, with no
   emulator: 22 host-to-target pairs.
@@ -32,9 +35,9 @@ here instead of naming tests.
 | conda.yml | before the conda packages are published | each package installed with pixi and used, on every host |
 | examples.yml | after publishing, and on pushes that change `examples/` or the workflow | the commands and `examples/` of the docs, as written; the programs for other targets on their runners |
 | docs.yml | pushes that change the docs, `examples/`, `tests/docs.ts` or a workflow, on every branch | `tests/docs.ts`; on `main`, then publishing to docs.clice.io |
-| cli.yml | by hand, and with `cli` in main.yml | the [unreleased](../design/roadmap.md#xclang-command) `xclang` command: `tests/cli.ts`, `tests/cargo.ts` |
-| main.yml, stage `msvc` (msvc.yml) | with `cli`, as the archives then carry `xclang` | the [unreleased](../design/roadmap.md#msvc) MSVC targets: `tests/msvc.ts` |
-| main.yml, stage `macos` (macos.yml) | with `cli` | the [unreleased](../design/roadmap.md#macos-any-host) macOS targets from Linux and Windows hosts: `tests/macos.ts` |
+| cli.yml | every release candidate, with main.yml's `cli` (on by default), and by hand | the `xclang` command: `tests/cli.ts`, `tests/cargo.ts` |
+| main.yml, stage `msvc` (msvc.yml) | every release candidate; needs `cli`, as the archives' `xclang` fetches the SDK | the MSVC targets: `tests/msvc.ts` |
+| main.yml, stage `macos` (macos.yml) | every release candidate; needs `cli` | the macOS targets from Linux and Windows hosts: `tests/macos.ts` |
 | bench.yml | by hand, for the notes or the docs | compile speed against LLVM's and Apple's builds (`tests/bench.ts`) |
 
 How the stages fit together is in the [build pipeline](release-build.md).
@@ -96,7 +99,13 @@ The job fails if any program loads a C++ runtime. That is the
   them. Its `on-target` job runs each on a runner of its target, with
   nothing installed, and compares what it prints with the `expected.txt`
   of its example. That covers every host to every Linux and Windows
-  target, and both macOS targets from both macOS hosts.
+  target, and both macOS targets from both macOS hosts. Its `sdk` job
+  fetches the vendor SDKs with the release's `xclang` on Linux x64,
+  Windows x64 and macOS arm64, as the docs show, and builds for both MSVC
+  targets (clang, clang-cl, CMake, cargo) and, on Linux and Windows, for
+  both macOS targets (clang, CMake, cargo); `on-target` runs those programs
+  on Windows x64 and arm64 and on Macs too. Nothing of an SDK leaves the
+  job.
 
 ## CMake Package
 
@@ -172,10 +181,9 @@ for another target.
 
 ## The xclang Command
 
-The `xclang` command is [unreleased](../design/roadmap.md#xclang-command).
-cli.yml builds it for every host, with a released xclang as the C compiler
-and linker (`scripts/cli.ts`). On a machine of each host, `tests/cli.ts`
-then:
+cli.yml builds the `xclang` command for every host, with a released xclang
+as the C compiler and linker (`scripts/cli.ts`). On a machine of each
+host, `tests/cli.ts` then:
 
 - fetches both vendor SDKs;
 - cross-compiles C, C++ and Objective-C programs against them, for both
@@ -188,9 +196,8 @@ ABI against the fetched SDKs ([Rust and Cargo](../integrations/cargo.md)).
 
 ## MSVC Targets
 
-The MSVC targets are [unreleased](../design/roadmap.md#msvc). msvc.yml
-tests them with a run's archives, from Linux x64, macOS arm64 and Windows
-x64 hosts. On each, `tests/msvc.ts`:
+msvc.yml tests the MSVC targets with a run's archives, from Linux x64,
+macOS arm64 and Windows x64 hosts. On each, `tests/msvc.ts`:
 
 - checks that clang and clang-cl stop without the SDK and name
   `sdk/windows`;
@@ -213,10 +220,9 @@ anything of the SDK.
 
 ## macOS from Linux and Windows
 
-macOS targets from Linux and Windows hosts are
-[unreleased](../design/roadmap.md#macos-any-host). macos.yml tests them
-with a run's archives, on Linux x64 and arm64 and Windows x64 and arm64
-hosts. On each, `tests/macos.ts`:
+macos.yml tests the macOS targets from Linux and Windows hosts with a
+run's archives, on Linux x64 and arm64 and Windows x64 and arm64 hosts. On
+each, `tests/macos.ts`:
 
 - checks that clang without the SDK names `sdk/macos`, and that the CMake
   package stops and says how to fetch it;
@@ -296,13 +302,13 @@ bench.yml compares the compile speed of a release with LLVM's own build of
 the same version, and with Apple's clang on macOS. The method and the
 numbers are in [PGO](../design/pgo.md#what-it-buys).
 
-## Runs for 23.1.2.6
+## Runs for 23.1.2.7
 
 | workflow | run |
 |---|---|
-| main.yml (build and `test` stage) | [37318534884](https://github.com/clice-io/xclang/actions/runs/37318534884) |
-| bazel.yml, on publishing | [37345631067](https://github.com/clice-io/xclang/actions/runs/37345631067) |
-| cmake.yml, on publishing | [37345631112](https://github.com/clice-io/xclang/actions/runs/37345631112) |
-| conda.yml | [37345830868](https://github.com/clice-io/xclang/actions/runs/37345830868) |
-| examples.yml | [37354730630](https://github.com/clice-io/xclang/actions/runs/37354730630); the `ccache` job: [37356757050](https://github.com/clice-io/xclang/actions/runs/37356757050) |
-| bench.yml | [37356476645](https://github.com/clice-io/xclang/actions/runs/37356476645) |
+| main.yml (build, `test`, `bazel`, `cmake`, `msvc` and `macos` stages) | [37454002667](https://github.com/clice-io/xclang/actions/runs/37454002667) |
+| bazel.yml, on publishing | [37481563479](https://github.com/clice-io/xclang/actions/runs/37481563479) |
+| cmake.yml, on publishing | [37481563519](https://github.com/clice-io/xclang/actions/runs/37481563519) |
+| conda.yml | [37481672889](https://github.com/clice-io/xclang/actions/runs/37481672889) |
+| examples.yml | 23.1.2.6's: [37354730630](https://github.com/clice-io/xclang/actions/runs/37354730630); the `ccache` job: [37356757050](https://github.com/clice-io/xclang/actions/runs/37356757050) |
+| bench.yml | 23.1.2.6's: [37356476645](https://github.com/clice-io/xclang/actions/runs/37356476645) |
