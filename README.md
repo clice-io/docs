@@ -22,11 +22,48 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: clice-io/docs@main
         with:
           project: your-project-name
           token: ${{ secrets.CLICE_DOCS }}
+```
+
+## Check translations
+
+Repositories with a Chinese tree keep `docs/zh` segment-isomorphic to
+`docs/en`, attested by hash pairs in `docs/meta/translations`
+([rules](tools/translations/RULES.md)). This composite action fails a PR
+whose trees drifted apart:
+
+```yaml
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: clice-io/docs/check-translations@v1
+        # with:
+        #   en: docs/en
+        #   zh: docs/zh
+        #   meta: docs/meta/translations
+        #   ignore: |
+        #     reference/**
+```
+
+The action sets up Node.js 24 with `actions/setup-node`, which also changes
+the `node` every later step of the calling job runs; put it last, or set
+up the node you need again after it.
+
+Locally, the same checker runs as `npx @clice-io/translate@1 check`
+(`report`, `record`, `review`); see [tools/translations](tools/translations/README.md).
+
+Releases: `v1.0.0`-style tags are immutable and publish the npm package;
+`v1` moves to the newest `v1.x.y`. A new release is tagged only when the
+action or the tool changed. After pushing the release tag, move `v1`:
+
+```bash
+git tag -f v1 vX.Y.Z && git push -f origin v1
 ```
 
 ## Doc layout convention

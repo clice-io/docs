@@ -1,0 +1,54 @@
+name: "Check Translations"
+description: "Check that a zh documentation tree matches its en counterpart segment by segment"
+
+inputs:
+  en:
+    description: "English tree, relative to the workspace"
+    required: false
+    default: "docs/en"
+  zh:
+    description: "Chinese tree, relative to the workspace"
+    required: false
+    default: "docs/zh"
+  meta:
+    description: "Hash-pair mappings, relative to the workspace"
+    required: false
+    default: "docs/meta/translations"
+  ignore:
+    description: "Globs of pages, relative to the en and zh trees, left out of the check; one per line"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    # Node 24 runs the checker's TypeScript sources as they are. This also
+    # switches the node of every later step in the calling job.
+    - name: Set up Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version: "24"
+        # Caching keys off the caller's package manager and lockfile, which
+        # have nothing to do with this action.
+        package-manager-cache: false
+
+    - name: Install the checker
+      shell: bash
+      run: npm ci --prefix "$GITHUB_ACTION_PATH/../tools/translations" --omit=dev --ignore-scripts --no-audit --no-fund
+
+    - name: Check translations
+      shell: bash
+      env:
+        EN: ${{ inputs.en }}
+        ZH: ${{ inputs.zh }}
+        META: ${{ inputs.meta }}
+        IGNORE: ${{ inputs.ignore }}
+      run: |
+        args=(check "--en=$EN" "--zh=$ZH" "--meta=$META")
+        while IFS= read -r glob; do
+          glob="$(sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' <<< "$glob")"
+          if [[ -n "$glob" ]]; then
+            args+=("--ignore=$glob")
+          fi
+        done <<< "$IGNORE"
+        node "$GITHUB_ACTION_PATH/../tools/translations/src/cli.ts" "${args[@]}"

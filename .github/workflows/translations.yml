@@ -1,0 +1,74 @@
+name: translations tool
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/**"
+      - "check-translations/**"
+      - ".github/workflows/translations.yml"
+  pull_request:
+    paths:
+      - "tools/**"
+      - "check-translations/**"
+      - ".github/workflows/translations.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  tool:
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest node the package supports, and the one the action runs.
+        node: ["22.18", "24"]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/translations
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Type check and lint
+        run: npm run check
+
+      - name: Test
+        run: npm test
+
+      # What `npx @clice-io/translate` runs: the packed tarball, compiled.
+      - name: Check the packed package
+        run: |
+          npm run build
+          tarball="$RUNNER_TEMP/$(npm pack --pack-destination "$RUNNER_TEMP" --silent)"
+          cd test/fixture
+          npx --yes --package="$tarball" clice-translate check --en=en --zh=zh --meta=meta
+
+  action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Add a page only the ignore list keeps out
+        run: |
+          mkdir -p tools/translations/test/fixture/en/reference
+          printf '# API\n' > tools/translations/test/fixture/en/reference/api.md
+
+      - uses: ./check-translations
+        with:
+          en: tools/translations/test/fixture/en
+          zh: tools/translations/test/fixture/zh
+          meta: tools/translations/test/fixture/meta
+          ignore: |
+            reference/**
