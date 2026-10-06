@@ -1122,6 +1122,12 @@ html[lang^="zh"] {
   font-weight: 700;
   padding-left: 22px;
   position: relative;
+  list-style: none;
+}
+
+/* the ::before triangle below replaces the native disclosure marker */
+.vp-doc .custom-block.details summary::-webkit-details-marker {
+  display: none;
 }
 
 .vp-doc .custom-block.details summary::before {
@@ -1462,8 +1468,8 @@ html[lang^="zh"] {
 }
 
 /* ---------------------------------------------------------------------------
- * Illustrated corners: chapter icons, sticker faces on callouts, empty
- * search, feature icons on the sub-site home pages
+ * Illustrated corners: chapter icons, empty search, feature icons on the
+ * sub-site home pages
  * ------------------------------------------------------------------------ */
 
 .VPSidebarItem.level-0 > .item > .text::before {
@@ -1476,57 +1482,6 @@ html[lang^="zh"] {
   height: 22px;
   margin: -4px 8px 0 0;
   vertical-align: middle;
-}
-
-.custom-block {
-  position: relative;
-  padding-right: 72px;
-}
-
-.custom-block::after {
-  content: "";
-  position: absolute;
-  right: 10px;
-  top: 8px;
-  width: 56px;
-  height: 56px;
-  border: var(--line) solid var(--line-color);
-  border-radius: 999px;
-  background: #ffffff center 20% / 150% no-repeat;
-}
-
-.custom-block.tip::after {
-  background-image: url("/mascot/sticker-tip.webp");
-}
-
-.custom-block.warning::after {
-  background-image: url("/mascot/sticker-warning.webp");
-}
-
-.custom-block.danger::after,
-.custom-block.caution::after {
-  background-image: url("/mascot/sticker-danger.webp");
-}
-
-.custom-block.info::after,
-.custom-block.note::after,
-.custom-block.important::after {
-  background-image: url("/mascot/sticker-note.webp");
-}
-
-.custom-block.details {
-  padding-right: 18px;
-}
-
-.custom-block.details::after {
-  border: none;
-  border-radius: 0;
-  background: linear-gradient(225deg, var(--paper) 50%, var(--line-color) 50%, var(--line-color) calc(50% + 2px), var(--paper-3) calc(50% + 2px));
-  width: 18px;
-  height: 18px;
-  right: -2px;
-  top: auto;
-  bottom: -2px;
 }
 
 /* `.results` outranks the box's own scoped `padding: 12px`, which loads later */
