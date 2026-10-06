@@ -456,12 +456,19 @@
  * Document body
  * ------------------------------------------------------------------------ */
 
+/* Inline, with the box cloned per line, so a wrapped title gets a marker
+   stroke under each line's words rather than one band across the block.
+   An inline box paints over the font's content area (about 1.45em for the
+   display faces), not the 1.2em line, so the stops sit higher than they
+   would on the line: 60-85% here lands at 62-92% of the line. */
 .vp-doc h1 {
   font-size: 40px;
   line-height: 1.2;
-  display: inline-block;
+  display: inline;
   padding-right: 24px;
-  background: linear-gradient(transparent 62%, var(--straw) 62%, var(--straw) 92%, transparent 92%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  background: linear-gradient(transparent 60%, var(--straw) 60%, var(--straw) 85%, transparent 85%);
 }
 
 .vp-doc h2 {
@@ -871,6 +878,20 @@ html[lang^="zh"] {
 .dark .vp-doc :not(pre) > code {
   background: var(--paper-3);
   border-color: var(--line-color);
+}
+
+/* In a heading the chip stays inline: padding and border on an inline box
+   don't grow the line, and line-height 1 keeps its own inline box inside
+   the heading's. At 0.85em the mono chip still fits in the 1.2em line.
+   Long code wraps with the heading, each piece a closed chip. */
+.vp-doc :is(h1, h2, h3, h4, h5, h6) > code {
+  display: inline;
+  font-size: 0.85em;
+  line-height: 1;
+  padding: 0 0.35em;
+  border-radius: 0.2em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 /* ---------------------------------------------------------------------------

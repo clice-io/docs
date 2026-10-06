@@ -626,6 +626,7 @@ onBeforeUnmount(unlisten)
 .snap-card :deep(h2),
 .snap-card :deep(h3),
 .snap-card :deep(h4) {
+  display: block;
   margin: 0 0 4px;
   padding: 0;
   font-family: var(--vp-font-family-base);
