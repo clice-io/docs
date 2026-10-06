@@ -22,7 +22,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: clice-io/docs@main
         with:
           project: your-project-name
@@ -41,7 +41,7 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: clice-io/docs/check-translations@v1
         # with:
         #   en: docs/en
@@ -60,7 +60,11 @@ Locally, the same checker runs as `npx @clice-io/translate@1 check`
 
 Releases: `v1.0.0`-style tags are immutable and publish the npm package;
 `v1` moves to the newest `v1.x.y`. A new release is tagged only when the
-action or the tool changed.
+action or the tool changed. After pushing the release tag, move `v1`:
+
+```bash
+git tag -f v1 vX.Y.Z && git push -f origin v1
+```
 
 ## Doc layout convention
 
