@@ -254,7 +254,7 @@ markdown 形状 shape、英文原文 en 和当前中文 zh。请逐段判断中�
 function readGlossary(file: string): string {
     return fs
         .readFileSync(file, "utf8")
-        .replace(/^---\n[\s\S]*?\n---\n/, "")
+        .replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, "")
         .trim();
 }
 

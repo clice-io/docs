@@ -2,6 +2,7 @@
 /// Keep an en and a zh documentation tree aligned without storing any
 /// prose twice. RULES.md states the contract; README.md the usage.
 
+import * as fs from "node:fs";
 import { parseArgs } from "node:util";
 import { check, listPages, record, report, type Layout } from "./contract.ts";
 import { review } from "./review.ts";
@@ -52,11 +53,19 @@ async function main(): Promise<number> {
         meta: values.meta,
         ignore: values.ignore,
     };
+    if (!fs.statSync(layout.en, { throwIfNoEntry: false })?.isDirectory()) {
+        console.error(`no English tree at ${layout.en}`);
+        return 2;
+    }
     const pages = listPages(layout);
     if (mode === "review") {
         const jobs = Number(values.jobs);
         if (!Number.isInteger(jobs) || jobs < 1) {
             console.error(`--jobs must be a positive integer, got ${values.jobs}`);
+            return 2;
+        }
+        if (values.glossary !== undefined && !fs.existsSync(values.glossary)) {
+            console.error(`no glossary at ${values.glossary}`);
             return 2;
         }
         return review(layout, pages, {

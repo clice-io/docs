@@ -28,6 +28,9 @@ runs:
       uses: actions/setup-node@v7
       with:
         node-version: "24"
+        # Caching keys off the caller's package manager and lockfile, which
+        # have nothing to do with this action.
+        package-manager-cache: false
 
     - name: Install the checker
       shell: bash

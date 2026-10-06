@@ -257,6 +257,13 @@ describe("usage", () => {
     test("rejects pages outside review", () => {
         assert.equal(run(["check", "index.md"]).status, 2);
     });
+
+    test("rejects a missing English tree", () => {
+        fs.renameSync(file("en"), file("english"));
+        const result = run(["check"]);
+        assert.equal(result.status, 2);
+        assert.match(result.stderr, /^no English tree at en$/m);
+    });
 });
 
 /// A stand-in for the codex CLI: answers each segment according to
@@ -327,6 +334,19 @@ describe("review", () => {
         const prompt = fs.readFileSync(env["FAKE_CODEX_PROMPT"] ?? "", "utf8");
         assert.match(prompt, /本项目的规则与术语表[^\n]*\n\n- parser → 解析器\n\n输入：/);
         assert.doesNotMatch(prompt, /name: terms/);
+    });
+
+    test("strips CRLF frontmatter", () => {
+        fs.writeFileSync(file("glossary.md"), "---\r\nname: terms\r\n---\r\n\r\n- parser\r\n");
+        const result = run(["review", "index.md", "--glossary=glossary.md"], env);
+        assert.equal(result.status, 0, result.stderr);
+        assert.doesNotMatch(fs.readFileSync(env["FAKE_CODEX_PROMPT"] ?? "", "utf8"), /name: terms/);
+    });
+
+    test("rejects a missing glossary", () => {
+        const result = run(["review", "index.md", "--glossary=nope.md"], env);
+        assert.equal(result.status, 2);
+        assert.match(result.stderr, /^no glossary at nope\.md$/m);
     });
 
     test("rejects an unknown page", () => {
