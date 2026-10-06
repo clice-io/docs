@@ -20,14 +20,20 @@ steps for cutting one are in [releasing](releasing.md).
    profile and ThinLTO, about two hours per host. The same build tree gives
    the libclang archive of that host. The ASan libclang of Linux x64 and
    macOS arm64 is built apart, without profile or ThinLTO.
-5. **Package and test.** The archives of each host are tested on a
-   machine of that host, and the Bazel module and the CMake package are
-   tested with them ([testing](testing.md)).
+5. **Package and test.** The archives of each host are made twice, on
+   two machines, and must be the same bytes: they are reproducible (tar
+   sorted, with the commit's time and no owner; xz in blocks of a fixed
+   size, whatever its number of threads). They are tested on a machine of
+   that host, and the Bazel module and the CMake package are tested with
+   them ([testing](testing.md)).
 6. **Release.** A draft release with every archive, the profile and
    `SHA256SUMS`. Publishing it, by hand, creates the tag.
 
 Linux and Windows hosts are built on Linux x64, the macOS ones on macOS
-arm64. Every host but those two is cross-compiled.
+arm64. Every host but those two is cross-compiled, with table generators
+built for the machine first: no program of another architecture runs
+during a build, Rosetta's x86_64 included (`scripts/toolchain.ts` checks
+the commands of each cross build).
 
 ## The Bootstrap Chain
 
@@ -42,6 +48,7 @@ The bootstrap clang is an earlier xclang release, pinned with its sha256 in
 | 23.1.2.4 | 23.1.2.3 |
 | 23.1.2.5 | 23.1.2.3 |
 | 23.1.2.6 | 23.1.2.5 |
+| 23.1.2.7 | 23.1.2.6 |
 
 xclang builds itself with the same config files, runtimes and linker its
 users get, so the release pipeline is its first user. The bootstrap moves
@@ -74,12 +81,12 @@ of building them again.
 | `macos` | macos.yml | the macOS targets from the Linux and Windows hosts' archives; needs `cli` |
 | `release` | release.yml | a draft release of everything, with `SHA256SUMS` |
 
-With `cli`, the `package` stage also builds the
+With `cli`, on by default, the `package` stage also builds the
 [xclang command](../reference/xclang-command.md) (cli.yml) and puts it into
 every toolchain archive. The command is
-[unreleased](../design/roadmap.md#xclang-command), so no release has been
-built with `cli`. cli.yml also runs on its own, testing the command on every
-host.
+[unreleased](../design/roadmap.md#xclang-command): no published release has
+been built with `cli` yet. cli.yml also runs on its own, testing the command
+on every host.
 
 A draft creates no tag; publishing it does. Publishing starts two
 workflows:
@@ -163,7 +170,9 @@ them, the pipeline needs:
    `xclang-target-<version>-<target>.tar.xz`, laid out as
    [the xclang command](../reference/xclang-command.md#targets) expects:
    `xclang/<target>/` (sysroot, libc++, libunwind, its licenses),
-   `xclang/lib/clang/<major>/lib/<target>/` (compiler-rt), and
+   `xclang/libc++/include/<target>/c++/v1/__config_site` (libc++'s headers
+   are the shared `libc++/include/c++/v1`), `xclang/lib/clang/<major>/lib/<target>/`
+   (compiler-rt), and
    `xclang/bin/<spelling>.cfg` for every spelling of the triple. The config
    files come from `config/`, as `scripts/common.ts` writes them,
    case-unique and without links.

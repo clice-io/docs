@@ -92,7 +92,11 @@ Programs run on macOS 13.0 and later. The config file passes
 ## ld64.lld
 
 macOS targets link with ld64.lld, on macOS hosts too. `-fuse-ld=ld`
-selects Apple's `ld` instead, with xclang's `lib/libLTO.dylib` for LTO.
+selects Apple's `ld` instead, for objects without LTO. Apple's `ld` reads
+LTO bitcode through Xcode's `libLTO.dylib`, which cannot read the bitcode
+of a newer LLVM. xclang carries no `libLTO.dylib` of its own since
+23.1.2.7, as it carries no LTO plugin for the system linkers of the other
+hosts either; before, it was 120 MB of every macOS host's archive.
 
 Why the LLVM linker and not Apple's:
 
@@ -147,7 +151,9 @@ The arm64 and x86_64 targets are both in every archive. To CMake, the
 other macOS architecture is `CMAKE_OSX_ARCHITECTURES`, not
 cross-compiling. x86_64 programs run on arm64 Macs through Rosetta, but
 not the reverse. The x86_64 macOS toolchain itself is cross-compiled on
-arm64 macOS.
+arm64 macOS, as the Linux and Windows hosts' are on Linux x64: its table
+generators are built for arm64 first, so no x86_64 program runs during the
+build. Its programs run in the tests, on an x86_64 Mac.
 
 ## Sanitizers
 

@@ -162,6 +162,7 @@ it in every toolchain archive.
 | <a id="libc-on-demand"></a>libc++, libc++abi and libunwind built from source on demand | Planned |
 | <a id="msan"></a>MemorySanitizer, through libc++ built on demand | Planned |
 | <a id="mingw-sanitizers"></a>Sanitizers for MinGW targets | Considered |
+| <a id="bazel-gsymutil"></a>`@xclang//bazel:llvm-gsymutil`, the toolchain's llvm-gsymutil for `bazel run` | Unreleased |
 | <a id="cargo-helper"></a>An `xclang cargo` helper that sets cargo's variables | Considered |
 | <a id="libgcc-s-script"></a>`libgcc_s.a` as a linker script naming libunwind, for Rust's Linux targets | Considered |
 | <a id="libcxx-msvc"></a>libc++ as the C++ library of MSVC targets | Planned |
@@ -222,25 +223,29 @@ The training is widened between releases, not while one is pending
 | item | status |
 |---|---|
 | <a id="cmake-relative-paths"></a>Relative paths in the debug information of CMake builds | Planned |
-| <a id="gsym-determinism"></a>The same GSYM file on every run (`xclang_debug_symbols` passing `--num-threads=1`) | Planned |
+| <a id="gsym-determinism"></a>The same GSYM file on every run (`xclang_debug_symbols` passing `--num-threads=1`) | Unreleased |
 | <a id="immutable-releases"></a>Immutable GitHub releases | Planned |
-| <a id="reproducible-archives"></a>Reproducible release archives | Planned |
-| <a id="license-notices"></a>Third-party license notices in the archives | Planned |
+| <a id="reproducible-archives"></a>Reproducible release archives | Unreleased |
+| <a id="license-notices"></a>Third-party license notices in the archives | Unreleased |
 | <a id="slsa"></a>SLSA provenance attestations | Considered |
 
 - **CMake builds** write the build tree's absolute paths into debug
   information. Bazel builds already use paths relative to the execution
   root ([debugging](../features/debugging.md#paths-in-debug-information)).
 - **GSYM files** from llvm-gsymutil's default threads differ run to run,
-  with the same lookups. One thread is deterministic.
+  with the same lookups. One thread is deterministic, about 1.4 times as
+  slow; `xclang_debug_symbols` passes `--num-threads=1` by default.
 - **Immutable releases** keep an archive and its `SHA256SUMS` from being
   replaced together
   ([releases](../reference/releases.md#checking-a-download)).
-- **Reproducible archives** need sorted entries and fixed times in the
-  `.tar.xz` files, and a test that compares two builds of one commit.
-- **License notices**: the archives carry xclang's own license only. The
-  notices of glibc, mingw-w64, the Linux kernel headers and LLVM's runtimes
-  are planned to ship with them.
+- **Reproducible archives**: sorted entries, the commit's time and no
+  owner in the `.tar.xz` files, xz in fixed blocks whatever its threads;
+  each host's archives are made twice, on two machines, and compared
+  ([build](../dev/release-build.md#the-stages)). The toolchain builds
+  themselves are not compared.
+- **License notices**: every archive has `share/licenses`, each
+  component's license files and an SPDX document
+  ([layout](../reference/layout.md#licenses)).
 
 ## Following LLVM
 
