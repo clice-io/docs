@@ -122,7 +122,11 @@ bazel build --strip=never //:tool_symbols //:tool.stripped
 
 `bazel-bin/tool.gsym` is the GSYM, and `bazel-bin/tool.stripped` the
 program to ship ([strip](#strip)). The fastbuild mode strips debug
-information unless `--strip=never` is given.
+information unless `--strip=never` is given. Without the toolchain on
+`PATH`, `bazel run @xclang//bazel:llvm-gsymutil -- $PWD/bazel-bin/tool.gsym
+--address=0x<address>` looks an address up with the toolchain's
+llvm-gsymutil ([unreleased](../design/roadmap.md#bazel-gsymutil)); `bazel
+run` runs it in another directory, so the path is absolute.
 
 ## Options
 
@@ -216,7 +220,7 @@ dSYM or GSYM names them correctly. `--stripopt` adds options to the strip.
 | | status |
 |---|---|
 | [Relative paths in the debug information of CMake builds](../design/roadmap.md#cmake-relative-paths) | Planned |
-| [The same GSYM file on every run](../design/roadmap.md#gsym-determinism) | Planned |
+| [The same GSYM file on every run](../design/roadmap.md#gsym-determinism) | Unreleased |
 
 ## Known Limitations
 
@@ -228,7 +232,10 @@ dSYM or GSYM names them correctly. `--stripopt` adds options to the strip.
   default threads writes a different file each run from the same DWARF.
   On one program, three runs gave three digests, 3,043,120 to 3,053,168
   bytes. The lookups agree; the layout does not. With `--num-threads=1`
-  the file is the same every run, and about 0.6% smaller.
-  `xclang_debug_symbols` does not pass it, so the GSYM of a release cannot
-  be compared byte for byte with that of a rebuild. Passing it is
-  [planned](../design/roadmap.md#gsym-determinism).
+  the file is the same every run, and about 0.6% smaller. On
+  `libclang-cpp.so.18`'s and `libLLVM.so.18`'s DWARF (Ubuntu 24.04's debug
+  symbols; 98 and 118 MB of GSYM) one thread took 6.0 and 7.8 s where four
+  took 4.3 and 5.7 s, on a 4-core runner. `xclang_debug_symbols` of
+  23.1.2.6 does not pass it, so the GSYM of a release cannot be compared
+  byte for byte with that of a rebuild; passing it is
+  [unreleased](../design/roadmap.md#gsym-determinism).
