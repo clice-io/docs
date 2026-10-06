@@ -8,10 +8,9 @@ ld64.lld.
 
 Apple's SDK cannot be redistributed. On a macOS host it comes from Xcode.
 On Linux and Windows hosts the user fetches it from Apple with the
-`xclang` command, and the toolchain's config files use it from there;
-that is [unreleased](roadmap.md#macos-any-host). Programs carry their own
-libc++ and run on macOS 13 or later. ld64.lld links them on every host,
-which took a patch to lld.
+`xclang` command, and the toolchain's config files use it from there.
+Programs carry their own libc++ and run on macOS 13 or later. ld64.lld
+links them on every host, which took a patch to lld.
 
 ## The SDK Is Xcode's
 
@@ -30,15 +29,14 @@ backported for 23.1.3, as [patch 0009](../reference/patches.md) from
 
 ## The SDK on Linux and Windows Hosts
 
-On `main`, and in no release, the macOS targets build from Linux and
-Windows hosts too ([unreleased](roadmap.md#macos-any-host)). The SDK is
-the one the user fetches from Apple, accepting Apple's license
-([vendor SDKs](vendor-sdks.md)):
+From 23.1.2.7 on, the macOS targets build from Linux and Windows hosts
+too. The SDK is the one the user fetches from Apple, accepting Apple's
+license ([vendor SDKs](vendor-sdks.md)):
 
-<!-- not run: needs the unreleased xclang command; macos.yml runs this through tests/macos.ts -->
+<!-- excerpt: .github/workflows/examples.yml -->
 ```sh
 xclang sdk fetch macos --accept-license
-clang++ --target=arm64-apple-macos -std=c++23 hello.cpp -o hello
+clang++ -O2 --target=arm64-apple-macos hello.cpp -o hello-macos-arm64
 ```
 
 The fetch unpacks the SDK into the toolchain's `sdk/macos-<version>` and
@@ -166,7 +164,6 @@ or from the directory of the program. That is the one exception to
 
 | | status |
 |---|---|
-| [macOS targets from Linux and Windows hosts](roadmap.md#macos-any-host) | Unreleased |
 | [macOS targets from Linux and Windows hosts in the Bazel module](roadmap.md#macos-any-host-bazel) | Planned |
 | [iOS, tvOS, watchOS, visionOS and their simulators](roadmap.md#ios) | In research |
 

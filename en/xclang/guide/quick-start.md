@@ -33,7 +33,7 @@ channels = ["conda-forge", "https://conda.clice.io"]
 platforms = ["linux-64", "linux-aarch64", "osx-64", "osx-arm64", "win-64", "win-arm64"]
 
 [dependencies]
-xclang = "23.1.2.6.*"
+xclang = "23.1.2.7.*"
 ```
 
 <!-- excerpt: .github/workflows/examples.yml -->
@@ -182,8 +182,11 @@ pixi run cmake -G Ninja -S ../cmake -B build-aarch64-w64-mingw32 \
 pixi run cmake --build build-aarch64-w64-mingw32
 ```
 
-`XCLANG_TARGET` takes any of the six targets; the macOS ones build on
-macOS hosts. Copy `build-aarch64-w64-mingw32/hello.exe` to a Windows on
+`XCLANG_TARGET` takes any of the six targets and the MSVC targets. The
+MSVC targets, and the macOS ones on Linux and Windows hosts, need the SDK
+that the `xclang` command fetches
+([CMake](../integrations/cmake.md#build-for-another-target)). Copy
+`build-aarch64-w64-mingw32/hello.exe` to a Windows on
 Arm machine, and it runs there with nothing installed.
 
 ## Next

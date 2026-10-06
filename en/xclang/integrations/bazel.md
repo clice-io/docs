@@ -22,7 +22,7 @@ The project is
 module(name = "hello")
 
 bazel_dep(name = "rules_cc", version = "0.2.25")
-bazel_dep(name = "xclang", version = "23.1.2.6")
+bazel_dep(name = "xclang", version = "23.1.2.7")
 ```
 
 `.bazelrc` adds the registry, and the options `import std` needs:
@@ -206,8 +206,7 @@ bazel build --strip=never //:tool_symbols //:tool.stripped
   for another target, with one thread, so the same program makes the same
   file. Its warnings go to `tool.gsym.log`, in the output group
   `gsym_log`. `bazel run @xclang//bazel:llvm-gsymutil -- <absolute path of
-  the .gsym> --address=0x<address>` reads it
-  ([unreleased](../design/roadmap.md#bazel-gsymutil)).
+  the .gsym> --address=0x<address>` reads it.
 - `bazel-bin/tool.dSYM`, for a macOS target, is in the output group
   `dsyms`. `--apple_generate_dsym` turns the feature on for the whole
   build.
@@ -285,7 +284,7 @@ the `packages/bazel` directory, and the `packages/bazel/bazel/versions.bzl`
 of the commit names the release it downloads:
 
 ```python
-bazel_dep(name = "xclang", version = "23.1.2.6")
+bazel_dep(name = "xclang", version = "23.1.2.7")
 git_override(
     module_name = "xclang",
     remote = "https://github.com/clice-io/xclang",

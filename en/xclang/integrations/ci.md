@@ -32,7 +32,7 @@ runs by putting `XCLANG_CACHE_DIR` in a cache entry keyed on the release:
 - uses: actions/cache@v6
   with:
     path: ${{ runner.temp }}/xclang
-    key: xclang-${{ runner.os }}-${{ runner.arch }}-23.1.2.6
+    key: xclang-${{ runner.os }}-${{ runner.arch }}-23.1.2.7
 - name: Build
   env:
     XCLANG_CACHE_DIR: ${{ runner.temp }}/xclang
@@ -93,8 +93,8 @@ cache: key it on the xclang release.
 - uses: actions/cache@v6
   with:
     path: ${{ runner.os == 'Windows' && 'C:/xclang-thinlto' || '/var/tmp/xclang-thinlto' }}
-    key: thinlto-${{ runner.os }}-${{ runner.arch }}-xclang-23.1.2.6-${{ github.sha }}
-    restore-keys: thinlto-${{ runner.os }}-${{ runner.arch }}-xclang-23.1.2.6-
+    key: thinlto-${{ runner.os }}-${{ runner.arch }}-xclang-23.1.2.7-${{ github.sha }}
+    restore-keys: thinlto-${{ runner.os }}-${{ runner.arch }}-xclang-23.1.2.7-
 ```
 
 Restoring a cache sets the last access of every file to the time of the
@@ -169,11 +169,13 @@ target:
 | `aarch64-apple-darwin` | `macos-15` |
 | `x86_64-apple-darwin` | `macos-15-intel` |
 
-In releases, macOS targets build on macOS runners only
-([unreleased](../design/roadmap.md#macos-any-host) from Linux and Windows
-ones). x86_64 macOS programs also run
-on arm64 runners through Rosetta, and x86_64 Windows programs on
-`windows-11-arm`.
+macOS targets build on Linux and Windows runners too, with the SDK the
+`xclang` command fetches
+([macOS](../design/macos.md#the-sdk-on-linux-and-windows-hosts)); in
+Bazel, on macOS runners only
+([roadmap](../design/roadmap.md#macos-any-host-bazel)). x86_64 macOS
+programs also run on arm64 runners through Rosetta, and x86_64 Windows
+programs on `windows-11-arm`.
 
 ## See Also
 
