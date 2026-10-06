@@ -1,0 +1,45 @@
+{
+  "name": "@clice-io/translate",
+  "version": "0.0.0",
+  "description": "Keep an English and a Chinese documentation tree aligned, segment by segment",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clice-io/docs.git",
+    "directory": "tools/translations"
+  },
+  "type": "module",
+  "bin": {
+    "clice-translate": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "RULES.md"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "check": "npm run typecheck && npm run lint",
+    "test": "node --test test/*.test.ts"
+  },
+  "dependencies": {
+    "p-limit": "^7.1.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^24.19.1",
+    "@types/unist": "^3.0.3",
+    "eslint": "^10.8.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.71.1"
+  }
+}
