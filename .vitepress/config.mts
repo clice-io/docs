@@ -19,10 +19,11 @@ export default defineConfig({
     lastUpdated: true,
     sitemap: { hostname: SITE },
     head: [
-        ["link", { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" }],
-        ["link", { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" }],
-        ["link", { rel: "icon", type: "image/png", sizes: "48x48", href: "/favicon-48.png" }],
-        ["link", { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" }],
+        // Browsers cache favicons apart from the page; bump v when the icons change.
+        ["link", { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png?v=2" }],
+        ["link", { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png?v=2" }],
+        ["link", { rel: "icon", type: "image/png", sizes: "48x48", href: "/favicon-48.png?v=2" }],
+        ["link", { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png?v=2" }],
         ["meta", { property: "og:type", content: "website" }],
         ["meta", { property: "og:site_name", content: "clice.io" }],
         ["meta", { name: "twitter:card", content: "summary_large_image" }],
@@ -61,6 +62,12 @@ export default defineConfig({
             head.push(["meta", { property: "og:description", content: description }]);
         }
         pageData.frontmatter.head = [...(pageData.frontmatter.head ?? []), ...head];
+        // Temporary: hide the mascot art on the project home pages until new
+        // hero art exists. The pages are synced from the project repos, so the
+        // image is dropped here rather than in their frontmatter.
+        if (projects.includes(en.split("/")[0]) && pageData.frontmatter.hero) {
+            delete pageData.frontmatter.hero.image;
+        }
     },
     markdown: {
         config: (md) => {
