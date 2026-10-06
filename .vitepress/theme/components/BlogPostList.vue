@@ -76,7 +76,6 @@ const regularPosts = computed<BlogPostItem[]>(() => sortedPosts.value.slice(1))
           <h2>{{ featuredPost.title }}</h2>
           <p class="summary">{{ featuredPost.summary }}</p>
         </div>
-        <div class="art" aria-hidden="true" />
       </a>
     </div>
     <div class="blog-post-grid">
@@ -166,11 +165,6 @@ const regularPosts = computed<BlogPostItem[]>(() => sortedPosts.value.slice(1))
   box-shadow: 6px 6px 0 var(--shadow-color);
 }
 
-.featured-card {
-  display: grid;
-  grid-template-columns: 1fr;
-}
-
 .copy {
   display: flex;
   flex-direction: column;
@@ -209,24 +203,6 @@ const regularPosts = computed<BlogPostItem[]>(() => sortedPosts.value.slice(1))
 .featured-card .summary {
   font-size: 16px;
   line-height: 1.6;
-}
-
-.art {
-  min-height: 220px;
-  border-left: var(--line) solid var(--line-color);
-  background: #ffffff url("/mascot/featured-reading.webp") center / cover no-repeat;
-}
-
-@media (max-width: 899px) {
-  .art {
-    display: none;
-  }
-}
-
-@media (min-width: 900px) {
-  .featured-card {
-    grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.6fr);
-  }
 }
 
 .blog-post-grid {
