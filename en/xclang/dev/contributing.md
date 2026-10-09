@@ -24,8 +24,8 @@ toolchain/         the build pipeline, TypeScript run by Node 24:
                    ships (licenses.ts)
   musl/            the patches of musl's security advisories, applied to
                    its release (sysroot.ts)
-cli/               the xclang command, in Rust; its SDK version table,
-                   sdk-versions.json; cli.ts builds it
+xclang/            the xclang command, in Rust; its SDK version table,
+                   sdk-versions.json; build.ts builds it
 patches/           changes to LLVM, a directory and a README each
 packages/          what xclang's users build with (packages/README.md):
   bazel/           the Bazel module; bazel.ts makes its registry archive
@@ -40,7 +40,8 @@ tests/             one directory per thing tested, its script beside its
   cmake/           cmake.ts and a project on the CMake package
   bazel/           bazel.ts and cross.ts, and a workspace on the module
   sdk/             msvc.ts and macos.ts, the targets of the vendor SDKs
-  cli/             cli.ts and cargo.ts, the xclang command
+  cli/             cli.ts and cargo.ts, the xclang command; crate/, a
+                   crate of C, C++, CMake and bindgen for xclang cargo
   release/         repack.ts, a repack against the release it repacks
   docs/            docs.ts, the docs against examples/ and examples.yml
   bench/           bench.ts and report.ts, compile speed
@@ -82,10 +83,10 @@ the way CI does (pixi.toml), on a machine that can take it.
 These are cheap locally:
 
 - `npm install && npm run check`: TypeScript type checks of every
-  script: `toolchain/`, `tests/`, and those of `cli/` and `packages/`.
+  script: `toolchain/`, `tests/`, and those of `xclang/` and `packages/`.
 - `node tests/docs/docs.ts`: the code blocks of the docs against `examples/`,
   the links, and the status words.
-- `cd cli && cargo test`: the unit tests of the xclang command.
+- `cd xclang && cargo test`: the unit tests of the xclang command.
 - A patch: `patch -p1 -F0 --dry-run` against the LLVM release source, and
   compiling the patched file against the headers of a release
   ([patching LLVM](llvm-patches.md)).
