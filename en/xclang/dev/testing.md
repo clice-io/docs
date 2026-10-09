@@ -104,7 +104,10 @@ How the stages fit together is in the [build pipeline](release-build.md).
 
 `tests/libclang/libclang.ts` builds and runs `tests/libclang`, a small tool on
 libclang. It finds libclang through `find_package(Clang)`, links the ThinLTO
-bitcode, and registers every target's MC layer.
+bitcode, and registers every target's MC layer. A second program crashes
+in a `qsort` comparator and in a signal handler that prints the stack:
+LLVM's stack trace reaches its frames past the C library's (on Windows on
+Arm, [patch 0010](../reference/patches.md)).
 
 ## Programs and What They Load
 
@@ -204,6 +207,9 @@ and libclang; a Linux host runs the musl tests of its architecture
 10. **Strip** by object format, for the host target and another OS's.
 11. **`@libclang` follows `--features=asan`**: its libraries and resource
     directory switch together.
+12. **An optimized macOS program exports nothing**: its `.stripped` has
+    no external symbol and runs; without `no_exported_symbols`, the weak
+    definition of its template stays.
 
 examples.yml builds `examples/bazel` from bazel.clice.io on every host, and
 for another target.
