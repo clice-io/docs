@@ -276,17 +276,21 @@ A MinGW variant on msvcrt, for Windows before 10, is
   (`--experimental_use_windows_sandbox`). An action can then read files it
   did not declare, and nothing notices. The Linux and macOS builds of the
   same targets enforce the declarations.
-- **Large ThinLTO links are not always the same bytes.** PE files carry a
-  link timestamp, and Bazel links pass `--no-insert-timestamp`, so small
-  programs link to the same bytes every time. A large one does not always.
-  clice's 600 MB `clice.exe`, linked six times by lld with ThinLTO from
-  the same inputs, came out in three different layouts, with and without
-  the ThinLTO cache. The cause is not known.
-- **Visual Studio's compiler-rt comes first without an SDK.** On a Windows
-  host with no fetched SDK, clang links with Visual Studio's libraries, and
-  their directory comes before xclang's compiler-rt in the search of
-  lld-link. Visual Studio has its own `clang_rt.*.lib` there (builtins,
-  UBSan, libFuzzer, the profile runtime: Microsoft's builds, for its
-  AddressSanitizer), which then take the place of xclang's: on
-  windows-2025 (Visual Studio 18, MSVC 14.51), `__int128` division, UBSan
-  and libFuzzer do not link. With the SDK fetched, they do.
+- **PGO-built programs were not always the same bytes**, until
+  23.1.2.10. PE files carry a link timestamp, and Bazel links pass
+  `--no-insert-timestamp`, so small programs linked to the same bytes
+  every time; a large PGO-built one did not always: clice's 600 MB
+  `clice.exe`, linked six times by lld with ThinLTO from the same inputs,
+  came out in three different layouts. lld-link records the place the
+  call graph profile gives each function under the function's name, and
+  local functions of the same name in several objects all took the place
+  of one of them, which one depending on where lld-link's memory happened
+  to put them. [Patch 0017](../reference/patches.md) takes the first.
+- **Visual Studio's compiler-rt came first without an SDK**, until
+  23.1.2.10. On a Windows host with no fetched SDK, clang gave lld-link
+  Visual Studio's library directory before xclang's compiler-rt, and
+  Visual Studio has its own `clang_rt.*.lib` there (Microsoft's builds,
+  for its own clang), which took the place of xclang's: on windows-2025
+  (Visual Studio 18, MSVC 14.51), `__int128` division, UBSan and
+  libFuzzer did not link. [Patch 0012](../reference/patches.md) puts
+  compiler-rt first.
