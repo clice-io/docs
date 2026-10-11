@@ -21,10 +21,11 @@ export interface Rendered {
     code: string;
     /** Result panels, empty for features whose result lives in the code. */
     results: Result[];
-    /** `split` shows the results column, `single` only the code, and
-     *  `tooltip` pops each marker's result up over its pin, and `inline`
-     *  shows it below the code, which it draws into. */
-    layout: "split" | "single" | "tooltip" | "inline";
+    /** `split` shows the results column, `stack` the results under the
+     *  code, `single` only the code, `tooltip` pops each marker's result up
+     *  over its pin, and `inline` shows it below the code, which it draws
+     *  into. */
+    layout: "split" | "stack" | "single" | "tooltip" | "inline";
     /** Small legend under the code (token kinds, hint kinds, …). */
     legend: { label: string; cls: string }[];
 }
@@ -48,6 +49,9 @@ export interface Insert {
     html: string;
     /** Ties at the same column: lower first. Closers should sort before openers of the same column. */
     order: number;
+    /** Placed between shiki's token spans rather than inside one, so an
+     *  element it opens may span several tokens. */
+    wrap?: boolean;
 }
 
 export function escapeHtml(text: string): string {
@@ -95,13 +99,27 @@ const PIN = (index: number, name: string): string =>
     `<span class="pin" data-name="${escapeHtml(name)}"><i>${index + 1}</i></span>`;
 
 /** Inserts that draw the `§` markers as numbered pins (and ranges as bands),
- *  numbered from `first`. */
-export function pinInserts(code: string, markers: Marker[], first = 0): Insert[] {
+ *  numbered from `first`. With `bands`, a range is banded on every line it
+ *  spans, across tokens. */
+export function pinInserts(code: string, markers: Marker[], first = 0, bands = false): Insert[] {
     const out: Insert[] = [];
+    const lines = code.split("\n");
     markers.forEach((m, at) => {
         const index = first + at;
         const [line, col] = offsetToPos(code, m.offset);
-        if (m.end !== undefined && m.end > m.offset) {
+        if (bands && m.end !== undefined && m.end > m.offset) {
+            const [endLine, endCol] = offsetToPos(code, m.end);
+            out.push({ line, col, html: PIN(index, m.name), order: 5 });
+            for (let l = line; l <= endLine; l += 1) {
+                const text = lines[l] ?? "";
+                const from = l === line ? col : text.length - text.trimStart().length;
+                const to = l === endLine ? endCol : text.length;
+                if (to <= from) continue;
+                // Outside whatever else starts or ends with the range.
+                out.push({ line: l, col: from, html: `<span class="pin-range">`, order: 4, wrap: true });
+                out.push({ line: l, col: to, html: `</span>`, order: 2, wrap: true });
+            }
+        } else if (m.end !== undefined && m.end > m.offset) {
             const [endLine, endCol] = offsetToPos(code, m.end);
             const close = endLine === line ? endCol : Number.MAX_SAFE_INTEGER;
             out.push({ line, col, html: `<span class="pin-range">${PIN(index, m.name)}`, order: 5 });
@@ -147,9 +165,10 @@ export function decorate(
     inserts: Insert[],
     lineClasses: Map<number, string[]> = new Map(),
     blockLines = false,
+    lang = "cpp",
 ): string {
     const highlight = md.options.highlight;
-    const html = highlight ? highlight(code, "cpp", "") : `<pre><code>${escapeHtml(code)}</code></pre>`;
+    const html = highlight ? highlight(code, lang, "") : `<pre><code>${escapeHtml(code)}</code></pre>`;
     const byLine = new Map<number, Insert[]>();
     for (const ins of inserts) {
         const list = byLine.get(ins.line) ?? [];
@@ -188,16 +207,34 @@ function applyInserts(inner: string, inserts: Insert[]): string {
     let k = 0;
     for (const part of parts) {
         const text = decodeHtml(part.text);
-        let segment = "";
+        if (text === "") {
+            out += part.open + part.close;
+            continue;
+        }
+        // A wrapping insert closes the token span it falls in and the
+        // token reopens after it.
+        let open = false;
         for (const ch of text) {
             while (k < sorted.length && sorted[k]!.col <= col) {
-                segment += sorted[k]!.html;
+                const insert = sorted[k]!;
+                if (insert.wrap && open) {
+                    out += part.close;
+                    open = false;
+                } else if (!insert.wrap && !open) {
+                    out += part.open;
+                    open = true;
+                }
+                out += insert.html;
                 k += 1;
             }
-            segment += escapeHtml(ch);
+            if (!open) {
+                out += part.open;
+                open = true;
+            }
+            out += escapeHtml(ch);
             col += 1;
         }
-        out += part.open + segment + part.close;
+        out += part.close;
     }
     while (k < sorted.length) {
         out += sorted[k]!.html;
@@ -602,7 +639,7 @@ function variantSections(snapshot: string): { key: string; body: string }[] | nu
 }
 
 /** One result per name, holding each variant's card under its label. */
-function mergeVariants(
+export function mergeVariants(
     sections: { key: string }[],
     rendered: Rendered[],
     variants: Record<string, Variant>,
