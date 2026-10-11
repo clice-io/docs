@@ -2010,6 +2010,33 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   background: color-mix(in srgb, var(--nav) 14%, transparent);
 }
 
+/* case cards: a pin's places, framed like an editor's occurrence
+   highlights; a write darker than a read or a declaration */
+.kind-read,
+.kind-text { --frame: color-mix(in srgb, var(--ink) 30%, transparent); --fill: color-mix(in srgb, var(--ink) 5%, transparent); }
+.kind-write { --frame: color-mix(in srgb, var(--ink) 65%, transparent); --fill: color-mix(in srgb, var(--ink) 14%, transparent); }
+
+.snap-source .mark-range.on,
+.snap .case-kind {
+  border-radius: 3px;
+  background: var(--fill);
+  box-shadow: inset 0 0 0 1px var(--frame);
+}
+
+.snap .case-kind {
+  display: inline-block;
+  padding: 0 8px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.snap .case-wrong {
+  margin: 0 0 6px;
+  color: #b95d55;
+  font-size: 13px;
+}
+
 .nav-row {
   display: flex;
   flex-wrap: wrap;

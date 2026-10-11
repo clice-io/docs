@@ -22,8 +22,9 @@ export interface Rendered {
     /** Result panels, empty for features whose result lives in the code. */
     results: Result[];
     /** `split` shows the results column, `single` only the code, and
-     *  `tooltip` pops each marker's result up over its pin. */
-    layout: "split" | "single" | "tooltip";
+     *  `tooltip` pops each marker's result up over its pin, and `inline`
+     *  shows it below the code, which it draws into. */
+    layout: "split" | "single" | "tooltip" | "inline";
     /** Small legend under the code (token kinds, hint kinds, …). */
     legend: { label: string; cls: string }[];
 }
@@ -93,10 +94,12 @@ function offsetToPos(code: string, offset: number): [number, number] {
 const PIN = (index: number, name: string): string =>
     `<span class="pin" data-name="${escapeHtml(name)}"><i>${index + 1}</i></span>`;
 
-/** Inserts that draw the `§` markers as numbered pins (and ranges as bands). */
-export function pinInserts(code: string, markers: Marker[]): Insert[] {
+/** Inserts that draw the `§` markers as numbered pins (and ranges as bands),
+ *  numbered from `first`. */
+export function pinInserts(code: string, markers: Marker[], first = 0): Insert[] {
     const out: Insert[] = [];
-    markers.forEach((m, index) => {
+    markers.forEach((m, at) => {
+        const index = first + at;
         const [line, col] = offsetToPos(code, m.offset);
         if (m.end !== undefined && m.end > m.offset) {
             const [endLine, endCol] = offsetToPos(code, m.end);

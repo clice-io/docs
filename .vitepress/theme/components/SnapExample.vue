@@ -2,7 +2,8 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useData } from 'vitepress'
 
-type Result = { name: string; meta: string; html: string }
+// `label` replaces `name` as the result's heading; empty shows the pin's number alone.
+type Result = { name: string; meta: string; html: string; label?: string }
 type File = { name: string; html: string }
 type Payload = {
   feature: string
@@ -10,7 +11,7 @@ type Payload = {
   markers: string[]
   files: File[]
   results: Result[]
-  layout: 'split' | 'single' | 'tooltip'
+  layout: 'split' | 'single' | 'tooltip' | 'inline'
   legend: { label: string; cls: string }[]
   source: string
 }
@@ -28,6 +29,8 @@ const payload = computed<Payload | null>(() => {
 })
 
 const open = ref(false)
+// Pins answer on hover and tap: in a tip over the code, or inline below it.
+const pins = computed(() => payload.value?.layout === 'tooltip' || payload.value?.layout === 'inline')
 const codeEl = ref<HTMLElement | null>(null)
 
 const indexOf = (name: string): number => payload.value?.markers.indexOf(name) ?? -1
@@ -47,6 +50,16 @@ const sourceUrl = computed(() =>
 const tip = ref<{ result: Result; left: number; top: number; arrow: number } | null>(null)
 const tipEl = ref<HTMLElement | null>(null)
 const pinned = ref(false)
+
+// A pin's places in the code show while its result is up.
+watch(tip, (value) => {
+  const host = codeEl.value
+  if (!host) return
+  for (const el of host.querySelectorAll('.mark-range.on, .pin.on')) el.classList.remove('on')
+  if (!value) return
+  const name = CSS.escape(value.result.name)
+  for (const el of host.querySelectorAll(`.mark-range[data-for="${name}"], .pin[data-name="${name}"]`)) el.classList.add('on')
+})
 
 // The tip hangs below its pin and slides sideways as far as needed to stay
 // inside the code pane; the arrow keeps pointing at the pin.
@@ -218,24 +231,30 @@ onBeforeUnmount(unlisten)
       <div
         ref="codeEl"
         class="snap-code"
-        @mouseover="payload.layout === 'tooltip' ? onOver($event) : onFoldOver($event)"
-        @mouseout="payload.layout === 'tooltip' ? onOut($event) : onFoldOut($event)"
-        @click="payload.layout === 'tooltip' ? onClick($event) : onFoldClick($event)"
+        @mouseover="pins ? onOver($event) : onFoldOver($event)"
+        @mouseout="pins ? onOut($event) : onFoldOut($event)"
+        @click="pins ? onClick($event) : onFoldClick($event)"
       >
         <div class="snap-source" v-html="payload.code" />
         <div v-for="file in payload.files" :key="file.name" class="snap-file">
           <span class="snap-file-name">{{ file.name }}</span>
           <div class="snap-source" v-html="file.html" />
         </div>
+        <div v-if="payload.layout === 'inline'" class="snap-active">
+          <template v-if="tip">
+            <i>{{ indexOf(tip.result.name) + 1 }}</i>
+            <div class="snap-active-body" v-html="tip.result.html" />
+          </template>
+        </div>
         <div v-if="payload.legend.length" class="snap-legend">
           <span v-for="item in payload.legend" :key="item.label" :class="item.cls">{{ item.label }}</span>
         </div>
         <div class="snap-foot">
-          <span v-if="payload.layout === 'tooltip'" class="snap-hint">{{ zh ? '悬停或点击编号查看结果' : 'Hover or tap a number for the result' }}</span>
+          <span v-if="pins" class="snap-hint">{{ zh ? '悬停或点击编号查看结果' : 'Hover or tap a number for the result' }}</span>
           <a class="snap-link" :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ payload.source }}</a>
         </div>
         <div
-          v-if="tip"
+          v-if="tip && payload.layout === 'tooltip'"
           ref="tipEl"
           class="snap-tip"
           :class="{ pinned }"
@@ -243,7 +262,7 @@ onBeforeUnmount(unlisten)
         >
           <div class="snap-result-head">
             <i v-if="indexOf(tip.result.name) >= 0">{{ indexOf(tip.result.name) + 1 }}</i>
-            <span class="snap-result-name">{{ tip.result.name }}</span>
+            <span v-if="(tip.result.label ?? tip.result.name) !== ''" class="snap-result-name">{{ tip.result.label ?? tip.result.name }}</span>
             <span v-if="tip.result.meta" class="snap-meta">{{ tip.result.meta }}</span>
           </div>
           <div class="snap-card" v-html="tip.result.html" />
@@ -254,7 +273,7 @@ onBeforeUnmount(unlisten)
           <div v-for="r in results" :key="r.name" class="snap-result">
             <div v-if="r.name" class="snap-result-head">
               <i v-if="indexOf(r.name) >= 0">{{ indexOf(r.name) + 1 }}</i>
-              <span class="snap-result-name">{{ r.name }}</span>
+              <span v-if="(r.label ?? r.name) !== ''" class="snap-result-name">{{ r.label ?? r.name }}</span>
               <span v-if="r.meta" class="snap-meta">{{ r.meta }}</span>
             </div>
             <div class="snap-card" v-html="r.html" />
@@ -372,10 +391,50 @@ onBeforeUnmount(unlisten)
   color: var(--ink-3);
 }
 
+.snap-active {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 16px 6px;
+  border-top: var(--line-thin) dashed var(--line-color);
+  font-size: 13px;
+}
+
+.snap-active i {
+  display: inline-block;
+  min-width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  padding: 0 3px;
+  border-radius: 999px;
+  border: 1px solid var(--line-color);
+  background: var(--bow);
+  color: #ffffff;
+  font-family: var(--clice-font-display);
+  font-style: normal;
+  font-weight: 900;
+  font-size: 10px;
+  line-height: 13px;
+  text-align: center;
+}
+
+.snap-active-body :deep(p) {
+  margin: 0 0 4px;
+}
+
+.inline .snap-code {
+  border-radius: var(--radius);
+  border-bottom: none;
+}
+
+.inline .snap-source :deep(.pin),
 .tooltip .snap-source :deep(.pin) {
   cursor: pointer;
 }
 
+.snap-source :deep(.pin.on i),
+.inline .snap-source :deep(.pin:hover i),
 .tooltip .snap-source :deep(.pin:hover i) {
   background: var(--bow);
   color: #ffffff;
