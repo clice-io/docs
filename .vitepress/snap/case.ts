@@ -610,8 +610,9 @@ function semanticTokens(ctx: Ctx, value: CardValue): Piece {
 }
 
 /** Each hinted line is a place on the line's text, from its first
- *  non-blank character, reading as that text with the hints in `⟨⟩`: a
- *  hint goes back at the column its offset in the text gives. */
+ *  non-blank character or a hint before it, reading as that text with the
+ *  hints in `⟨⟩`: a hint goes back at the column its offset in the text
+ *  gives. */
 function inlayHints(ctx: Ctx, value: CardValue): Piece {
     for (const item of listOf(value)) {
         if (!isTable(item) || !isPlace(item.line)) continue;
@@ -620,8 +621,7 @@ function inlayHints(ctx: Ctx, value: CardValue): Piece {
         const texts = pieces.filter((_, i) => i % 2 === 0);
         const labels = pieces.filter((_, i) => i % 2 === 1);
         const details = listOf(item.hints).filter(isTable);
-        // A hint in the indentation keeps the blanks after it in the text.
-        let col = range.start.character - indentOf(texts.join(""));
+        let col = range.start.character;
         const out: Insert[] = [];
         labels.forEach((label, i) => {
             col += texts[i]!.length;
