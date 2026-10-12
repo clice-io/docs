@@ -11,7 +11,7 @@ import { decorate, escapeHtml, mergeVariants, pinInserts, type Insert, type Rend
  * Answers about places draw into the code: a marker's (highlights,
  * locations, selection ranges, a hover's symbol) while its pin is active,
  * a file's (semantic tokens, inlay hints, folds, links, diagnostics)
- * always. Answers in words (hover markdown, completion lists, signature
+ * always. Answers in words (hover cards, completion lists, signature
  * help, code actions, outlines, command transcripts) are result cards. A
  * case's tests, and the two clients of a test that pins them apart, are
  * its variants: stacked in each result when they draw the same code,
@@ -468,10 +468,18 @@ function hierarchy(ctx: Ctx, value: CardValue, key: string): Piece {
     };
 }
 
+/** A hover card in the markup the server sent it in, which its key names. */
 function hover(ctx: Ctx, value: CardValue): Piece {
-    if (!isTable(value) || typeof value.markdown !== "string") return { html: none(ctx.t.noHover), where: "tip" };
-    if (isPlace(value.range)) span(ctx, value.range, "mark-range mark-word", keysOf(ctx));
-    return { html: ctx.md.render(value.markdown, {}), where: "tip" };
+    const card: Table = isTable(value) ? value : {};
+    const html =
+        typeof card.markdown === "string"
+            ? ctx.md.render(card.markdown, {})
+            : typeof card.plaintext === "string"
+              ? `<pre class="snap-raw"><code>${escapeHtml(card.plaintext)}</code></pre>`
+              : "";
+    if (!html) return { html: none(ctx.t.noHover), where: "tip" };
+    if (isPlace(card.range)) span(ctx, card.range, "mark-range mark-word", keysOf(ctx));
+    return { html, where: "tip" };
 }
 
 /** A snippet's text with its tab stops drawn as fields. */
