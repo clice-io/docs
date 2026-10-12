@@ -15,7 +15,8 @@ import { decorate, escapeHtml, mergeVariants, pinInserts, type Insert, type Rend
  * help, code actions, outlines, command transcripts) are result cards. A
  * case's tests, and the two clients of a test that pins them apart, are
  * its variants: stacked in each result when they draw the same code,
- * tabs over the code when they do not.
+ * tabs over the code when they do not. A test run with options is
+ * labelled with them as clice.toml spells them, `key = value`.
  */
 
 export interface CardMarker {
@@ -61,7 +62,8 @@ export interface Card {
     topic: string;
     status: string;
     files: CardFile[];
-    tests: { name: string; blocks: CardBlock[] }[];
+    /** Each test with the options it set, shaped as clice.toml. */
+    tests: { name: string; config?: Table; blocks: CardBlock[] }[];
 }
 
 type CaseResult = Result & { label: string };
@@ -110,7 +112,6 @@ const TEXT = {
         killed: "killed",
         push: (n: number) => `push ${n}`,
         default: "Default",
-        configured: "Configured",
         inspect: "clice inspect",
         server: "server",
     },
@@ -138,7 +139,6 @@ const TEXT = {
         killed: "被终止",
         push: (n: number) => `第 ${n} 次推送`,
         default: "默认",
-        configured: "配置后",
         inspect: "clice inspect",
         server: "服务器",
     },
@@ -918,10 +918,33 @@ function isClient(block: CardBlock): boolean {
     );
 }
 
+const BARE_KEY = /^[A-Za-z0-9_-]+$/;
+
+function tomlOf(value: CardValue): string {
+    if (typeof value === "string") return JSON.stringify(value);
+    if (Array.isArray(value)) return `[${value.map(tomlOf).join(", ")}]`;
+    if (isTable(value)) return `{ ${pairsOf(value).join(", ")} }`;
+    return String(value);
+}
+
+/** A table as clice.toml's dotted keys: `inlay_hints.block_end = true`. */
+function pairsOf(table: Table, prefix = ""): string[] {
+    return Object.entries(table).flatMap(([name, value]) => {
+        const key = prefix + (BARE_KEY.test(name) ? name : JSON.stringify(name));
+        return isTable(value) ? pairsOf(value, `${key}.`) : [`${key} = ${tomlOf(value)}`];
+    });
+}
+
 function viewsOf(card: Card, t: Texts): View[] {
     const markers = new Set(card.files.flatMap((file) => file.markers.map((m) => m.name)));
-    const testLabel = (name: string): string =>
-        card.tests.length < 2 ? "" : name === "default" ? t.default : name === "configured" ? t.configured : name;
+    const testLabel = (test: Card["tests"][number]): string =>
+        card.tests.length < 2
+            ? ""
+            : test.config
+              ? pairsOf(test.config).join(", ")
+              : test.name === "default"
+                ? t.default
+                : test.name;
     return card.tests.flatMap((test) => {
         const shared = test.blocks.filter((block) => !isClient(block));
         const clients = test.blocks.filter(isClient);
@@ -936,10 +959,10 @@ function viewsOf(card: Card, t: Texts): View[] {
                         : (value as Table),
             }));
         };
-        if (clients.length === 0) return [{ key: test.name, label: testLabel(test.name), blocks: shared }];
+        if (clients.length === 0) return [{ key: test.name, label: testLabel(test), blocks: shared }];
         return clients.map((client) => ({
             key: `${test.name}/${client.label}`,
-            label: [testLabel(test.name), client.label === "server" ? t.server : t.inspect].filter(Boolean).join(" · "),
+            label: [testLabel(test), client.label === "server" ? t.server : t.inspect].filter(Boolean).join(" · "),
             blocks: [...shared, ...expand(client)],
         }));
     });
