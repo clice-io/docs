@@ -3,6 +3,7 @@ import * as path from "node:path";
 import type MarkdownIt from "markdown-it";
 import type { Token } from "markdown-it/index.js";
 import { escapeHtml, renderFeature, type Marker, type Variant } from "./snap/render";
+import { renderCard, type Card } from "./snap/case";
 
 /**
  * Capability cards for the generated feature pages.
@@ -249,12 +250,48 @@ function renderSnap(md: MarkdownIt, env: { relativePath?: string }, content: str
     return `<SnapExample data="${encoded}" />\n`;
 }
 
+/** Render one `case` fence: the named case's card into a SnapExample
+ *  component. The fence names the case's directory in the project
+ *  (`tests/<topic>/<subtopic>/<case>`), which the card links to; its
+ *  card is synced as `sources/<project>/cases/<topic>/<subtopic>/<case>.json`. */
+function renderCase(md: MarkdownIt, env: { relativePath?: string }, content: string): string {
+    const rel = content.trim();
+    const lang = String(env.relativePath ?? "").startsWith("zh/") ? "zh" : "en";
+    const project = String(env.relativePath ?? "").replace(/^zh\//, "").split("/")[0] ?? "";
+    const id = rel.split("/").slice(1).join("/");
+    const file = path.resolve(process.cwd(), "sources", project, "cases", `${id}.json`);
+    if (!fs.existsSync(file)) {
+        return `<SnapExample missing="${escapeHtml(rel)}" />\n`;
+    }
+    const card = JSON.parse(fs.readFileSync(file, "utf8")) as Card;
+    const rendered = renderCard(md, card, lang);
+    const payload = {
+        feature: card.topic,
+        code: rendered.code,
+        codeName: rendered.codeName,
+        markers: rendered.markers,
+        files: rendered.files,
+        results: rendered.results,
+        layout: rendered.layout,
+        legend: rendered.legend,
+        notes: rendered.notes,
+        variants: rendered.variants,
+        source: rel,
+        url: `https://github.com/clice-io/${project}/tree/main/${rel}`,
+    };
+    const encoded = Buffer.from(JSON.stringify(payload), "utf8").toString("base64");
+    return `<SnapExample data="${encoded}" />\n`;
+}
+
 export function capabilityCards(md: MarkdownIt): void {
     const fence = md.renderer.rules.fence!;
     md.renderer.rules.fence = (tokens, idx, options, env, self) => {
         const token = tokens[idx]!;
         if (token.info.trim() === "snap") {
             return renderSnap(md, env as { relativePath?: string }, token.content);
+        }
+        if (token.info.trim() === "case") {
+            return renderCase(md, env as { relativePath?: string }, token.content);
         }
         return fence(tokens, idx, options, env, self);
     };

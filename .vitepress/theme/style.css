@@ -2010,6 +2010,670 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   background: color-mix(in srgb, var(--nav) 14%, transparent);
 }
 
+/* case cards: a pin's places, framed like an editor's occurrence
+   highlights; a write darker than a read or a declaration */
+.kind-read,
+.kind-text { --frame: color-mix(in srgb, var(--ink) 30%, transparent); --fill: color-mix(in srgb, var(--ink) 5%, transparent); }
+.kind-write { --frame: color-mix(in srgb, var(--ink) 65%, transparent); --fill: color-mix(in srgb, var(--ink) 14%, transparent); }
+/* a navigation target or a symbol's name: the accent's frame */
+.mark-nav { --frame: color-mix(in srgb, var(--bow) 70%, transparent); --fill: color-mix(in srgb, var(--bow) 13%, transparent); }
+/* a selection, filled like an editor's */
+.mark-sel { --frame: transparent; --fill: color-mix(in srgb, var(--bow) 26%, transparent); }
+/* the symbol a hover card is about, or a call site */
+.mark-word { --frame: transparent; --fill: color-mix(in srgb, var(--ink) 10%, transparent); }
+/* what accepting a completion item replaces */
+.mark-edit { --frame: var(--ribbon); --fill: var(--ribbon-soft); }
+
+.snap-source .mark-range.on,
+.snap-source .mark-range.lit,
+.snap .case-kind {
+  border-radius: 3px;
+  background: var(--fill);
+  box-shadow: inset 0 0 0 1px var(--frame);
+}
+
+/* an edit underlined; an insert/replace edit's insert range nests in its
+   replace range, so it fills deeper */
+.snap-source :is(.mark-edit, .mark-insert).lit {
+  box-shadow: inset 0 -2px 0 var(--frame);
+}
+
+.snap-legend .edit-legend {
+  box-shadow: inset 0 -2px 0 var(--bow);
+}
+
+.snap-legend .edit-replace {
+  background: color-mix(in srgb, var(--bow) 22%, transparent);
+}
+
+.snap-legend .edit-insert {
+  background: color-mix(in srgb, var(--bow) 40%, transparent);
+}
+
+/* a result entry hovered: its place alone */
+.snap-code.focusing .mark-range.on:not(.lit) {
+  background: none;
+  box-shadow: none;
+}
+
+.snap-source .mark-range.lit {
+  --frame: var(--bow);
+  --fill: color-mix(in srgb, var(--bow) 22%, transparent);
+}
+
+.snap-source .mark-sel.lit {
+  --frame: transparent;
+  --fill: color-mix(in srgb, var(--bow) 30%, transparent);
+}
+
+.snap-source [data-caret].on,
+.snap-source [data-caret].lit {
+  margin: 0 -1px;
+  border-left: 2px solid var(--frame);
+  box-shadow: none !important;
+}
+
+/* shiki's token spans take the colour of a semantic token around them */
+.snap.case .snap-source .tok span {
+  color: inherit;
+}
+
+.snap.case .snap-source .hint {
+  color: var(--ink-2);
+}
+
+.snap.case .snap-source .hint-link {
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+.snap.case .snap-source .pin-range {
+  border-radius: 0;
+}
+
+/* links: drawn for good, the hovered one filled */
+.snap-source .doc-link.lit {
+  border-radius: 2px;
+  background: var(--pinafore-soft);
+}
+
+/* diagnostics: squiggles by severity */
+.diag-error { --sev: #d1453b; }
+.diag-warning { --sev: #c98a1b; }
+.diag-information { --sev: #4568a7; }
+.diag-hint { --sev: #7d8497; }
+
+.dark .diag-error { --sev: #ef7d72; }
+.dark .diag-warning { --sev: #e3b65a; }
+.dark .diag-information { --sev: #93acd8; }
+
+.snap-source .diag {
+  text-decoration: underline wavy var(--sev);
+  text-decoration-skip-ink: none;
+  text-underline-offset: 3px;
+}
+
+.snap-source .diag-hint {
+  text-decoration-style: dotted;
+}
+
+.snap-source .diag.lit {
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--sev) 16%, transparent);
+}
+
+/* folds of a case card: shut, the line ends with the collapsed text */
+.snap-source .fold-shut {
+  display: none;
+}
+
+.snap-source .fold-shut.shut {
+  display: inline;
+}
+
+.snap-source .fold-open.shut {
+  display: none;
+}
+
+.snap-source .fold-chip {
+  margin: 0 2px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--straw);
+  color: #2b3040;
+  font-size: 11px;
+}
+
+.snap.case .snap-source .fold-rest {
+  color: var(--ink-3);
+}
+
+.snap.case .snap-source .block-lines .line {
+  min-height: 1.6em;
+}
+
+/* a case card's lists and code are its own, not the page's */
+.snap.case :is(.case-places, .cmp-list, .sig-list, .sym-list, .link-list, .cp-list, .diag-list) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.snap.case :is(.case-places, .cmp-list, .sig-list, .sym-list, .link-list, .cp-list, .diag-list) > li {
+  margin: 0;
+}
+
+.snap.case :is(.case-code, .link-text, .cp-path, .term-cmd code) {
+  border-radius: 0;
+  background: none;
+}
+
+/* a place in a result: its line, the place set off */
+.snap.case .case-code {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--vp-font-family-mono);
+  font-size: 12.5px;
+  white-space: pre;
+}
+
+.snap.case .case-hit {
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--bow) 16%, transparent);
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--bow) 70%, transparent);
+}
+
+.snap.case .case-caret {
+  margin: 0 -1px;
+  border-left: 2px solid var(--bow);
+  background: none;
+  box-shadow: none;
+}
+
+.snap.case .case-file {
+  margin-right: 8px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+
+.snap.case .case-more {
+  margin-left: 8px;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.snap.case .case-rel + .case-rel {
+  margin-top: 8px;
+}
+
+.snap.case .case-rel-name {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-3);
+}
+
+.snap.case .case-places {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.snap.case .case-place {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 4px;
+  margin: 0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.snap.case .case-place:hover,
+.snap.case .sym-item[data-mark]:hover,
+.snap.case .link-item:hover,
+.snap.case .diag-item:hover,
+.snap.case .cmp-item[data-mark]:hover {
+  background: var(--pinafore-soft);
+}
+
+.snap.case .case-step {
+  display: inline-block;
+  min-width: 16px;
+  margin-right: 4px;
+  font-family: var(--vp-font-family-mono);
+  font-style: normal;
+  font-size: 11px;
+  color: var(--ink-3);
+  text-align: right;
+}
+
+.snap.case .case-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-right: 8px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 12.5px;
+}
+
+.snap.case .case-wrong-mark {
+  color: #d1453b;
+}
+
+.dark .snap.case .case-wrong-mark,
+.dark .snap.case .case-wrong {
+  color: #ef7d72;
+}
+
+/* completion: what accepting an item inserts, under it */
+.snap.case .cmp-item {
+  flex-wrap: wrap;
+}
+
+.snap.case .cmp-item .cmp-insert {
+  flex: 1 0 100%;
+  margin: 0 0 0 26px;
+  overflow-wrap: anywhere;
+}
+
+.snap.case .cmp-field {
+  padding: 0 3px;
+  border-radius: 3px;
+  background: var(--pinafore-soft);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bow) 40%, transparent);
+  color: var(--ink-2);
+}
+
+.snap.case .cmp-stop {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin: 0 1px;
+  vertical-align: -2px;
+  background: var(--bow);
+}
+
+.snap.case .cmp-deprecated .cmp-label {
+  text-decoration: line-through;
+}
+
+.snap.case .cmp-more {
+  padding: 3px 8px 0 34px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.snap.case :is(.cmp-File, .cmp-Folder, .cmp-Module, .sym-File, .sym-Module, .sym-Package, .cmp-TypeParameter, .sym-TypeParameter, .cmp-Interface) { background: var(--aqua-soft); }
+.snap.case :is(.cmp-Property, .sym-Property, .cmp-Value, .cmp-Unit) { background: var(--straw-soft); }
+.snap.case :is(.cmp-Operator, .sym-Operator, .cmp-Text) { background: var(--ribbon-soft); }
+.dark .snap.case :is(.cmp-Function, .cmp-Method, .cmp-Constructor, .sym-Function, .sym-Method, .sym-Constructor) { background: rgba(179, 167, 240, 0.24); }
+.dark .snap.case :is(.cmp-EnumMember, .sym-EnumMember) { background: rgba(230, 179, 106, 0.24); }
+
+/* signature help: the active signature marked, the others quieter */
+.snap.case .sig-item:not(.sig-current) {
+  opacity: 0.7;
+}
+
+.snap.case .sig-current {
+  border-left: 2px solid var(--bow);
+}
+
+.snap.case .sig-item .sig-active {
+  padding: 0 1px;
+  border-radius: 3px;
+  background: var(--straw);
+}
+
+.snap.case .sig-item .sig-active span {
+  font-weight: 700;
+}
+
+.dark .snap.case .sig-item .sig-active {
+  background: color-mix(in srgb, var(--straw) 30%, transparent);
+}
+
+/* the token at a pin, as an editor's token inspector shows it */
+.snap.case .case-token {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.snap.case .case-token code {
+  padding: 0 4px;
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 3px;
+  background: var(--paper-2);
+  font-size: 13px;
+}
+
+.snap.case .case-token-type {
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.snap.case .case-token-mod {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--paper-3);
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+  color: var(--ink-2);
+}
+
+/* outlines and symbol lists */
+.snap.case .sym-item {
+  align-items: center;
+  border-radius: 4px;
+}
+
+.snap.case .sym-file {
+  margin-left: auto;
+  padding-left: 8px;
+  color: var(--ink-3);
+  font-size: 11px;
+}
+
+/* document links */
+.snap.case .link-item {
+  border-radius: 4px;
+}
+
+.snap.case .link-text {
+  padding: 0;
+  background: none;
+  color: var(--bow);
+  font-size: 12.5px;
+}
+
+.snap.case .link-arrow,
+.snap.case .cp-arrow {
+  color: var(--ink-3);
+}
+
+/* counterparts and contexts */
+.snap.case .cp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.snap.case .cp-item {
+  margin: 0;
+  padding: 2px 8px;
+  font-size: 13px;
+}
+
+.snap.case .cp-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.snap.case .cp-path {
+  font-size: 12.5px;
+}
+
+.snap.case .cp-preferred {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--straw);
+  color: #2b3040;
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+}
+
+.snap.case .cp-reasons {
+  margin: 2px 0 0;
+  padding-left: 36px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.snap.case .cp-reasons li {
+  margin: 0;
+}
+
+/* diagnostics list */
+.snap.case .diag-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.snap.case .diag-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.snap.case .diag-icon {
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--sev);
+}
+
+.snap.case .diag-origin {
+  margin-left: auto;
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.snap.case .diag-push + .diag-push {
+  margin-top: 8px;
+}
+
+/* code actions: each with what it does to every file it edits */
+.snap.case .ca-item + .ca-item {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: var(--line-thin) dashed var(--line-color);
+}
+
+.snap.case .ca-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.snap.case .ca-title {
+  font-weight: 700;
+}
+
+.snap.case .ca-check {
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+}
+
+.snap.case .ca-check.ok { color: #3d7a3d; }
+.snap.case .ca-check.no { color: #d1453b; }
+.dark .snap.case .ca-check.ok { color: #9fd39f; }
+.dark .snap.case .ca-check.no { color: #ef7d72; }
+
+.snap.case .ca-kind {
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.snap.case .ca-errors {
+  margin: 6px 0 0;
+  color: #d1453b;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+.snap.case .case-file-head {
+  display: inline-block;
+  margin: 8px 0 4px;
+  padding: 0 8px;
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 4px;
+  background: var(--straw-soft);
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+}
+
+/* a diff: changed lines filled, signs in a gutter */
+.snap.case .case-diff {
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 4px;
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.dark .snap.case .case-diff {
+  background: var(--paper-2);
+}
+
+.snap.case .case-diff pre {
+  margin: 0;
+  padding: 4px 0;
+  background: transparent !important;
+  font-size: 12.5px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.snap.case .case-diff code {
+  display: block;
+  min-width: max-content;
+}
+
+.snap.case .case-diff .line {
+  display: block;
+  min-height: 1.6em;
+  padding: 0 12px 0 26px;
+  position: relative;
+}
+
+.snap.case .case-diff .line::before {
+  position: absolute;
+  left: 10px;
+  color: var(--ink-3);
+}
+
+.snap.case .case-diff .diff-add {
+  background: rgba(61, 122, 61, 0.14);
+}
+
+.snap.case .case-diff .diff-add::before {
+  content: "+";
+  color: #3d7a3d;
+}
+
+.snap.case .case-diff .diff-del {
+  background: rgba(209, 69, 59, 0.12);
+}
+
+.snap.case .case-diff .diff-del::before {
+  content: "−";
+  color: #d1453b;
+}
+
+.snap.case .case-diff .diff-gap {
+  color: var(--ink-3);
+}
+
+.dark .snap.case .case-diff .diff-add { background: rgba(159, 211, 159, 0.12); }
+.dark .snap.case .case-diff .diff-del { background: rgba(239, 125, 114, 0.13); }
+
+/* a command's run, its result card drawn as a terminal */
+.snap.case .term {
+  font-family: var(--vp-font-family-mono);
+  font-size: 12.5px;
+}
+
+.snap.case .term-cmd {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0 0 6px;
+  border-bottom: var(--line-thin) dashed var(--line-color);
+}
+
+.snap.case .term-cmd code {
+  padding: 0;
+  background: none;
+  font-weight: 700;
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}
+
+.snap.case .term-prompt {
+  color: var(--bow);
+  font-weight: 700;
+}
+
+.snap.case .term-exit {
+  margin-left: auto;
+  flex: 0 0 auto;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+.snap.case .term-exit.ok { background: rgba(61, 122, 61, 0.16); color: #3d7a3d; }
+.snap.case .term-exit.no { background: rgba(209, 69, 59, 0.14); color: #d1453b; }
+.dark .snap.case .term-exit.ok { color: #9fd39f; }
+.dark .snap.case .term-exit.no { color: #ef7d72; }
+
+.snap.case .term-out,
+.snap.case .term-err,
+.snap.case .term-json pre {
+  margin: 0;
+  padding: 6px 0;
+  background: transparent !important;
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.snap.case .term-err {
+  color: #b5443b;
+}
+
+.dark .snap.case .term-err {
+  color: #ef9d93;
+}
+
+.snap.case .term-json + .term-err,
+.snap.case .term-out + .term-err {
+  border-top: var(--line-thin) dashed var(--line-color);
+}
+
+.snap.case .case-kind {
+  display: inline-block;
+  padding: 0 8px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.snap.case .case-wrong {
+  margin: 0 0 6px;
+  color: #b95d55;
+  font-size: 13px;
+}
+
 .nav-row {
   display: flex;
   flex-wrap: wrap;

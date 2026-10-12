@@ -2,17 +2,21 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useData } from 'vitepress'
 
-type Result = { name: string; meta: string; html: string }
-type File = { name: string; html: string }
-type Payload = {
+// `label` replaces `name` as the result's heading; empty shows the pin's number alone.
+type Result = { name: string; meta: string; html: string; label?: string }
+// A file starts folded away when `open` is false.
+type File = { name: string; html: string; open?: boolean }
+type Legend = { label: string; cls: string }[]
+// A variant of a case card drawing its own code: shown as a tab.
+type View = { label: string; code: string; files: File[]; results: Result[]; legend: Legend; notes?: string[] }
+type Payload = View & {
   feature: string
-  code: string
+  codeName?: string
   markers: string[]
-  files: File[]
-  results: Result[]
-  layout: 'split' | 'single' | 'tooltip'
-  legend: { label: string; cls: string }[]
+  layout: 'split' | 'stack' | 'single' | 'tooltip' | 'inline'
+  variants?: View[]
   source: string
+  url?: string
 }
 
 const props = defineProps<{ data?: string; missing?: string }>()
@@ -28,11 +32,26 @@ const payload = computed<Payload | null>(() => {
 })
 
 const open = ref(false)
+const tab = ref(0)
+const view = computed<View | null>(() => payload.value?.variants?.[tab.value] ?? payload.value)
+
+// Files shown open, as the card says or as the reader toggled them; a
+// folded-away file waits as a chip in one row.
+const toggled = ref(new Map<string, boolean>())
+const isOpen = (file: File): boolean => toggled.value.get(file.name) ?? file.open !== false
+const openFiles = computed(() => (view.value?.files ?? []).filter(isOpen))
+const shutFiles = computed(() => (view.value?.files ?? []).filter((file) => !isOpen(file)))
+function toggleFile(file: File): void {
+  toggled.value = new Map(toggled.value).set(file.name, !isOpen(file))
+}
+// Pins answer on hover and tap: in a tip over the code, or inline below it.
+const pins = computed(() => payload.value?.layout === 'tooltip' || payload.value?.layout === 'inline')
+const inline = computed(() => payload.value?.layout === 'inline')
 const codeEl = ref<HTMLElement | null>(null)
 
 const indexOf = (name: string): number => payload.value?.markers.indexOf(name) ?? -1
 const results = computed(() =>
-  [...(payload.value?.results ?? [])].sort((a, b) => {
+  [...(view.value?.results ?? [])].sort((a, b) => {
     const ia = indexOf(a.name)
     const ib = indexOf(b.name)
     return (ia < 0 ? 1e9 : ia) - (ib < 0 ? 1e9 : ib)
@@ -40,13 +59,38 @@ const results = computed(() =>
 )
 const byName = computed(() => new Map(results.value.map((r) => [r.name, r])))
 const sourceUrl = computed(() =>
-  payload.value ? `https://github.com/clice-io/clice/blob/main/${payload.value.source}` : ''
+  payload.value ? (payload.value.url ?? `https://github.com/clice-io/clice/blob/main/${payload.value.source}`) : ''
 )
 
 // Tooltip mode: the result of a marker pops up over its pin.
 const tip = ref<{ result: Result; left: number; top: number; arrow: number } | null>(null)
 const tipEl = ref<HTMLElement | null>(null)
 const pinned = ref(false)
+
+// A pin's places in the code show while its result is up.
+watch(tip, (value) => {
+  const host = codeEl.value
+  if (!host) return
+  for (const el of host.querySelectorAll('.mark-range[data-for].on, .pin.on')) el.classList.remove('on')
+  if (!value) return
+  const name = CSS.escape(value.result.name)
+  for (const el of host.querySelectorAll(`.mark-range[data-for~="${name}"], .pin[data-name="${name}"]`)) el.classList.add('on')
+})
+
+// An entry of a result naming a place (`data-mark`) lights it in the code
+// while hovered, dimming the pin's other places; a whole-line mark lights
+// its line.
+function lightMark(event: MouseEvent, on: boolean): void {
+  const item = (event.target as HTMLElement).closest('[data-mark]') as HTMLElement | null
+  const host = codeEl.value
+  if (!item || !host) return
+  if (!on && item.contains(event.relatedTarget as Node | null)) return
+  host.classList.toggle('focusing', on)
+  for (const el of host.querySelectorAll(`[data-for~="${CSS.escape(item.dataset.mark ?? '')}"]`)) {
+    el.classList.toggle('lit', on)
+    if (el.classList.contains('line-mark')) el.closest('.line')?.classList.toggle('hl', on)
+  }
+}
 
 // The tip hangs below its pin and slides sideways as far as needed to stay
 // inside the code pane; the arrow keeps pointing at the pin.
@@ -70,19 +114,20 @@ async function showFor(pin: HTMLElement, sticky: boolean): Promise<void> {
 }
 
 function onOver(event: MouseEvent): void {
-  if (pinned.value) return
+  if (pinned.value && !inline.value) return
   const pin = (event.target as HTMLElement).closest('.pin') as HTMLElement | null
   if (pin) void showFor(pin, false)
 }
 
 function onOut(event: MouseEvent): void {
-  if (pinned.value) return
+  // Inline, the last pin's result stays until another pin's replaces it.
+  if (pinned.value || inline.value) return
   const to = event.relatedTarget as HTMLElement | null
   if (to && (to.closest('.snap-tip') || to.closest('.pin'))) return
   tip.value = null
 }
 
-// Lines of the main file, for folding and outline highlights.
+// Lines of the main file, for outline highlights.
 function mainLines(): HTMLElement[] {
   const host = codeEl.value
   if (!host) return []
@@ -90,8 +135,14 @@ function mainLines(): HTMLElement[] {
   return source ? Array.from(source.querySelectorAll<HTMLElement>('.line')) : []
 }
 
+// Lines of the file a fold mark is in.
+function foldLines(mark: HTMLElement): HTMLElement[] {
+  const source = mark.closest('.snap-source')
+  return source ? Array.from(source.querySelectorAll<HTMLElement>('.line')) : []
+}
+
 function foldRegion(mark: HTMLElement, cls: string, on: boolean): void {
-  const lines = mainLines()
+  const lines = foldLines(mark)
   for (let l = Number(mark.dataset.start); l <= Number(mark.dataset.end); l += 1) lines[l]?.classList.toggle(cls, on)
 }
 
@@ -112,9 +163,17 @@ function onFoldClick(event: MouseEvent): void {
   const end = Number(mark.dataset.end)
   const collapsed = mark.classList.toggle('collapsed')
   mark.textContent = collapsed ? '▸' : '▾'
-  mark.closest('.line')?.classList.toggle('collapsed-line', collapsed)
+  // A case card's fold ends its first line with its own collapsed text.
+  const fold = mark.dataset.fold
+  if (fold) {
+    for (const el of mark.closest('.line')?.querySelectorAll(`[data-fold="${CSS.escape(fold)}"]`) ?? []) {
+      el.classList.toggle('shut', collapsed)
+    }
+  } else {
+    mark.closest('.line')?.classList.toggle('collapsed-line', collapsed)
+  }
   foldRegion(mark, 'fold-hl', false)
-  const lines = mainLines()
+  const lines = foldLines(mark)
   for (let l = start + 1; l <= end; l += 1) {
     const line = lines[l]
     if (!line) continue
@@ -141,33 +200,52 @@ function highlightLines(spec: string | undefined, sel: string | undefined, on: b
 function onResultOver(event: MouseEvent): void {
   const item = (event.target as HTMLElement).closest('[data-lines]') as HTMLElement | null
   if (item) highlightLines(item.dataset.lines, item.dataset.sel, true)
+  lightMark(event, true)
 }
 
 function onResultOut(event: MouseEvent): void {
   const item = (event.target as HTMLElement).closest('[data-lines]') as HTMLElement | null
   if (item) highlightLines(item.dataset.lines, item.dataset.sel, false)
+  lightMark(event, false)
+}
+
+function onCodeOver(event: MouseEvent): void {
+  if (pins.value) onOver(event)
+  else onFoldOver(event)
+  lightMark(event, true)
+}
+
+function onCodeOut(event: MouseEvent): void {
+  if (pins.value) onOut(event)
+  else onFoldOut(event)
+  lightMark(event, false)
+}
+
+function onCodeClick(event: MouseEvent): void {
+  if (pins.value && !(event.target as HTMLElement).closest('.fold-mark')) onClick(event)
+  else onFoldClick(event)
 }
 
 function onClick(event: MouseEvent): void {
   const pin = (event.target as HTMLElement).closest('.pin') as HTMLElement | null
   if (pin) {
-    if (pinned.value && tip.value?.result.name === pin.dataset.name) {
+    if (pinned.value && tip.value?.result.name === pin.dataset.name && !inline.value) {
       tip.value = null
       pinned.value = false
     } else {
-      void showFor(pin, true)
+      void showFor(pin, !inline.value)
     }
     event.stopPropagation()
     return
   }
-  if (!(event.target as HTMLElement).closest('.snap-tip')) {
+  if (!(event.target as HTMLElement).closest('.snap-tip') && !inline.value) {
     tip.value = null
     pinned.value = false
   }
 }
 
 function onDocClick(): void {
-  if (pinned.value) {
+  if (pinned.value && !inline.value) {
     tip.value = null
     pinned.value = false
   }
@@ -175,8 +253,20 @@ function onDocClick(): void {
 
 // The tip's position is measured once, so any layout change dismisses it.
 function onLayoutChange(): void {
+  if (inline.value) return
   tip.value = null
   pinned.value = false
+}
+
+// Inline, the first pin with a result answers until another is hovered.
+async function showFirst(): Promise<void> {
+  tip.value = null
+  pinned.value = false
+  if (!inline.value) return
+  await nextTick()
+  const name = payload.value?.markers.find((m) => byName.value.has(m))
+  const pin = name ? codeEl.value?.querySelector<HTMLElement>(`.pin[data-name="${CSS.escape(name)}"]`) : null
+  if (pin) void showFor(pin, false)
 }
 
 function scrollers(): Element[] {
@@ -189,17 +279,29 @@ function unlisten(): void {
   for (const pre of scrollers()) pre.removeEventListener('scroll', onLayoutChange)
 }
 
+function listen(): void {
+  document.addEventListener('click', onDocClick)
+  window.addEventListener('resize', onLayoutChange)
+  for (const pre of scrollers()) pre.addEventListener('scroll', onLayoutChange, { passive: true })
+}
+
 watch(open, async (value) => {
   tip.value = null
   pinned.value = false
   if (value) {
     await nextTick()
-    document.addEventListener('click', onDocClick)
-    window.addEventListener('resize', onLayoutChange)
-    for (const pre of scrollers()) pre.addEventListener('scroll', onLayoutChange, { passive: true })
+    listen()
+    await showFirst()
   } else {
     unlisten()
   }
+})
+
+watch(tab, async () => {
+  unlisten()
+  await nextTick()
+  listen()
+  await showFirst()
 })
 
 onBeforeUnmount(unlisten)
@@ -209,33 +311,70 @@ onBeforeUnmount(unlisten)
   <div v-if="!payload" class="snap snap-missing">
     {{ zh ? '示例尚未同步' : 'Example not synced yet' }} <code>{{ missing }}</code>
   </div>
-  <div v-else class="snap" :class="{ open }">
+  <div v-else class="snap" :class="{ open, case: !!payload.url }">
     <button class="snap-toggle" type="button" @click="open = !open">
       <span class="chev" aria-hidden="true">▶</span>
       {{ open ? (zh ? '收起示例' : 'Hide example') : (zh ? '查看示例' : 'Show example') }}
     </button>
-    <div v-if="open" class="snap-body" :class="payload.layout">
+    <div v-if="open && view" class="snap-body" :class="payload.layout">
       <div
         ref="codeEl"
         class="snap-code"
-        @mouseover="payload.layout === 'tooltip' ? onOver($event) : onFoldOver($event)"
-        @mouseout="payload.layout === 'tooltip' ? onOut($event) : onFoldOut($event)"
-        @click="payload.layout === 'tooltip' ? onClick($event) : onFoldClick($event)"
+        @mouseover="onCodeOver"
+        @mouseout="onCodeOut"
+        @click="onCodeClick"
       >
-        <div class="snap-source" v-html="payload.code" />
-        <div v-for="file in payload.files" :key="file.name" class="snap-file">
-          <span class="snap-file-name">{{ file.name }}</span>
+        <div v-if="payload.variants" class="snap-tabs" role="tablist">
+          <button
+            v-for="(variant, i) in payload.variants"
+            :key="i"
+            type="button"
+            role="tab"
+            :aria-selected="tab === i"
+            :class="{ on: tab === i }"
+            @click.stop="tab = i"
+            v-html="variant.label"
+          />
+        </div>
+        <span v-if="payload.codeName && view.code" class="snap-file-name snap-entry-name">{{ payload.codeName }}</span>
+        <div v-if="view.code" class="snap-source" v-html="view.code" />
+        <div v-for="file in openFiles" :key="file.name" class="snap-file">
+          <button
+            v-if="payload.url"
+            type="button"
+            class="snap-file-name open"
+            :aria-expanded="true"
+            @click.stop="toggleFile(file)"
+          >{{ file.name }}</button>
+          <span v-else class="snap-file-name">{{ file.name }}</span>
           <div class="snap-source" v-html="file.html" />
         </div>
-        <div v-if="payload.legend.length" class="snap-legend">
-          <span v-for="item in payload.legend" :key="item.label" :class="item.cls">{{ item.label }}</span>
+        <div v-if="shutFiles.length" class="snap-file snap-file-row">
+          <button
+            v-for="file in shutFiles"
+            :key="file.name"
+            type="button"
+            class="snap-file-name"
+            :aria-expanded="false"
+            @click.stop="toggleFile(file)"
+          >{{ file.name }}</button>
+        </div>
+        <div v-if="payload.layout === 'inline'" class="snap-active">
+          <template v-if="tip">
+            <i>{{ indexOf(tip.result.name) + 1 }}</i>
+            <div class="snap-active-body" v-html="tip.result.html" />
+          </template>
+        </div>
+        <div v-if="view.notes?.length" class="snap-notes" v-html="view.notes.join('')" />
+        <div v-if="view.legend.length" class="snap-legend">
+          <span v-for="item in view.legend" :key="item.label" :class="item.cls">{{ item.label }}</span>
         </div>
         <div class="snap-foot">
-          <span v-if="payload.layout === 'tooltip'" class="snap-hint">{{ zh ? '悬停或点击编号查看结果' : 'Hover or tap a number for the result' }}</span>
+          <span v-if="pins" class="snap-hint">{{ zh ? '悬停或点击编号查看结果' : 'Hover or tap a number for the result' }}</span>
           <a class="snap-link" :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ payload.source }}</a>
         </div>
         <div
-          v-if="tip"
+          v-if="tip && payload.layout === 'tooltip'"
           ref="tipEl"
           class="snap-tip"
           :class="{ pinned }"
@@ -243,18 +382,18 @@ onBeforeUnmount(unlisten)
         >
           <div class="snap-result-head">
             <i v-if="indexOf(tip.result.name) >= 0">{{ indexOf(tip.result.name) + 1 }}</i>
-            <span class="snap-result-name">{{ tip.result.name }}</span>
+            <span v-if="(tip.result.label ?? tip.result.name) !== ''" class="snap-result-name">{{ tip.result.label ?? tip.result.name }}</span>
             <span v-if="tip.result.meta" class="snap-meta">{{ tip.result.meta }}</span>
           </div>
           <div class="snap-card" v-html="tip.result.html" />
         </div>
       </div>
-      <div v-if="payload.layout === 'split'" class="snap-results" @mouseover="onResultOver" @mouseout="onResultOut">
+      <div v-if="payload.layout === 'split' || payload.layout === 'stack'" class="snap-results" @mouseover="onResultOver" @mouseout="onResultOut">
         <template v-if="results.length > 0">
           <div v-for="r in results" :key="r.name" class="snap-result">
-            <div v-if="r.name" class="snap-result-head">
+            <div v-if="indexOf(r.name) >= 0 || (r.label ?? r.name) !== '' || r.meta" class="snap-result-head">
               <i v-if="indexOf(r.name) >= 0">{{ indexOf(r.name) + 1 }}</i>
-              <span class="snap-result-name">{{ r.name }}</span>
+              <span v-if="(r.label ?? r.name) !== ''" class="snap-result-name">{{ r.label ?? r.name }}</span>
               <span v-if="r.meta" class="snap-meta">{{ r.meta }}</span>
             </div>
             <div class="snap-card" v-html="r.html" />
@@ -372,10 +511,55 @@ onBeforeUnmount(unlisten)
   color: var(--ink-3);
 }
 
+.snap-active {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 16px 6px;
+  border-top: var(--line-thin) dashed var(--line-color);
+  font-size: 13px;
+}
+
+.snap-active i {
+  display: inline-block;
+  min-width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  padding: 0 3px;
+  border-radius: 999px;
+  border: 1px solid var(--line-color);
+  background: var(--bow);
+  color: #ffffff;
+  font-family: var(--clice-font-display);
+  font-style: normal;
+  font-weight: 900;
+  font-size: 10px;
+  line-height: 13px;
+  text-align: center;
+}
+
+.snap-active-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.snap-active-body :deep(p) {
+  margin: 0 0 4px;
+}
+
+.inline .snap-code {
+  border-radius: var(--radius);
+  border-bottom: none;
+}
+
+.inline .snap-source :deep(.pin),
 .tooltip .snap-source :deep(.pin) {
   cursor: pointer;
 }
 
+.snap-source :deep(.pin.on i),
+.inline .snap-source :deep(.pin:hover i),
 .tooltip .snap-source :deep(.pin:hover i) {
   background: var(--bow);
   color: #ffffff;
@@ -490,6 +674,44 @@ onBeforeUnmount(unlisten)
   border-top: var(--line-thin) dashed var(--line-color);
 }
 
+button.snap-file-name {
+  color: var(--ink);
+  line-height: 18px;
+  cursor: pointer;
+}
+
+button.snap-file-name::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 6px;
+  color: var(--bow);
+  font-size: 9px;
+  transition: transform 0.15s ease;
+}
+
+button.snap-file-name.open::before {
+  transform: rotate(90deg);
+}
+
+button.snap-file-name:hover {
+  border-color: var(--bow);
+}
+
+.snap-file-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 16px 10px;
+}
+
+.snap-file-row .snap-file-name {
+  margin: 0;
+}
+
+.case .snap-file > .snap-file-name + .snap-source :deep(pre) {
+  padding-top: 8px;
+}
+
 .snap-file-name {
   display: inline-block;
   margin: 8px 0 0 16px;
@@ -499,6 +721,56 @@ onBeforeUnmount(unlisten)
   background: var(--straw-soft);
   font-family: var(--vp-font-family-mono);
   font-size: 11px;
+}
+
+.snap-entry-name {
+  margin-top: 10px;
+}
+
+.snap-entry-name + .snap-source :deep(pre) {
+  padding-top: 8px;
+}
+
+.snap-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 16px 0;
+}
+
+.snap-tabs button {
+  padding: 1px 10px;
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 999px;
+  background: var(--paper);
+  font-family: var(--vp-font-family-mono);
+  font-size: 11.5px;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.snap-tabs button:hover {
+  color: var(--bow);
+  border-color: var(--bow);
+}
+
+.snap-tabs button.on {
+  background: var(--bow);
+  border-color: var(--bow);
+  color: #ffffff;
+}
+
+.dark .snap-tabs button.on {
+  color: var(--paper-3);
+}
+
+.snap-notes {
+  padding: 8px 16px 0;
+  border-top: var(--line-thin) dashed var(--line-color);
+}
+
+.snap-notes :deep(.case-wrong) {
+  margin: 0 0 4px;
 }
 
 .snap-source :deep(.pin) {
@@ -557,6 +829,14 @@ onBeforeUnmount(unlisten)
 
 .snap-link:hover {
   color: var(--bow) !important;
+}
+
+.case .snap-link {
+  line-break: anywhere;
+}
+
+.snap-code > .snap-file:first-child {
+  border-top: none;
 }
 
 .snap-result + .snap-result {
