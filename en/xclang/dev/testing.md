@@ -14,8 +14,10 @@ here instead of naming tests.
   `tests/libclang/libclang.ts`), the CMake package (`tests/cmake/cmake.ts`),
   the Bazel module (`tests/bazel`), the MSVC targets and the macOS targets
   from Linux and Windows hosts (`tests/sdk/msvc.ts`, `tests/sdk/macos.ts`),
-  the command (`tests/cli/cli.ts`, `tests/cli/cargo.ts`) and the examples. docs.yml checks the
-  docs and the scripts' types on every push.
+  the command (`tests/cli/cli.ts`, `tests/cli/cargo.ts`) and the examples.
+  Every push also checks that the Bazel module names the latest release
+  and its digests (the bazel-version job, `packages/bazel/bazel.ts
+  check`). docs.yml checks the docs and the scripts' types on every push.
 - **Before a release**, release.yml tests each host's archives on a
   machine of that host, and the same checks run with them. The programs
   they build for other targets run on a machine of those targets, with no
@@ -53,7 +55,8 @@ rest are called by them, by release.yml, or started by hand.
 | stage-package.yml | | stage `package` | | | each host's archives made again on another machine, in another directory, with other file times, umask 077 and three xz threads (the first has four): the same bytes |
 
 A change to on-target.yml, to the archives action
-(`.github/actions/archives`) or to `tests/lib` runs every workflow of
+(`.github/actions/archives`), to `tests/lib` or to `toolchain/common.ts`
+(which writes the config files and the CMake package) runs every workflow of
 checks.yml. A newer push to a branch or pull request cancels the checks
 still running for the one before, but on `main`. A pull request from a
 branch of this repository is tested by the push of that branch.
@@ -328,7 +331,9 @@ macOS, Xcode's for the macOS targets):
 - builds `examples/cargo`, and `tests/cli/crate`: C, C++ (exceptions,
   `std::format`), a CMake project through the `cmake` crate and bindgen's
   bindings, whose layout of a struct must be C's for the target, with
-  `RUSTFLAGS` of its own; from Linux also `xclang/` itself;
+  rustflags of its own (`RUSTFLAGS`; for the MSVC targets, whose
+  `CARGO_TARGET_<TARGET>_RUSTFLAGS` xclang cargo sets, `build.rustflags`);
+  from Linux also `xclang/` itself;
 - checks what each program loads, and runs them all on a machine of their
   target; the host's target, and on Linux musl's, with `cargo run` and
   `cargo test` too, and the host's target with `XCLANG_STDLIB=platform`;
