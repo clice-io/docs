@@ -114,6 +114,8 @@ const TEXT = {
         default: "Default",
         inspect: "clice inspect",
         server: "server",
+        insertRange: "insert",
+        replaceRange: "replace",
     },
     zh: {
         read: "读",
@@ -141,6 +143,8 @@ const TEXT = {
         default: "默认",
         inspect: "clice inspect",
         server: "服务器",
+        insertRange: "插入",
+        replaceRange: "替换",
     },
 };
 
@@ -491,8 +495,15 @@ function completion(ctx: Ctx, value: CardValue): Piece {
         const label = str(item.label);
         const insert = typeof item.insert === "string" ? item.insert : undefined;
         const edit = isPlace(item.replace) ? item.replace : undefined;
-        const id = edit ? idOf(ctx, edit, "edit") : "";
-        if (edit) span(ctx, edit, "mark-range mark-edit", [id]);
+        // An insert/replace edit: inserting overwrites only up to the cursor.
+        const inserted = isPlace(item.insert_range) ? item.insert_range : undefined;
+        const id = edit ? idOf(ctx, edit, inserted ? `edit ${JSON.stringify(inserted.range)}` : "edit") : "";
+        if (edit) span(ctx, edit, "mark-range mark-edit", [id], inserted ? ctx.t.replaceRange : "");
+        if (edit && inserted) {
+            span(ctx, inserted, "mark-range mark-insert", [id], ctx.t.insertRange);
+            ctx.canvas.legend.set(ctx.t.replaceRange, "edit-legend edit-replace");
+            ctx.canvas.legend.set(ctx.t.insertRange, "edit-legend edit-insert");
+        }
         const shown =
             insert !== undefined && insert !== label
                 ? `<span class="cmp-insert">${item.snippet === true ? snippetHtml(insert) : escapeHtml(insert)}</span>`

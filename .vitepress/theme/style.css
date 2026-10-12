@@ -2032,8 +2032,22 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   box-shadow: inset 0 0 0 1px var(--frame);
 }
 
-.snap-source .mark-edit.lit {
+/* an edit underlined; an insert/replace edit's insert range nests in its
+   replace range, so it fills deeper */
+.snap-source :is(.mark-edit, .mark-insert).lit {
   box-shadow: inset 0 -2px 0 var(--frame);
+}
+
+.snap-legend .edit-legend {
+  box-shadow: inset 0 -2px 0 var(--bow);
+}
+
+.snap-legend .edit-replace {
+  background: color-mix(in srgb, var(--bow) 22%, transparent);
+}
+
+.snap-legend .edit-insert {
+  background: color-mix(in srgb, var(--bow) 40%, transparent);
 }
 
 /* a result entry hovered: its place alone */
