@@ -252,7 +252,7 @@ function renderSnap(md: MarkdownIt, env: { relativePath?: string }, content: str
 
 /** Render one `case` fence: the named case's card into a SnapExample
  *  component. The fence names the case's directory in the project
- *  (`tests-next/<topic>/<subtopic>/<case>`), which the card links to; its
+ *  (`tests/<topic>/<subtopic>/<case>`), which the card links to; its
  *  card is synced as `sources/<project>/cases/<topic>/<subtopic>/<case>.json`. */
 function renderCase(md: MarkdownIt, env: { relativePath?: string }, content: string): string {
     const rel = content.trim();
