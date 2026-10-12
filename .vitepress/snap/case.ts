@@ -598,28 +598,20 @@ function semanticTokens(ctx: Ctx, value: CardValue): Piece {
     return { html: "", where: "none" };
 }
 
-/** Each hinted line reads as the source line with the hints in `⟨⟩`:
- *  the line is found in the file from the pin on, and each hint put back
- *  where its text says. */
+/** Each hinted line is a place on the line's text, from its first
+ *  non-blank character, reading as that text with the hints in `⟨⟩`: a
+ *  hint goes back at the column its offset in the text gives. */
 function inlayHints(ctx: Ctx, value: CardValue): Piece {
-    const file = ctx.files.get(ctx.query);
-    if (!file) return { html: "", where: "none" };
-    const lines = file.text.split("\n");
-    let from = ctx.marker ? file.text.slice(0, ctx.marker.begin).split("\n").length - 1 : 0;
-    const out: Insert[] = [];
     for (const item of listOf(value)) {
-        if (!isTable(item) || typeof item.line !== "string") continue;
-        const pieces = item.line.split(/⟨([^⟩]*)⟩/);
+        if (!isTable(item) || !isPlace(item.line)) continue;
+        const { path, range } = item.line;
+        const pieces = item.line.$place.split(/⟨([^⟩]*)⟩/);
         const texts = pieces.filter((_, i) => i % 2 === 0);
         const labels = pieces.filter((_, i) => i % 2 === 1);
-        const plain = texts.join("");
-        let at = from;
-        while (at < lines.length && lines[at]!.trim() !== plain.trim()) at += 1;
-        if (at >= lines.length) continue;
-        from = at + 1;
-        const base = lines[at]!.indexOf(plain);
         const details = listOf(item.hints).filter(isTable);
-        let col = base < 0 ? indentOf(lines[at]!) : base;
+        // A hint in the indentation keeps the blanks after it in the text.
+        let col = range.start.character - indentOf(texts.join(""));
+        const out: Insert[] = [];
         labels.forEach((label, i) => {
             col += texts[i]!.length;
             const detail = details[i];
@@ -634,7 +626,7 @@ function inlayHints(ctx: Ctx, value: CardValue): Piece {
                 .join("\n");
             const cls = `hint${kind ? ` hint-${kind}` : ""}${padding.includes("left") ? " pad-l" : ""}${padding.includes("right") ? " pad-r" : ""}${links.length ? " hint-link" : ""}`;
             out.push({
-                line: at,
+                line: range.start.line,
                 col,
                 html: `<span class="${cls}"${title ? ` title="${escapeHtml(title)}"` : ""}>${escapeHtml(label)}</span>`,
                 order: 3,
@@ -642,8 +634,8 @@ function inlayHints(ctx: Ctx, value: CardValue): Piece {
             });
             if (kind) ctx.canvas.legend.set(kind, `hint hint-${kind}`);
         });
+        ctx.canvas.add(path, out);
     }
-    ctx.canvas.add(file.path, out);
     return { html: "", where: "none" };
 }
 
