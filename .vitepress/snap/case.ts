@@ -890,12 +890,12 @@ function transcript(ctx: Ctx, label: string, value: Table): string {
             ? `<div class="term-json">${decorate(ctx.md, stdout, [], new Map(), false, "json")}</div>`
             : `<pre class="term-out">${escapeHtml(stdout)}</pre>`
         : "";
-    const stderr = listOf(value.stderr).map(str);
+    const stderr = str(value.stderr);
     const files = editsHtml(ctx.md, value.files);
     return (
         `<div class="term"><div class="term-cmd"><span class="term-prompt">$</span><code>${escapeHtml(command)}</code>${status}</div>` +
         out +
-        (stderr.length ? `<pre class="term-err">${escapeHtml(stderr.join("\n"))}</pre>` : "") +
+        (stderr ? `<pre class="term-err">${escapeHtml(stderr)}</pre>` : "") +
         `</div>${files}`
     );
 }
