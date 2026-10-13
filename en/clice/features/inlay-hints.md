@@ -256,11 +256,11 @@ tests/inlay_hints/type_hints/10_scopes
 
 <!-- END CAPABILITY -->
 
-<!-- BEGIN CAPABILITY: partial clangd#2275 -->
+<!-- BEGIN CAPABILITY: supported clangd#2275 -->
 
 **Instantiated templates**
 
-A template body shows its hints once, but a variable whose type depends on the template shows none even when the only instantiation fixes it
+An `auto` variable inside a class template shows the type the template's only instantiation gives it
 
 With two instantiations deducing different types there is no one type to show.
 
