@@ -312,7 +312,7 @@ tests/signature_help/parameters/07_standard_forwarding
 
 ## Documentation
 
-The called function's documentation comment shows with its signatures, as plain text.
+The called function's documentation comment shows with its signatures, as plain text, read as hover reads it; each parameter carries its `@param` text, which editors show for the parameter being written.
 
 <!-- BEGIN GENERATED ITEMS: signature_help/documentation -->
 
@@ -320,7 +320,7 @@ The called function's documentation comment shows with its signatures, as plain 
 
 **Documentation comments**
 
-The called function's documentation comment shows with its signature
+The called function's documentation comment shows with its signature, and the `@param` text of the parameter being written with that parameter
 
 With `documentation = false` in the `[signature_help]` section the popup
 shows the signatures alone.
