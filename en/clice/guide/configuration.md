@@ -270,7 +270,7 @@ The `[hover]` section controls how hover cards render.
 | ---------- | ------ | ------- |
 | `show_aka` | `bool` | `true`  |
 
-Show the desugared form of a type, e.g. `vector<int>::size_type (aka unsigned long)`.
+Show what a type alias stands for, e.g. `size_type` is `unsigned long`.
 
 </div>
 
@@ -281,6 +281,16 @@ Show the desugared form of a type, e.g. `vector<int>::size_type (aka unsigned lo
 | `max_members` | `uint32` | `20`    |
 
 Maximum number of members the definition of a hovered class or enum lists: data members and member types, or enumerators; member functions are left out. `0` shows the declaration alone.
+
+</div>
+
+<div class="config-option">
+
+| Option   | Type   | Default |
+| -------- | ------ | ------- |
+| `layout` | `bool` | `true`  |
+
+Show how the compiler lays out a class or a field wherever it is hovered: size, alignment, a field's offset, and the padding.
 
 </div>
 
