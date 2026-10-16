@@ -4,7 +4,7 @@
 
 `clice refactor` 根据持久化索引改写工作区的源代码，`clice query` 读取的也是同一份索引。整个过程不做编译，因此在大型源码树上做一次重构，耗时与一次查询相当。目前唯一的重构是 `rename`；编辑器里的重命名走的也是同一个引擎。
 
-**用法**：`clice refactor rename (--symbol <locator> --to <name> | --spec <file>) [--workspace <dir>] [--configuration <tag>] [--dry-run] [--fresh]`
+**用法**：`clice refactor rename (<locator> <new-name> | --spec <file>) [--workspace <dir>] [--configuration <tag>] [--dry-run] [--fresh]`
 
 ## 重命名
 
@@ -93,7 +93,7 @@ tests/refactor/edits/01_plan_then_write
 
 若输入的名称对应两个符号，会列出这两个符号，使用带作用域的名称或候选项的 `symbol` 即可选定其中一个
 
-名称有歧义时，不会执行任何重命名。每个候选项都带有一个 `symbol`，可将其原样传给 `--symbol`。
+名称有歧义时，不会执行任何重命名。每个候选项都带有一个 `symbol`，可将其原样传回。
 
 ```case
 tests/refactor/locators/02_ambiguous_name
