@@ -3,16 +3,16 @@
   "topic": "semantic_tokens",
   "subtopic": "lexical",
   "title": "Attribute names",
-  "summary": "Attribute names and their expressions do not receive semantic tokens yet",
+  "summary": "Attribute names are `attribute` tokens, and their arguments keep their own kinds",
   "prose": "",
-  "status": "partial",
+  "status": "supported",
   "issues": [
     "clangd#2209"
   ],
   "files": [
     {
       "path": "main.cpp",
-      "text": "[[nodiscard]] int compute();\n[[deprecated(\"use v2\")]] void old_func();\n[[maybe_unused]] int counter = 0;\n\nstruct [[gnu::packed]] Packed {};\n",
+      "text": "[[nodiscard]] int compute();\n[[deprecated(\"use v2\")]] void old_func();\n[[maybe_unused]] int counter = 0;\n\nstruct [[gnu::packed]] Packed {};\n\n__attribute__((noinline)) void slow();\n[[using gnu: hot]] void warm();\n",
       "markers": [
         {
           "name": "nodiscard",
@@ -49,6 +49,18 @@
           "begin": 120,
           "end": 120,
           "range": false
+        },
+        {
+          "name": "gnu_style",
+          "begin": 156,
+          "end": 156,
+          "range": false
+        },
+        {
+          "name": "using_prefix",
+          "begin": 182,
+          "end": 182,
+          "range": false
         }
       ]
     }
@@ -61,10 +73,9 @@
           "label": "nodiscard",
           "marker": "nodiscard",
           "value": {
-            "wrong": "an attribute name should be colored (clangd#2209)",
             "semantic_token": {
               "text": "nodiscard",
-              "type": "none"
+              "type": "attribute"
             }
           }
         },
@@ -72,10 +83,9 @@
           "label": "deprecated",
           "marker": "deprecated",
           "value": {
-            "wrong": "an attribute name should be colored (clangd#2209)",
             "semantic_token": {
               "text": "deprecated",
-              "type": "none"
+              "type": "attribute"
             }
           }
         },
@@ -93,10 +103,9 @@
           "label": "maybe_unused",
           "marker": "maybe_unused",
           "value": {
-            "wrong": "an attribute name should be colored (clangd#2209)",
             "semantic_token": {
               "text": "maybe_unused",
-              "type": "none"
+              "type": "attribute"
             }
           }
         },
@@ -104,10 +113,9 @@
           "label": "vendor",
           "marker": "vendor",
           "value": {
-            "wrong": "an attribute name should be colored (clangd#2209)",
             "semantic_token": {
               "text": "gnu",
-              "type": "none"
+              "type": "attribute"
             }
           }
         },
@@ -115,10 +123,29 @@
           "label": "packed",
           "marker": "packed",
           "value": {
-            "wrong": "an attribute name should be colored (clangd#2209)",
             "semantic_token": {
               "text": "packed",
-              "type": "none"
+              "type": "attribute"
+            }
+          }
+        },
+        {
+          "label": "gnu_style",
+          "marker": "gnu_style",
+          "value": {
+            "semantic_token": {
+              "text": "noinline",
+              "type": "attribute"
+            }
+          }
+        },
+        {
+          "label": "using_prefix",
+          "marker": "using_prefix",
+          "value": {
+            "semantic_token": {
+              "text": "using",
+              "type": "keyword"
             }
           }
         }
