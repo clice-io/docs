@@ -4,6 +4,7 @@ import type MarkdownIt from "markdown-it";
 import type { Token } from "markdown-it/index.js";
 import { escapeHtml, renderFeature, type Marker, type Variant } from "./snap/render";
 import { renderCard, type Card } from "./snap/case";
+import { escapeBraces } from "./braces";
 
 /**
  * Capability cards for the generated feature pages.
@@ -80,14 +81,19 @@ const VARIANTS: Record<string, Record<string, string>> = {
     zh: { default: "默认", configured: "配置后" },
 };
 
+/** Text from the BEGIN comment, which skips the markdown renderers. */
+function literal(text: string): string {
+    return escapeBraces(escapeHtml(text));
+}
+
 function issueLink(ref: string): string {
     const hash = ref.indexOf("#");
     const tracker = ref.slice(0, hash);
     const base = TRACKERS[tracker];
     if (!base) {
-        return `<span>${ref}</span>`;
+        return `<span>${literal(ref)}</span>`;
     }
-    return `<a href="${base}${ref.slice(hash + 1)}" target="_blank" rel="noopener noreferrer">${ref}</a>`;
+    return `<a href="${base}${literal(ref.slice(hash + 1))}" target="_blank" rel="noopener noreferrer">${literal(ref)}</a>`;
 }
 
 /** Strip `§`, `§(name)`, `§⟦…⟧` and `§(name)⟦…⟧` annotations, keeping offsets. */
@@ -308,7 +314,7 @@ export function capabilityCards(md: MarkdownIt): void {
             if (begin) {
                 const [status = "", ...issues] = begin[1]!.trim().split(/\s+/).filter(Boolean);
                 const tone = TONE[status] ?? "note";
-                const label = LABELS[lang]?.[status] ?? status;
+                const label = LABELS[lang]?.[status] ?? literal(status);
                 const links = issues.map(issueLink).join(" ");
                 token.content =
                     `<div class="capability ${tone}"><div class="capability-meta">` +

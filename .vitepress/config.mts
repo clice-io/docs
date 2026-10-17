@@ -7,6 +7,7 @@ import { genSidebar } from "./sidebar";
 import { statusStickers } from "./status";
 import { capabilityCards } from "./capability";
 import { mermaidFences } from "./mermaid";
+import { literalBraces } from "./braces";
 
 const SITE = "https://docs.clice.io";
 const projects = ["clice", "catter", "xclang"];
@@ -77,6 +78,8 @@ export default defineConfig({
             md.use(statusStickers);
             md.use(capabilityCards);
             md.use(mermaidFences);
+            // Last, so it wraps whatever text and inline code renderers are in place.
+            md.use(literalBraces);
             // Override caption only (display text) so repeated refs show [1] not [1:1]; leaves id/href intact.
             md.renderer.rules.footnote_caption = (tokens, idx) =>
                 `[${Number(tokens[idx].meta.id + 1)}]`;
