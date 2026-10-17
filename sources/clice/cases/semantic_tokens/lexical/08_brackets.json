@@ -3,14 +3,14 @@
   "topic": "semantic_tokens",
   "subtopic": "lexical",
   "title": "Bracket token types",
-  "summary": "Matching brackets do not receive pair-specific token kinds yet",
-  "prose": "",
-  "status": "unsupported",
+  "summary": "The angle brackets of template arguments and parameters are `bracket` tokens",
+  "prose": "They are told apart from the comparisons an editor's grammar takes them\nfor. Parentheses, square brackets and braces, which the editor matches\nitself, get no token.",
+  "status": "supported",
   "issues": [],
   "files": [
     {
       "path": "main.cpp",
-      "text": "template <typename T>\nstruct Grid {\n    T cells[4];\n};\n\nGrid<int> grid{{1, 2, 3, 4}};\n\nint first(Grid<int>& grid) {\n    return grid.cells[0];\n}\n",
+      "text": "template <typename T>\nstruct Grid {\n    T cells[4];\n};\n\nGrid<int> grid{{1, 2, 3, 4}};\nGrid<Grid<int>> nested;\n\nint first(Grid<int>& grid) {\n    return grid.cells[0];\n}\n\nauto identity = []<class T>(T value) { return value; };\n",
       "markers": [
         {
           "name": "template_open",
@@ -37,15 +37,33 @@
           "range": false
         },
         {
+          "name": "inner_close",
+          "begin": 99,
+          "end": 99,
+          "range": false
+        },
+        {
+          "name": "outer_close",
+          "begin": 100,
+          "end": 100,
+          "range": false
+        },
+        {
           "name": "paren_open",
-          "begin": 96,
-          "end": 96,
+          "begin": 120,
+          "end": 120,
           "range": false
         },
         {
           "name": "subscript_open",
-          "begin": 137,
-          "end": 137,
+          "begin": 161,
+          "end": 161,
+          "range": false
+        },
+        {
+          "name": "lambda_open",
+          "begin": 187,
+          "end": 187,
           "range": false
         }
       ]
@@ -59,10 +77,9 @@
           "label": "template_open",
           "marker": "template_open",
           "value": {
-            "wrong": "a bracket should be a token of its bracket kind",
             "semantic_token": {
               "text": "<",
-              "type": "none"
+              "type": "bracket"
             }
           }
         },
@@ -70,7 +87,6 @@
           "label": "array_open",
           "marker": "array_open",
           "value": {
-            "wrong": "a bracket should be a token of its bracket kind",
             "semantic_token": {
               "text": "[",
               "type": "none"
@@ -81,10 +97,9 @@
           "label": "argument_open",
           "marker": "argument_open",
           "value": {
-            "wrong": "a bracket should be a token of its bracket kind",
             "semantic_token": {
               "text": "<",
-              "type": "none"
+              "type": "bracket"
             }
           }
         },
@@ -92,7 +107,6 @@
           "label": "brace_open",
           "marker": "brace_open",
           "value": {
-            "wrong": "a bracket should be a token of its bracket kind",
             "semantic_token": {
               "text": "{",
               "type": "none"
@@ -100,10 +114,29 @@
           }
         },
         {
+          "label": "inner_close",
+          "marker": "inner_close",
+          "value": {
+            "semantic_token": {
+              "text": ">>",
+              "type": "bracket"
+            }
+          }
+        },
+        {
+          "label": "outer_close",
+          "marker": "outer_close",
+          "value": {
+            "semantic_token": {
+              "text": ">>",
+              "type": "bracket"
+            }
+          }
+        },
+        {
           "label": "paren_open",
           "marker": "paren_open",
           "value": {
-            "wrong": "a bracket should be a token of its bracket kind",
             "semantic_token": {
               "text": "(",
               "type": "none"
@@ -114,10 +147,19 @@
           "label": "subscript_open",
           "marker": "subscript_open",
           "value": {
-            "wrong": "a bracket should be a token of its bracket kind",
             "semantic_token": {
               "text": "[",
               "type": "none"
+            }
+          }
+        },
+        {
+          "label": "lambda_open",
+          "marker": "lambda_open",
+          "value": {
+            "semantic_token": {
+              "text": "<",
+              "type": "bracket"
             }
           }
         }
