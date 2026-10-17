@@ -1,5 +1,5 @@
 name: "Publish Documentation"
-description: "Sync project docs to the docs repo via PR with auto-merge"
+description: "Build docs.clice.io with a project's docs, and sync them there via a PR with auto-merge"
 
 inputs:
   project:
@@ -9,52 +9,143 @@ inputs:
     description: "Path to docs directory in source repo"
     required: false
     default: "docs"
+  mode:
+    description: >-
+      `check` builds the site with these docs in place of the published ones.
+      `publish` checks, then opens the sync PR and enables auto-merge; it runs
+      only on the source repo's default branch.
+    required: false
+    default: "publish"
   token:
-    description: "GitHub token with write access to docs repo"
-    required: true
+    description: "GitHub token with write access to docs repo; publish only"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
   steps:
+    # First, so that a refused publish has touched nothing.
+    - name: Check inputs
+      shell: bash
+      env:
+        PROJECT: ${{ inputs.project }}
+        MODE: ${{ inputs.mode }}
+        TOKEN: ${{ inputs.token }}
+        EVENT: ${{ github.event_name }}
+        REF: ${{ github.ref }}
+        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+      run: |
+        # The overlay below deletes en/<project> and zh/<project>.
+        if [[ ! "$PROJECT" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+          echo "::error title=Publish Documentation::project must be a plain directory name, got '$PROJECT'"
+          exit 1
+        fi
+        case "$MODE" in
+          check) ;;
+          publish)
+            # Only the default branch publishes; pull requests, other
+            # branches and tags may check only.
+            branch="${DEFAULT_BRANCH:-main}"
+            if [[ "$EVENT" == pull_request* || "$REF" != "refs/heads/$branch" ]]; then
+              echo "::error title=Publish refused::only $branch may publish docs, and this is $EVENT on $REF; use mode: check here"
+              exit 1
+            fi
+            if [[ -z "$TOKEN" ]]; then
+              echo "::error title=Publish Documentation::mode publish needs a token with write access to clice-io/docs"
+              exit 1
+            fi
+            ;;
+          *)
+            echo "::error title=Publish Documentation::mode must be check or publish, got '$MODE'"
+            exit 1
+            ;;
+        esac
+
     - name: Checkout docs repo
       uses: actions/checkout@v4
       with:
         repository: clice-io/docs
-        token: ${{ inputs.token }}
+        # The repo is public, so a check needs no token of its own and runs
+        # in fork PRs too.
+        token: ${{ inputs.token || github.token }}
+        persist-credentials: ${{ inputs.mode == 'publish' }}
         path: __docs_repo
 
+    # Check and publish both build on this one overlay, so what is checked
+    # is what gets published.
     - name: Sync documentation
       shell: bash
+      env:
+        PROJECT: ${{ inputs.project }}
+        SRC: ${{ inputs.docs-path }}
       run: |
-        project="${{ inputs.project }}"
-        src="${{ inputs.docs-path }}"
-
-        rm -rf "__docs_repo/en/${project}"
-        rm -rf "__docs_repo/zh/${project}"
+        rm -rf "__docs_repo/en/${PROJECT}"
+        rm -rf "__docs_repo/zh/${PROJECT}"
 
         for tree in en zh; do
-          if [ -d "${src}/${tree}" ]; then
-            cp -rf "${src}/${tree}" "__docs_repo/${tree}/${project}"
+          if [ -d "${SRC}/${tree}" ]; then
+            cp -rf "${SRC}/${tree}" "__docs_repo/${tree}/${PROJECT}"
           fi
         done
-        if [ -d "${src}/public" ]; then
-          cp -rf "${src}/public/." "__docs_repo/public/"
+        if [ -d "${SRC}/public" ]; then
+          cp -rf "${SRC}/public/." "__docs_repo/public/"
         fi
-
 
         # What the feature pages' example cards read at build time: the
         # snapshot corpus for ```snap fences, the cases' cards for ```case.
-        rm -rf "__docs_repo/sources/${project}"
+        rm -rf "__docs_repo/sources/${PROJECT}"
         if [ -d "tests/snap" ]; then
-          mkdir -p "__docs_repo/sources/${project}/tests"
-          cp -rf "tests/snap" "__docs_repo/sources/${project}/tests/snap"
+          mkdir -p "__docs_repo/sources/${PROJECT}/tests"
+          cp -rf "tests/snap" "__docs_repo/sources/${PROJECT}/tests/snap"
         fi
-        if [ -d "${src}/cards" ]; then
-          mkdir -p "__docs_repo/sources/${project}"
-          cp -rf "${src}/cards" "__docs_repo/sources/${project}/cases"
+        if [ -d "${SRC}/cards" ]; then
+          mkdir -p "__docs_repo/sources/${PROJECT}"
+          cp -rf "${SRC}/cards" "__docs_repo/sources/${PROJECT}/cases"
         fi
+
+    # This also switches the node of every later step in the calling job.
+    - name: Set up Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version: "24"
+        cache: npm
+        cache-dependency-path: __docs_repo/package-lock.json
+
+    - name: Install site dependencies
+      shell: bash
+      working-directory: __docs_repo
+      run: npm ci --no-audit --no-fund
+
+    - name: Build site
+      shell: bash
+      working-directory: __docs_repo
+      env:
+        PROJECT: ${{ inputs.project }}
+        SRC: ${{ inputs.docs-path }}
+      run: |
+        log="$RUNNER_TEMP/docs-build.log"
+        if ! npm run build 2>&1 | tee "$log"; then
+          # Annotate the dead links and the error VitePress gives up on,
+          # naming pages by their path in the source repo. Its line:col
+          # count in the page compiled to Vue, not in the markdown: dropped.
+          mapfile -t errors < <(
+            sed -e 's/\x1b\[[0-9;]*m//g' "$log" |
+              sed -n -E -e 's/^\(!\) (Found dead link .*)/\1/p' \
+                -e '/^build error:/{n;s/ \([0-9]+:[0-9]+\)//;p;q}'
+          )
+          [[ ${#errors[@]} -gt 0 ]] || errors=("see the build log above")
+          for line in "${errors[@]}"; do
+            line="${line//%/%25}"
+            line="${line//en\/${PROJECT}\//${SRC}/en/}"
+            line="${line//zh\/${PROJECT}\//${SRC}/zh/}"
+            echo "::error title=docs.clice.io build failed::${line}"
+          done
+          exit 1
+        fi
+
     - name: Create Pull Request
       id: create-pr
+      if: inputs.mode == 'publish'
       uses: peter-evans/create-pull-request@v7
       with:
         path: __docs_repo
@@ -71,7 +162,7 @@ runs:
         delete-branch: true
 
     - name: Enable auto-merge
-      if: steps.create-pr.outputs.pull-request-number
+      if: inputs.mode == 'publish' && steps.create-pr.outputs.pull-request-number
       shell: bash
       run: gh pr merge ${{ steps.create-pr.outputs.pull-request-number }} --auto --squash
       env:
