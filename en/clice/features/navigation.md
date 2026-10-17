@@ -87,13 +87,29 @@ tests/navigation/definition/07_error_recovery
 
 <!-- END CAPABILITY -->
 
+<!-- BEGIN CAPABILITY: supported -->
+
+**Pure virtual functions**
+
+Go-to-definition on the declaration of a pure virtual function lists its overrides
+
+Nothing defines a pure virtual function: standing on its declaration,
+go-to-definition reaches the overrides that do. A call through it reaches
+the declaration, as for any function nothing defines.
+
+```case
+tests/navigation/definition/10_pure_virtual
+```
+
+<!-- END CAPABILITY -->
+
 <!-- END GENERATED ITEMS -->
 
 ## Go to Declaration
 
 Navigate from a symbol usage or definition to its declaration. In C++, many entities have separate declarations and definitions.
 
-clice returns the declaration locations plus the definition — symbols defined inline have no separate declaration — minus the site the cursor already stands on, so declaration and definition sites alternate just like go-to-definition.
+clice returns the declaration locations plus the definition — symbols defined inline have no separate declaration — minus the site the cursor already stands on, so declaration and definition sites alternate just like go-to-definition. On a function defined with no declaration of its own, it falls back to the functions of its name in its scope that nothing defines: the declaration a changed parameter parted it from.
 
 <!-- BEGIN GENERATED ITEMS: navigation/declaration -->
 
@@ -184,11 +200,33 @@ tests/navigation/declaration/06_signature_spelling
 
 <!-- END CAPABILITY -->
 
+<!-- BEGIN CAPABILITY: supported -->
+
+**A definition whose declaration changed**
+
+Go-to-declaration on a definition that no longer matches its declaration reaches the declaration it parted from
+
+When a parameter changes on one side only, the definition and the header
+declaration become two functions, and the definition has no declaration of
+its own. Go-to-declaration on it falls back to the functions of its name and
+linkage in its scope that nothing defines: the declaration that wants the
+same edit, a `static` one's in its own file. An overload with a definition
+of its own is no candidate, nor is a function of another linkage or of an
+anonymous namespace it is not in. A method defined in its class never had a
+declaration apart, and a template or a system header's function is left
+alone: those are declared where they are defined.
+
+```case
+tests/navigation/declaration/07_changed_signatures
+```
+
+<!-- END CAPABILITY -->
+
 <!-- END GENERATED ITEMS -->
 
 ## Go to Type Definition
 
-Navigate to the type definition of a symbol. Applicable to variables, parameters, fields, and any other named entity that has a type. When the type is a type alias or a pointer-like wrapper, navigation should unwrap to the underlying/pointee type.
+Navigate to the type definition of a symbol. Applicable to variables, parameters, fields, and any other named entity that has a type. A type alias reaches both the alias and the type it names, a pointer-like wrapper both the wrapper and the type it points to; a type's own name reaches the type itself.
 
 <!-- BEGIN GENERATED ITEMS: navigation/type_definition -->
 
@@ -240,11 +278,13 @@ tests/navigation/type_definition/04_smart_pointers
 
 <!-- END CAPABILITY -->
 
-<!-- BEGIN CAPABILITY: partial -->
+<!-- BEGIN CAPABILITY: supported -->
 
 **Type aliases**
 
-Go-to-type-definition on a variable of an aliased type reaches the `using` or `typedef` declaration; it does not yet unwrap the alias to the underlying type's definition
+Go-to-type-definition on a variable of an aliased type reaches both the `using` or `typedef` declaration and the type it names
+
+An alias template's alias reaches the template its target specializes.
 
 ```case
 tests/navigation/type_definition/05_type_aliases
@@ -276,11 +316,26 @@ tests/navigation/type_definition/07_pointers_and_references
 
 <!-- END CAPABILITY -->
 
+<!-- BEGIN CAPABILITY: supported -->
+
+**`this`**
+
+Go-to-type-definition on `this` answers nothing, as every other navigation request on it does
+
+The code spelling `this` already sits in the class it points to, so the
+keyword leads nowhere new; clangd reaches the class.
+
+```case
+tests/navigation/type_definition/11_this
+```
+
+<!-- END CAPABILITY -->
+
 <!-- END GENERATED ITEMS -->
 
 ## Go to Implementation
 
-From a virtual method, go to implementation lists its overrides; from a class, the classes deriving from it.
+From a virtual method, go to implementation lists its overrides at every level below it; from a class, every class deriving from it, directly or not. Go to definition on the declaration of a pure virtual function, which nothing defines, lists the overrides too.
 
 <!-- BEGIN GENERATED ITEMS: navigation/implementation -->
 
@@ -288,10 +343,10 @@ From a virtual method, go to implementation lists its overrides; from a class, t
 
 **Override chain**
 
-Implementation navigation follows an override chain one level at a time
+Implementation navigation lists the overrides at every level below
 
-Along a three-level override chain, go-to-implementation from each method
-reaches the override one level down — base to middle, middle to leaf.
+Along a three-level override chain, go-to-implementation from the base
+reaches the middle and the leaf override, and from the middle the leaf.
 
 ```case
 tests/navigation/implementation/01_override_chain
@@ -337,7 +392,7 @@ tests/navigation/implementation/03_non_virtual
 Base classes navigate to every derived class
 
 Go-to-implementation on a base class name lists the classes that derive
-from it.
+from it, directly or through another derived class.
 
 ```case
 tests/navigation/implementation/04_derived_classes
@@ -351,7 +406,8 @@ tests/navigation/implementation/04_derived_classes
 
 Go to implementation on a dependent call reaches the method it resolves to in the template's only instantiation
 
-This applies to function templates and generic lambdas alike.
+This applies to function templates and generic lambdas alike, and to a
+conversion operator called by name.
 
 ```case
 tests/navigation/implementation/05_dependent_calls
@@ -363,7 +419,7 @@ tests/navigation/implementation/05_dependent_calls
 
 ## Find References
 
-Find references lists every place that names the symbol, its declarations included.
+Find references lists every place that names the symbol, its declarations included. A method's references include the calls made through the methods it overrides, which may dispatch to it; a class's the names of its constructors.
 
 <!-- BEGIN GENERATED ITEMS: navigation/references -->
 
@@ -394,11 +450,15 @@ tests/navigation/references/02_range_for
 
 <!-- END CAPABILITY -->
 
-<!-- BEGIN CAPABILITY: unsupported -->
+<!-- BEGIN CAPABILITY: supported -->
 
 **Implicit constructor and destructor calls**
 
-Find references on a constructor reports only its explicit sites; an object definition that implicitly invokes the constructor or its destructor is not included
+Find references on a constructor or a destructor lists the places that name it, not the objects that run it implicitly
+
+`Blob b;` runs the constructor, and the end of its scope the destructor, but
+names neither: listing every object that does would bury the references of
+any class with local variables.
 
 ```case
 tests/navigation/references/03_implicit_construction
@@ -448,7 +508,12 @@ tests/navigation/references/06_access_kinds
 
 **Reference enclosing context**
 
-Each reference is reported as a bare location; the name of the function that encloses it is not attached, so results carry no context beyond the file and line
+Each reference reaches the editor as a bare location, without the function that encloses it
+
+clangd attaches the enclosing function through an extension field
+(`containerName`) for a client that declares support for it; clice does not
+read that declaration yet. `clice query references` names the function each
+reference lies in.
 
 ```case
 tests/navigation/references/07_enclosing_functions
@@ -464,6 +529,25 @@ Find references on a label lists the label itself together with every `goto` tha
 
 ```case
 tests/navigation/references/08_labels
+```
+
+<!-- END CAPABILITY -->
+
+<!-- BEGIN CAPABILITY: supported clangd#1558 -->
+
+**Calls through overridden methods**
+
+Find references on an override includes the calls made through the methods it overrides, which may dispatch to it
+
+`shape.area()` on a `Shape&` may run `Circle::area`, so it is among the
+references of the override. A call through `Circle` never runs
+`Shape::area`, so it is not among the references of the method overridden;
+nor is `Shape::area()` in the override's own body, which names the method
+overridden, or `circle.Shape::scale(factor)` in a template, which names one
+of the overloads overridden before any instantiation picks it.
+
+```case
+tests/navigation/references/13_override_calls
 ```
 
 <!-- END CAPABILITY -->
@@ -559,6 +643,22 @@ itself when it is instantiated with several types.
 
 ```case
 tests/navigation/deduced_types/06_dependent_auto
+```
+
+<!-- END CAPABILITY -->
+
+<!-- BEGIN CAPABILITY: supported -->
+
+**Library-internal aliases**
+
+An `auto` deduced through a library's internal alias reaches the type the alias names; one deduced through a public alias reaches the alias
+
+A name a library reserves for itself, `std::__detail::__unique_ptr_t`, is
+not one the code would write, so `auto` sees through it to `unique_ptr`. A
+public alias such as `iterator` is the name the library gives its users.
+
+```case
+tests/navigation/deduced_types/08_library_aliases
 ```
 
 <!-- END CAPABILITY -->
@@ -690,6 +790,22 @@ Find references on a macro does not include the mentions of it written inside th
 
 ```case
 tests/navigation/macros/05_nested_macros
+```
+
+<!-- END CAPABILITY -->
+
+<!-- BEGIN CAPABILITY: supported -->
+
+**Header macros defined per unit**
+
+Go-to-definition on a macro a shared header uses reaches every definition the units including it expand
+
+Two units include `config.h`, one with `FAST` defined: the header's `MODE`
+expands to a different definition in each, and from a closed header
+go-to-definition lists both.
+
+```case
+tests/navigation/macros/10_header_variants
 ```
 
 <!-- END CAPABILITY -->
@@ -1144,7 +1260,7 @@ tests/navigation/projects/03_uses_across_sources
 
 ## Call Hierarchy
 
-A call hierarchy lists the callers of a function and the functions it calls.
+A call hierarchy lists the callers of a function and the functions it calls; a call made through a method a function overrides counts among its callers. Each item shows the function's parameters, which tell overloads apart. A function's local variables and parameters get no item: their only caller is the function itself.
 
 <!-- BEGIN GENERATED ITEMS: navigation/call_hierarchy -->
 
@@ -1184,11 +1300,11 @@ tests/navigation/call_hierarchy/03_outgoing_calls
 
 <!-- END CAPABILITY -->
 
-<!-- BEGIN CAPABILITY: unsupported -->
+<!-- BEGIN CAPABILITY: supported -->
 
 **Call hierarchy item details**
 
-A call hierarchy item carries only its name; the function signature is not attached in a detail field, so overloads are indistinguishable in the hierarchy
+A call hierarchy item shows the function's parameters beside its name, telling overloads apart
 
 ```case
 tests/navigation/call_hierarchy/04_signature_details
@@ -1212,10 +1328,14 @@ tests/navigation/call_hierarchy/05_qualified_names
 
 **Calls through an override**
 
-A call through a class that overrides a virtual method is an incoming call of the override alone
+A call through a virtual method reaches every override it may dispatch to, a qualified call only the method it names
 
-`d.draw()` on a `Derived&` runs `Derived::draw` or an override below it,
-never `Base::draw`, so only the override lists it among its incoming calls.
+`b.draw()` on a `Base&` may run `Base::draw` or `Derived::draw`, so both
+list it among their incoming calls. `d.draw()` on a `Derived&` runs
+`Derived::draw` or an override below it, never `Base::draw`, so only the
+override lists it. `Base::draw()`, in an override's body or anywhere else,
+runs `Base::draw` alone, while `Group`'s `child->draw()` may reach either.
+So does `Base::draw()` spelled by a macro, in `Logged`'s override.
 
 ```case
 tests/navigation/call_hierarchy/06_virtual_dispatch
@@ -1258,6 +1378,22 @@ Incoming calls of a constructor do not include the call sites that reach it thro
 
 ```case
 tests/navigation/call_hierarchy/09_forwarding_factories
+```
+
+<!-- END CAPABILITY -->
+
+<!-- BEGIN CAPABILITY: supported -->
+
+**Function locals**
+
+A function's local variables and parameters get no call hierarchy item
+
+The only function that can use them is the one declaring them, so an item
+for them would have one caller, known in advance. A field of a class
+declared in a function keeps its item: the class's methods use it.
+
+```case
+tests/navigation/call_hierarchy/15_function_locals
 ```
 
 <!-- END CAPABILITY -->
@@ -1324,7 +1460,7 @@ tests/navigation/type_hierarchy/04_template_bases
 
 ## Document Highlight
 
-Highlight all references to the symbol under cursor within the current file (`textDocument/documentHighlight`). Highlights come from the same index as Find References, so they cover the same names and work in read-only mode too; each one tells whether the code there writes the symbol, reads it, or declares it.
+Highlight all references to the symbol under cursor within the current file (`textDocument/documentHighlight`). Highlights come from the same index as Find References, so they cover the same names and work in read-only mode too; a variable, a field or a parameter is marked written or read where the code writes or reads it; every other highlight is plain.
 
 ### Declarations and Uses
 
@@ -1440,7 +1576,7 @@ tests/document_highlight/modules/01_module_units
 
 ## Workspace Symbol
 
-Search the whole project for a symbol by name (`workspace/symbol`).
+Search the whole project for a symbol by name (`workspace/symbol`), the names of internal linkage at namespace scope (`static`, an anonymous namespace) included. Each result has the kind the outline gives it, and a function its parameters.
 
 ### Queries
 
@@ -1573,18 +1709,33 @@ Each result names its symbol and the container it lies in.
 
 <!-- BEGIN GENERATED ITEMS: workspace_symbol/results -->
 
-<!-- BEGIN CAPABILITY: unsupported clangd#1344 -->
+<!-- BEGIN CAPABILITY: supported clangd#1344 -->
 
 **Overload disambiguation**
 
-Workspace symbol results omit parameter types, leaving overloads ambiguous
+Workspace symbol results show each function's parameters, telling overloads apart
 
-Querying an overloaded name finds every overload, but each entry
-carries only the bare name — nothing tells the two `process` results
-apart short of opening both locations.
+Querying an overloaded name finds every overload, each named with its
+parameters: the two `process` results differ at a glance.
 
 ```case
 tests/workspace_symbol/results/01_overloads
+```
+
+<!-- END CAPABILITY -->
+
+<!-- BEGIN CAPABILITY: supported -->
+
+**Names of internal linkage**
+
+Search finds the names of internal linkage at namespace scope, in every file declaring one, but never a function's locals
+
+A `static` variable or a member of an anonymous namespace is known only to
+its own file, yet it is a name the project declares: search lists it, once
+per file that declares one. A local variable is not.
+
+```case
+tests/workspace_symbol/results/06_internal_names
 ```
 
 <!-- END CAPABILITY -->
@@ -1608,6 +1759,23 @@ The query finds a function in `other.cpp`, which stays closed while
 
 ```case
 tests/workspace_symbol/projects/01_closed_files
+```
+
+<!-- END CAPABILITY -->
+
+<!-- BEGIN CAPABILITY: supported -->
+
+**Copies of one checkout**
+
+Two checkouts of the same code opened side by side list each symbol once, from the folder being edited
+
+Two worktrees of one repository opened as workspace folders hold the same
+symbols at the same places in the same text. Search lists each once, the
+copy of the folder with an open document: the one the editor works in. A
+folder whose file reads otherwise holds a symbol of its own, listed too.
+
+```case
+tests/workspace_symbol/projects/03_worktree_copies
 ```
 
 <!-- END CAPABILITY -->

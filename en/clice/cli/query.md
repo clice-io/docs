@@ -8,8 +8,8 @@
 
 ## Questions
 
-- `symbol-search [<locator>] [--limit <n>]` lists the symbols a [locator](#locators) matches, best first, with their kind, file, line, container and `symbol`.
-- `definition <locator>`, `read-symbol <locator>`, `references <locator> [--include-declaration]`, `call-graph <locator> [--direction callers|callees|both]` and `type-hierarchy <locator> [--direction supertypes|subtypes|both]` answer about the one symbol the locator names. A locator several symbols match lists them as `candidates`; a name none spells exactly lists the closest matches the same way. `definition` and `read-symbol` also give the symbol's `documentation`: its documentation comment as markdown, read as the editor's hover reads it — `@param`, `@return` and `@copydoc` resolved, an undocumented override showing what it overrides.
+- `symbol-search [<locator>] [--limit <n>]` lists the symbols a [locator](#locators) matches, best first, with their kind, file, line, container and `symbol`, and for a function the `signature` that tells its overloads apart.
+- `definition <locator>`, `read-symbol <locator>`, `references <locator> [--include-declaration]`, `call-graph <locator> [--direction callers|callees|both]`, `type-hierarchy <locator> [--direction supertypes|subtypes|both]` and `implementation <locator>` answer about the one symbol the locator names: `definition` gives its declaration when nothing defines it, each reference names the function it lies in, and `implementation` lists the classes deriving from a class, or the overrides of a function, at every level below it. A locator several symbols match lists them as `candidates`; a name none spells exactly lists the closest matches the same way. `definition` and `read-symbol` also give the symbol's `documentation`: its documentation comment as markdown, read as the editor's hover reads it — `@param`, `@return` and `@copydoc` resolved, an undocumented override showing what it overrides.
 - `document-symbols <file>` is the file's outline.
 - `compile-command <file>` is the command the editor would compile the file with, and where it came from: the file's own database entry, a host source for a header, a rule's default command, a command borrowed from a nearby unit — for a provisional member (`provisional`) or a file outside the build (`inferred`) — or the fallback. The command is the one the compiler resolves it to, with its target and system include directories; when asking the compiler failed, `toolchainError` says why and the command stays the unresolved driver command.
 - `project-files [--filter all|source|header|module]` lists the build's files; `file-deps <file> [--direction includes|includers|both] [--depth <n>]` follow the include graph, and `impact-analysis <file>` the include graph and the files that import a module the file is part of.
@@ -36,7 +36,7 @@ A locator names symbols, wherever a command takes one. It is one string: spaces 
 | `kind:function,method`       | only these kinds                                                                                                                                                                                                                                           |
 | `path:src/index/`            | symbols declared in that file or under that directory, a relative path starting at the workspace root; a bare file name, `path:a.cpp`, matches every file of that name                                                                                     |
 
-A local, a parameter and an entity of internal linkage — `static`, or in an anonymous namespace — are known only to the files that see them: a name finds them only together with `path:` naming their file or its directory.
+A local or a parameter is known only to its file: a name finds it only together with `path:` naming the file or its directory. An entity of internal linkage at namespace scope — `static`, or in an anonymous namespace — a name finds wherever it is.
 
 Every symbol an answer lists carries `symbol`, a locator naming it back: its id, followed by `path:` and its file for a symbol only some files see. Pass it back as it is. On a shell command line, quote the whole locator: `#` there starts a comment, `<` and `>` redirect and `*` expands.
 
@@ -60,7 +60,7 @@ Each question names a symbol or a file and answers with what the index knows abo
 
 **References of a symbol**
 
-Every place naming a method, its declarations included
+Every place naming a method, its declarations and the calls through the method it overrides included, each with the function it lies in
 
 ```case
 tests/query/basics/01_references
@@ -84,7 +84,7 @@ tests/query/basics/02_symbol_search
 
 **Questions about symbols**
 
-Look a symbol up by name, by its id or by a line, and ask where it is defined and used, who calls it, what it derives from and what a file declares
+Look a symbol up by name, by its id or by a line, and ask where it is defined and used, who calls it, what it derives from, what implements it and what a file declares
 
 ```case
 tests/query/basics/03_symbol_questions
@@ -116,6 +116,18 @@ tests/query/basics/10_documentation
 
 <!-- END CAPABILITY -->
 
+<!-- BEGIN CAPABILITY: supported -->
+
+**A symbol nothing defines**
+
+The definition of a symbol nothing defines is its declaration, as go-to-definition answers in the editor
+
+```case
+tests/query/basics/11_declaration_only
+```
+
+<!-- END CAPABILITY -->
+
 <!-- END GENERATED ITEMS -->
 
 ### Narrowing by Path
@@ -128,7 +140,7 @@ A `path:` term narrows a search to some files, and finds the names only one file
 
 **File-local symbols**
 
-Symbols only one file can name, such as statics, locals and parameters, are found by name within that file with `path:`
+A static found by name anywhere; locals and parameters, which only their function names, found by name within their file with `path:`
 
 ```case
 tests/query/names/05_file_local_names
