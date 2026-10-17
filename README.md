@@ -4,9 +4,46 @@ Documentation site for [clice.io](https://docs.clice.io), built with [VitePress]
 
 ## Sync docs from other repos
 
-This repo provides a composite action. When docs change in a source repo, it creates a PR here, validates the build, and auto-merges.
+This repo is also a composite action that puts a project's docs on the
+site. It overlays the project's `docs/en`, `docs/zh`, `docs/public`,
+`docs/cards` and `tests/snap` onto a checkout of this repo's `main` and
+builds the site there. The `mode` input decides what happens next:
 
-Add this workflow to your repo:
+- `check`: only the build. A page that renders on GitHub but breaks
+  VitePress (an unclosed `<version>` read as a Vue element, a dead link)
+  fails the step, with an annotation naming the page. It needs no token,
+  so pull requests from forks can run it.
+- `publish` (the default): the same check, then a `sync/<project>` PR here
+  with auto-merge enabled. It needs `token`, with write access to this repo,
+  and runs only on the source repo's default branch: on a pull request,
+  another branch or a tag it fails with "Publish refused".
+
+Check in pull requests, so a breaking page shows up before it merges:
+
+```yaml
+# .github/workflows/docs.yml
+name: docs
+
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "tests/snap/**"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: clice-io/docs@main
+        with:
+          project: your-project-name
+          mode: check
+```
+
+Publish from `main`:
 
 ```yaml
 # .github/workflows/publish-docs.yml
@@ -17,17 +54,24 @@ on:
     branches: [main]
     paths:
       - "docs/**"
+      - "tests/snap/**"
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: clice-io/docs@main
         with:
           project: your-project-name
           token: ${{ secrets.CLICE_DOCS }}
 ```
+
+Both modes set up Node.js 24 with `actions/setup-node`, which also changes
+the `node` every later step of the calling job runs; put the action last,
+or set up the node you need again after it.
 
 ## Check translations
 
