@@ -1,21 +1,27 @@
-# Inspect
+# Explain
 
-Inspect prints how catter analyzes one command, without running it: which compiler or archiver it recognizes, the compiler's mode and target, and the files the command reads and writes. It answers why a command gets, or does not get, an entry in the compilation database.
+`catter explain` prints how catter analyzes one command, without running it: which compiler or archiver it recognizes, the compiler's mode and target, and the files the command reads and writes. It answers why a command gets, or does not get, an entry in the compilation database.
 
-Built-in: `inspect`
+Command: `explain`
 
 ## Usage
 
 ```bash
-catter inspect -- <command>
+catter explain [options] -- <command>
 ```
+
+## Options
+
+| Option                   | Description                                                        |
+| ------------------------ | ------------------------------------------------------------------ |
+| `-C, --directory <path>` | The directory the command runs in. Default: the current directory. |
 
 ## Output
 
 A JSON object. For a compiler:
 
 ```bash
-catter inspect -- gcc -c a.c
+catter explain -- gcc -c a.c
 ```
 
 ```json
@@ -57,4 +63,4 @@ catter inspect -- gcc -c a.c
 | `reads`, `writes`, `edges` | The files the command reads and writes, and which output is made from which inputs (the target tree's edges).                      |
 | `inferred`                 | Outputs the command does not name, inferred from the compiler's defaults.                                                          |
 | `diagnostics`              | What the analysis could not settle, such as an output it cannot infer.                                                             |
-| `entries`                  | The compilation database entries `cdb` writes for this command.                                                                    |
+| `entries`                  | The compilation database entries `compile-commands` writes for this command.                                                       |
