@@ -1,0 +1,1181 @@
+{
+  "id": "code_completion/functions_snippets/12_objective_c_methods",
+  "topic": "code_completion",
+  "subtopic": "functions_snippets",
+  "title": "Objective-C methods",
+  "summary": "A message completes its selector with a placeholder for each argument, from the piece the cursor is at; in a message to `super` the method being written passes its own arguments on. A method declared in an implementation gets its whole declaration, and after a dot a method taking no argument reads as a property",
+  "prose": "The list shows a selector's first piece, the rest as its signature. With `delimiters` the arguments are empty tab stops; with `none`, and where an argument is written already, the piece alone.",
+  "status": "supported",
+  "issues": [],
+  "files": [
+    {
+      "path": "main.m",
+      "text": "__attribute__((objc_root_class))\n@interface Shape\n@property int width;\n+ (instancetype)shapeWithWidth:(int)width;\n+ (Shape *)unit;\n- (void)moveToX:(int)x;\n- (void)moveToX:(int)x y:(int)y;\n- (int)area;\n@end\n\n@interface Square : Shape\n@end\n\nvoid use(Shape *shape) {\n    [shape mo];\n    [shape ar];\n    [shape moveToX:1 y];\n    [shape mo:1];\n    [Shape sha];\n    int area = shape.ar;\n    Shape *unit = Shape.un;\n    SEL moving = @selector(mo);\n    SEL renamed = @selector(mo:y:);\n}\n\n@implementation Square\n- (void)moveToX:(int)x y:(int)y {\n    [super mo];\n    [super mo:x y:y];\n}\n- (void)mo {\n}\n- (void)moveToX:(int)x y {\n}\n- ar {\n}\n@end\n\n@protocol Drawable\n- (void)draw;\n@end\n\n@compatibility_alias Stylus Shape;\n\nvoid sketch(Shape *shape) {\n    [Sha unit];\n    id<Dra> drawable;\n    int wide = shape.wi;\n    [Sty unit];\n    SEL later = @selector(moveToX:y);\n}\n",
+      "markers": [
+        {
+          "name": "message",
+          "begin": 277,
+          "end": 277,
+          "range": false
+        },
+        {
+          "name": "unary",
+          "begin": 293,
+          "end": 293,
+          "range": false
+        },
+        {
+          "name": "next_piece",
+          "begin": 318,
+          "end": 318,
+          "range": false
+        },
+        {
+          "name": "written",
+          "begin": 334,
+          "end": 334,
+          "range": false
+        },
+        {
+          "name": "class_message",
+          "begin": 353,
+          "end": 353,
+          "range": false
+        },
+        {
+          "name": "method_as_property",
+          "begin": 379,
+          "end": 379,
+          "range": false
+        },
+        {
+          "name": "class_method_as_property",
+          "begin": 407,
+          "end": 407,
+          "range": false
+        },
+        {
+          "name": "selector",
+          "begin": 438,
+          "end": 438,
+          "range": false
+        },
+        {
+          "name": "selector_written",
+          "begin": 471,
+          "end": 471,
+          "range": false
+        },
+        {
+          "name": "super_message",
+          "begin": 550,
+          "end": 550,
+          "range": false
+        },
+        {
+          "name": "super_written",
+          "begin": 566,
+          "end": 566,
+          "range": false
+        },
+        {
+          "name": "declaration",
+          "begin": 587,
+          "end": 587,
+          "range": false
+        },
+        {
+          "name": "declaration_piece",
+          "begin": 616,
+          "end": 616,
+          "range": false
+        },
+        {
+          "name": "untyped_declaration",
+          "begin": 625,
+          "end": 625,
+          "range": false
+        },
+        {
+          "name": "class_receiver",
+          "begin": 747,
+          "end": 747,
+          "range": false
+        },
+        {
+          "name": "protocol",
+          "begin": 765,
+          "end": 765,
+          "range": false
+        },
+        {
+          "name": "property",
+          "begin": 800,
+          "end": 800,
+          "range": false
+        },
+        {
+          "name": "alias",
+          "begin": 810,
+          "end": 810,
+          "range": false
+        },
+        {
+          "name": "selector_piece",
+          "begin": 853,
+          "end": 853,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "default",
+      "blocks": [
+        {
+          "label": "message",
+          "marker": "message",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX:${1:(int)}",
+                  "snippet": true
+                },
+                {
+                  "label": "moveToX:(int) y:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX:${1:(int)} y:${2:(int)}",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "unary",
+          "marker": "unary",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "area",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "area"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "next_piece",
+          "marker": "next_piece",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "y:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "y:${1:(int)}",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "written",
+          "marker": "written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX"
+                },
+                {
+                  "label": "moveToX:(int) y:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "class_message",
+          "marker": "class_message",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "shapeWithWidth:(int)",
+                  "kind": "Method",
+                  "detail": "instancetype",
+                  "insert": "shapeWithWidth:${1:(int)}",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "method_as_property",
+          "marker": "method_as_property",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "area",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "area"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "class_method_as_property",
+          "marker": "class_method_as_property",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "unit",
+                  "kind": "Method",
+                  "detail": "Shape *",
+                  "insert": "unit"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "selector",
+          "marker": "selector",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:",
+                  "kind": "Method",
+                  "insert": "moveToX:"
+                },
+                {
+                  "label": "moveToX:y:",
+                  "kind": "Method",
+                  "insert": "moveToX:y:"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "selector_written",
+          "marker": "selector_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:",
+                  "kind": "Method",
+                  "insert": "moveToX"
+                },
+                {
+                  "label": "moveToX:y:",
+                  "kind": "Method",
+                  "insert": "moveToX"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "super_message",
+          "marker": "super_message",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:x y:y",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX:x y:y"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "super_written",
+          "marker": "super_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:x y:y",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "declaration",
+          "marker": "declaration",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:(int)x",
+                  "kind": "Method",
+                  "insert": "moveToX:(int)x"
+                },
+                {
+                  "label": "moveToX:(int)x y:(int)y",
+                  "kind": "Method",
+                  "insert": "moveToX:(int)x y:(int)y"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "declaration_piece",
+          "marker": "declaration_piece",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "y:(int)y",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "y:(int)y"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "untyped_declaration",
+          "marker": "untyped_declaration",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "area",
+                  "kind": "Method",
+                  "insert": "(int)area"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "class_receiver",
+          "marker": "class_receiver",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "shape",
+                  "kind": "Variable",
+                  "detail": "Shape *",
+                  "insert": "shape"
+                },
+                {
+                  "label": "Shape",
+                  "kind": "Class",
+                  "insert": "Shape"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "protocol",
+          "marker": "protocol",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Drawable",
+                  "kind": "Interface",
+                  "insert": "Drawable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "property",
+          "marker": "property",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width",
+                  "kind": "Property",
+                  "detail": "int",
+                  "insert": "width"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "alias",
+          "marker": "alias",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Stylus",
+                  "kind": "TypeParameter",
+                  "insert": "Stylus"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "selector_piece",
+          "marker": "selector_piece",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "y:",
+                  "kind": "Method",
+                  "insert": "y:"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "delimiters",
+      "config": {
+        "code_completion": {
+          "arguments": "delimiters"
+        }
+      },
+      "blocks": [
+        {
+          "label": "message",
+          "marker": "message",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX:$1",
+                  "snippet": true
+                },
+                {
+                  "label": "moveToX:(int) y:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX:$1 y:$2",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "unary",
+          "marker": "unary",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "area",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "area"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "next_piece",
+          "marker": "next_piece",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "y:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "y:$1",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "written",
+          "marker": "written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX"
+                },
+                {
+                  "label": "moveToX:(int) y:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "class_message",
+          "marker": "class_message",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "shapeWithWidth:(int)",
+                  "kind": "Method",
+                  "detail": "instancetype",
+                  "insert": "shapeWithWidth:$1",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "method_as_property",
+          "marker": "method_as_property",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "area",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "area"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "class_method_as_property",
+          "marker": "class_method_as_property",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "unit",
+                  "kind": "Method",
+                  "detail": "Shape *",
+                  "insert": "unit"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "selector",
+          "marker": "selector",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:",
+                  "kind": "Method",
+                  "insert": "moveToX:"
+                },
+                {
+                  "label": "moveToX:y:",
+                  "kind": "Method",
+                  "insert": "moveToX:y:"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "selector_written",
+          "marker": "selector_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:",
+                  "kind": "Method",
+                  "insert": "moveToX"
+                },
+                {
+                  "label": "moveToX:y:",
+                  "kind": "Method",
+                  "insert": "moveToX"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "super_message",
+          "marker": "super_message",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:x y:y",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX:x y:y"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "super_written",
+          "marker": "super_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:x y:y",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "declaration",
+          "marker": "declaration",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:(int)x",
+                  "kind": "Method",
+                  "insert": "moveToX:(int)x"
+                },
+                {
+                  "label": "moveToX:(int)x y:(int)y",
+                  "kind": "Method",
+                  "insert": "moveToX:(int)x y:(int)y"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "declaration_piece",
+          "marker": "declaration_piece",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "y:(int)y",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "y:(int)y"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "untyped_declaration",
+          "marker": "untyped_declaration",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "area",
+                  "kind": "Method",
+                  "insert": "(int)area"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "class_receiver",
+          "marker": "class_receiver",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "shape",
+                  "kind": "Variable",
+                  "detail": "Shape *",
+                  "insert": "shape"
+                },
+                {
+                  "label": "Shape",
+                  "kind": "Class",
+                  "insert": "Shape"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "protocol",
+          "marker": "protocol",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Drawable",
+                  "kind": "Interface",
+                  "insert": "Drawable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "property",
+          "marker": "property",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width",
+                  "kind": "Property",
+                  "detail": "int",
+                  "insert": "width"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "alias",
+          "marker": "alias",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Stylus",
+                  "kind": "TypeParameter",
+                  "insert": "Stylus"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "selector_piece",
+          "marker": "selector_piece",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "y:",
+                  "kind": "Method",
+                  "insert": "y:"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "none",
+      "config": {
+        "code_completion": {
+          "arguments": "none"
+        }
+      },
+      "blocks": [
+        {
+          "label": "message",
+          "marker": "message",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX:"
+                },
+                {
+                  "label": "moveToX:(int) y:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX:"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "unary",
+          "marker": "unary",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "area",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "area"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "next_piece",
+          "marker": "next_piece",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "y:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "y:"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "written",
+          "marker": "written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX"
+                },
+                {
+                  "label": "moveToX:(int) y:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "class_message",
+          "marker": "class_message",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "shapeWithWidth:(int)",
+                  "kind": "Method",
+                  "detail": "instancetype",
+                  "insert": "shapeWithWidth:"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "method_as_property",
+          "marker": "method_as_property",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "area",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "area"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "class_method_as_property",
+          "marker": "class_method_as_property",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "unit",
+                  "kind": "Method",
+                  "detail": "Shape *",
+                  "insert": "unit"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "selector",
+          "marker": "selector",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:",
+                  "kind": "Method",
+                  "insert": "moveToX:"
+                },
+                {
+                  "label": "moveToX:y:",
+                  "kind": "Method",
+                  "insert": "moveToX:y:"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "selector_written",
+          "marker": "selector_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:",
+                  "kind": "Method",
+                  "insert": "moveToX"
+                },
+                {
+                  "label": "moveToX:y:",
+                  "kind": "Method",
+                  "insert": "moveToX"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "super_message",
+          "marker": "super_message",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:x y:y",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX:x y:y"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "super_written",
+          "marker": "super_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:x y:y",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "declaration",
+          "marker": "declaration",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:(int)x",
+                  "kind": "Method",
+                  "insert": "moveToX:(int)x"
+                },
+                {
+                  "label": "moveToX:(int)x y:(int)y",
+                  "kind": "Method",
+                  "insert": "moveToX:(int)x y:(int)y"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "declaration_piece",
+          "marker": "declaration_piece",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "y:(int)y",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "y:(int)y"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "untyped_declaration",
+          "marker": "untyped_declaration",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "area",
+                  "kind": "Method",
+                  "insert": "(int)area"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "class_receiver",
+          "marker": "class_receiver",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "shape",
+                  "kind": "Variable",
+                  "detail": "Shape *",
+                  "insert": "shape"
+                },
+                {
+                  "label": "Shape",
+                  "kind": "Class",
+                  "insert": "Shape"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "protocol",
+          "marker": "protocol",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Drawable",
+                  "kind": "Interface",
+                  "insert": "Drawable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "property",
+          "marker": "property",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width",
+                  "kind": "Property",
+                  "detail": "int",
+                  "insert": "width"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "alias",
+          "marker": "alias",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Stylus",
+                  "kind": "TypeParameter",
+                  "insert": "Stylus"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "selector_piece",
+          "marker": "selector_piece",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "y:",
+                  "kind": "Method",
+                  "insert": "y:"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "plain text client",
+      "blocks": [
+        {
+          "label": "message",
+          "marker": "message",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "moveToX:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX:"
+                },
+                {
+                  "label": "moveToX:(int) y:(int)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "moveToX:"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
