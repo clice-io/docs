@@ -1,5 +1,5 @@
 import * as fs from "node:fs";
-import { defineConfig } from "vitepress";
+import { defineConfigWithTheme, type DefaultTheme } from "vitepress";
 import cjkFriendly from "markdown-it-cjk-friendly";
 import footnote from "markdown-it-footnote";
 import taskLists from "markdown-it-task-lists";
@@ -12,7 +12,20 @@ import { literalBraces } from "./braces";
 const SITE = "https://docs.clice.io";
 const projects = ["clice", "catter", "xclang"];
 
-export default defineConfig({
+// The projects that publish a zh tree. The other projects are English only:
+// their zh nav and footer entries link to the English pages. A sync that adds
+// zh/<project> switches the project over at the next build. The trees sit
+// next to .vitepress: srcDir is not set, so it is the site root.
+const zhProjects = projects.filter((p) => fs.existsSync(new URL(`../zh/${p}`, import.meta.url)));
+
+function projectNav(lang: "en" | "zh"): DefaultTheme.NavItem[] {
+    return projects.map((p) => ({
+        text: p,
+        link: lang === "zh" && zhProjects.includes(p) ? `/zh/${p}/` : `/${p}/`,
+    }));
+}
+
+export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string[] }>({
     title: "clice.io",
     description: "Next generation C++ tooling",
     cleanUrls: true,
@@ -36,8 +49,8 @@ export default defineConfig({
         const en = isZh ? path.replace(/^zh\/?/, "") : path;
         const url = (p: string) => `${SITE}/${p}`;
         // The en and zh trees mirror each other file for file, except for
-        // projects that publish one language only (xclang has no zh tree):
-        // link a translation only when its source page exists.
+        // projects that publish English only (no zh/<project> tree, see
+        // zhProjects): link a translation only when its source page exists.
         const source = pageData.relativePath.replace(/^zh\//, "");
         const hasEn = fs.existsSync(`${siteConfig.srcDir}/en/${source}`);
         const hasZh = fs.existsSync(`${siteConfig.srcDir}/zh/${source}`);
@@ -97,6 +110,8 @@ export default defineConfig({
     },
     themeConfig: {
         logo: "/mascot/logo-mark.webp",
+        // Read by SiteFooter, which runs in the browser.
+        zhProjects,
         outline: "deep",
         search: {
             provider: "local"
@@ -114,9 +129,7 @@ export default defineConfig({
             themeConfig: {
                 nav: [
                     { text: "blog", link: "/blog" },
-                    { text: "clice", link: "/clice/" },
-                    { text: "catter", link: "/catter/" },
-                    { text: "xclang", link: "/xclang/" },
+                    ...projectNav("en"),
                     { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
                 ],
                 sidebar: genSidebar(projects, "en"),
@@ -129,9 +142,7 @@ export default defineConfig({
             themeConfig: {
                 nav: [
                     { text: "博客", link: "/zh/blog" },
-                    { text: "clice", link: "/zh/clice/" },
-                    { text: "catter", link: "/zh/catter/" },
-                    { text: "xclang", link: "/xclang/" },
+                    ...projectNav("zh"),
                     { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
                 ],
                 sidebar: genSidebar(projects, "zh"),
