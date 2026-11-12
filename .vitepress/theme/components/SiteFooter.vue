@@ -1,24 +1,30 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useData } from 'vitepress'
+import { useData, type DefaultTheme } from 'vitepress'
 import { useSidebar } from 'vitepress/theme'
 import BrandIcon from './BrandIcon.vue'
 
 type Column = { title: string; links: { text: string; href: string; icon?: string; external?: boolean }[] }
 
-const { lang } = useData()
+const { lang, theme } = useData<DefaultTheme.Config & { zhProjects: string[] }>()
 const { hasSidebar } = useSidebar()
 const zh = computed(() => lang.value.startsWith('zh'))
 const p = computed(() => (zh.value ? '/zh' : ''))
+
+// A project without a zh tree (zhProjects, worked out at build time) is
+// English only: the zh footer links to its English pages.
+const guide = (project: string) => {
+  const prefix = theme.value.zhProjects.includes(project) ? p.value : ''
+  return `${prefix}/${project}/guide/what-is-${project}`
+}
 
 const columns = computed<Column[]>(() => [
   {
     title: zh.value ? '文档' : 'Docs',
     links: [
-      { text: 'clice', href: `${p.value}/clice/guide/what-is-clice` },
-      { text: 'catter', href: `${p.value}/catter/guide/what-is-catter` },
-      // English only: the zh footer links to the English pages too.
-      { text: 'xclang', href: '/xclang/guide/what-is-xclang' },
+      { text: 'clice', href: guide('clice') },
+      { text: 'catter', href: guide('catter') },
+      { text: 'xclang', href: guide('xclang') },
       { text: zh.value ? '博客' : 'Blog', href: `${p.value}/blog` }
     ]
   },
