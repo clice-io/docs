@@ -7,8 +7,7 @@
   "prose": "",
   "status": "unsupported",
   "issues": [
-    "clangd#716",
-    "clangd#1872"
+    "clangd#716"
   ],
   "files": [
     {
@@ -32,7 +31,7 @@
           "label": "constructor",
           "marker": "constructor",
           "value": {
-            "wrong": "make<Widget>(800, 600) runs the constructor, so it should be among the references (clangd#716, clangd#1872)",
+            "wrong": "make<Widget>(800, 600) runs the constructor, so it should be among the references, as clangd 22 lists it (clangd#716)",
             "references": [
               {
                 "$place": "return T⟦(⟧static_cast<Args&&>(args)...);",

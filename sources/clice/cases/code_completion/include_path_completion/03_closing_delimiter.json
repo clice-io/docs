@@ -4,10 +4,15 @@
   "subtopic": "include_path_completion",
   "title": "Closing delimiter",
   "summary": "Accepting a header closes the directive, replacing what was already typed after the cursor instead of doubling it",
-  "prose": "A delimiter already there is replaced, and so is the rest of a path when the header is picked in an earlier path component.",
+  "prose": "A delimiter already there is replaced, and so is the rest of a path when the header is picked in an earlier path component. A name with spaces is replaced through its closing delimiter; without one, it ends at its first space.",
   "status": "supported",
   "issues": [],
   "files": [
+    {
+      "path": "inc/snap spaced.h",
+      "text": "#pragma once\n",
+      "markers": []
+    },
     {
       "path": "inc/snap_dir/nested.h",
       "text": "#pragma once\n",
@@ -20,7 +25,7 @@
     },
     {
       "path": "main.cpp",
-      "text": "#include \"snap_hea\n#include \"snap_header.h\"\n#include \"snap_hea/rest.h\"\n",
+      "text": "#include \"snap_hea\n#include \"snap_header.h\"\n#include \"snap_hea/rest.h\"\n#include \"snap spaced.h\"\n#include \"snap spaced.h\n",
       "markers": [
         {
           "name": "open",
@@ -38,6 +43,18 @@
           "name": "component",
           "begin": 62,
           "end": 62,
+          "range": false
+        },
+        {
+          "name": "spaced_closed",
+          "begin": 85,
+          "end": 85,
+          "range": false
+        },
+        {
+          "name": "spaced_open",
+          "begin": 110,
+          "end": 110,
           "range": false
         }
       ]
@@ -126,6 +143,140 @@
                       "end": {
                         "line": 2,
                         "character": 26
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "spaced_closed",
+          "marker": "spaced_closed",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "snap spaced.h",
+                  "kind": "File",
+                  "insert": "snap spaced.h\"",
+                  "replace": {
+                    "$place": "#include \"⟦snap spaced.h\"⟧",
+                    "path": "main.cpp",
+                    "range": {
+                      "start": {
+                        "line": 3,
+                        "character": 10
+                      },
+                      "end": {
+                        "line": 3,
+                        "character": 24
+                      }
+                    }
+                  }
+                },
+                {
+                  "label": "snap_dir/",
+                  "kind": "Folder",
+                  "insert": "snap_dir",
+                  "replace": {
+                    "$place": "#include \"⟦snap spaced.h⟧\"",
+                    "path": "main.cpp",
+                    "range": {
+                      "start": {
+                        "line": 3,
+                        "character": 10
+                      },
+                      "end": {
+                        "line": 3,
+                        "character": 23
+                      }
+                    }
+                  }
+                },
+                {
+                  "label": "snap_header.h",
+                  "kind": "File",
+                  "insert": "snap_header.h\"",
+                  "replace": {
+                    "$place": "#include \"⟦snap spaced.h\"⟧",
+                    "path": "main.cpp",
+                    "range": {
+                      "start": {
+                        "line": 3,
+                        "character": 10
+                      },
+                      "end": {
+                        "line": 3,
+                        "character": 24
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "spaced_open",
+          "marker": "spaced_open",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "snap spaced.h",
+                  "kind": "File",
+                  "insert": "snap spaced.h\"",
+                  "replace": {
+                    "$place": "#include \"⟦snap⟧ spaced.h",
+                    "path": "main.cpp",
+                    "range": {
+                      "start": {
+                        "line": 4,
+                        "character": 10
+                      },
+                      "end": {
+                        "line": 4,
+                        "character": 14
+                      }
+                    }
+                  }
+                },
+                {
+                  "label": "snap_dir/",
+                  "kind": "Folder",
+                  "insert": "snap_dir",
+                  "replace": {
+                    "$place": "#include \"⟦snap⟧ spaced.h",
+                    "path": "main.cpp",
+                    "range": {
+                      "start": {
+                        "line": 4,
+                        "character": 10
+                      },
+                      "end": {
+                        "line": 4,
+                        "character": 14
+                      }
+                    }
+                  }
+                },
+                {
+                  "label": "snap_header.h",
+                  "kind": "File",
+                  "insert": "snap_header.h\"",
+                  "replace": {
+                    "$place": "#include \"⟦snap⟧ spaced.h",
+                    "path": "main.cpp",
+                    "range": {
+                      "start": {
+                        "line": 4,
+                        "character": 10
+                      },
+                      "end": {
+                        "line": 4,
+                        "character": 14
                       }
                     }
                   }

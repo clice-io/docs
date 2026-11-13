@@ -21,6 +21,42 @@
       ]
     },
     {
+      "path": "identifier.cpp",
+      "text": "int importance = 0;\n\nint rank() {\n    importance = impo;\n    return importance;\n}\n",
+      "markers": [
+        {
+          "name": "longer_word",
+          "begin": 55,
+          "end": 55,
+          "range": false
+        }
+      ]
+    },
+    {
+      "path": "indented.cpp",
+      "text": "    import ma\n",
+      "markers": [
+        {
+          "name": "indented",
+          "begin": 13,
+          "end": 13,
+          "range": false
+        }
+      ]
+    },
+    {
+      "path": "inside.cpp",
+      "text": "import math;\n",
+      "markers": [
+        {
+          "name": "inside_keyword",
+          "begin": 3,
+          "end": 3,
+          "range": false
+        }
+      ]
+    },
+    {
       "path": "main.cpp",
       "text": "import ma\n",
       "markers": [
@@ -63,6 +99,108 @@
                       "end": {
                         "line": 0,
                         "character": 7
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "longer_word",
+          "marker": "longer_word",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "importance",
+                  "kind": "Variable",
+                  "detail": "int",
+                  "insert": "importance",
+                  "replace": {
+                    "$place": "importance = ⟦impo⟧;",
+                    "path": "identifier.cpp",
+                    "range": {
+                      "start": {
+                        "line": 3,
+                        "character": 17
+                      },
+                      "end": {
+                        "line": 3,
+                        "character": 21
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "indented",
+          "marker": "indented",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "math",
+                  "kind": "Module",
+                  "insert": "math;",
+                  "replace": {
+                    "$place": "import ⟦ma⟧",
+                    "path": "indented.cpp",
+                    "range": {
+                      "start": {
+                        "line": 0,
+                        "character": 11
+                      },
+                      "end": {
+                        "line": 0,
+                        "character": 13
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "inside_keyword",
+          "marker": "inside_keyword",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "import",
+                  "kind": "Keyword",
+                  "insert": "import",
+                  "replace": {
+                    "$place": "⟦import⟧ math;",
+                    "path": "inside.cpp",
+                    "range": {
+                      "start": {
+                        "line": 0,
+                        "character": 0
+                      },
+                      "end": {
+                        "line": 0,
+                        "character": 6
+                      }
+                    }
+                  },
+                  "insert_range": {
+                    "$place": "⟦imp⟧ort math;",
+                    "path": "inside.cpp",
+                    "range": {
+                      "start": {
+                        "line": 0,
+                        "character": 0
+                      },
+                      "end": {
+                        "line": 0,
+                        "character": 3
                       }
                     }
                   }

@@ -3,14 +3,14 @@
   "topic": "rename",
   "subtopic": "refusals",
   "title": "Names a rename refuses",
-  "summary": "Pressing rename on an operator, a symbol or a macro of the system headers, a macro the compile command defines or a name its instantiations resolve to several symbols says why it cannot be renamed; off any name, nothing happens",
+  "summary": "Pressing rename on an operator, a symbol or a macro of the system headers, a macro the compile command defines, a name its instantiations resolve to several symbols or the parenthesis of a constructor call says why it cannot be renamed; off any name, nothing happens",
   "prose": "",
   "status": "supported",
   "issues": [],
   "files": [
     {
       "path": "main.cpp",
-      "text": "#include <cstdio>\n\nstruct Point {\n    int x;\n    Point operator+(const Point& other) const { return {x + other.x}; }\n};\n\nstruct Size {\n    int x;\n};\n\ntemplate <typename T>\nint width(const T& shape) {\n    return shape.x;\n}\n\nint main() {\n    Point p{1};\n    std::printf(\"%d\", (p + p).x);\n    return FROM_BUILD + EOF + width(p) + width(Size{2});\n}\n",
+      "text": "#include <cstdio>\n\nstruct Point {\n    int x;\n    Point operator+(const Point& other) const { return {x + other.x}; }\n};\n\nstruct Size {\n    int x;\n};\n\nstruct Gauge {\n    explicit Gauge(int level);\n};\n\nGauge gauge(1);\n\ntemplate <typename T>\nint width(const T& shape) {\n    return shape.x;\n}\n\nint main() {\n    Point p{1};\n    std::printf(\"%d\", (p + p).x);\n    return FROM_BUILD + EOF + width(p) + width(Size{2});\n}\n",
       "markers": [
         {
           "name": "include",
@@ -25,27 +25,33 @@
           "range": false
         },
         {
+          "name": "constructor_paren",
+          "begin": 211,
+          "end": 211,
+          "range": false
+        },
+        {
           "name": "dependent",
-          "begin": 217,
-          "end": 217,
+          "begin": 284,
+          "end": 284,
           "range": false
         },
         {
           "name": "system",
-          "begin": 261,
-          "end": 261,
+          "begin": 328,
+          "end": 328,
           "range": false
         },
         {
           "name": "command_line",
-          "begin": 297,
-          "end": 297,
+          "begin": 364,
+          "end": 364,
           "range": false
         },
         {
           "name": "system_macro",
-          "begin": 310,
-          "end": 310,
+          "begin": 377,
+          "end": 377,
           "range": false
         }
       ]
@@ -68,6 +74,15 @@
           "value": {
             "prepare_rename": {
               "error": "`operator+` is named by the language, not by an identifier"
+            }
+          }
+        },
+        {
+          "label": "constructor_paren",
+          "marker": "constructor_paren",
+          "value": {
+            "prepare_rename": {
+              "error": "no name of `Gauge` is written here"
             }
           }
         },

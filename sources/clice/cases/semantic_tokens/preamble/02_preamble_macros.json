@@ -10,18 +10,24 @@
   "files": [
     {
       "path": "main.cpp",
-      "text": "#define SQUARE(x) ((x) * (x))\n\n[[maybe_unused]] static int squared = SQUARE(4);\n",
+      "text": "#define TRACED\n#define SQUARE(x) ((x) * (x))\n\n[[maybe_unused]] static int squared = SQUARE(4);\n",
       "markers": [
         {
-          "name": "definition",
+          "name": "empty_definition",
           "begin": 8,
           "end": 8,
           "range": false
         },
         {
+          "name": "definition",
+          "begin": 23,
+          "end": 23,
+          "range": false
+        },
+        {
           "name": "expansion",
-          "begin": 69,
-          "end": 69,
+          "begin": 84,
+          "end": 84,
           "range": false
         }
       ]
@@ -31,6 +37,20 @@
     {
       "name": "answers",
       "blocks": [
+        {
+          "label": "empty_definition",
+          "marker": "empty_definition",
+          "value": {
+            "semantic_token": {
+              "text": "TRACED",
+              "type": "macro",
+              "modifiers": [
+                "definition",
+                "empty"
+              ]
+            }
+          }
+        },
         {
           "label": "definition",
           "marker": "definition",

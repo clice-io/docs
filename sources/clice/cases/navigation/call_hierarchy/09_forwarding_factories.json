@@ -7,7 +7,7 @@
   "prose": "",
   "status": "unsupported",
   "issues": [
-    "clangd#2242"
+    "clangd#716"
   ],
   "files": [
     {
@@ -31,7 +31,7 @@
           "label": "constructor",
           "marker": "constructor",
           "value": {
-            "wrong": "build reaches the constructor through make<Widget>, so it should be among the incoming calls (clangd#2242)",
+            "wrong": "build reaches the constructor through make<Widget>, so it should be among the incoming calls, as clangd 22 shows it (clangd#716)",
             "call_hierarchy": [
               {
                 "name": "Widget",

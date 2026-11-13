@@ -41,7 +41,66 @@
   ],
   "tests": [
     {
-      "name": "answers",
+      "name": "compiled",
+      "blocks": [
+        {
+          "label": "type",
+          "marker": "type",
+          "value": {
+            "semantic_token": {
+              "text": "Widget",
+              "type": "struct",
+              "modifiers": [
+                "definition",
+                "global"
+              ]
+            }
+          }
+        },
+        {
+          "label": "function",
+          "marker": "function",
+          "value": {
+            "semantic_token": {
+              "text": "Widget",
+              "type": "function",
+              "modifiers": [
+                "declaration",
+                "global"
+              ]
+            }
+          }
+        },
+        {
+          "label": "type_and_function",
+          "marker": "type_and_function",
+          "value": {
+            "semantic_token": {
+              "text": "Widget",
+              "type": "conflict",
+              "modifiers": [
+                "global"
+              ]
+            }
+          }
+        },
+        {
+          "label": "type_and_variable",
+          "marker": "type_and_variable",
+          "value": {
+            "semantic_token": {
+              "text": "Thing",
+              "type": "conflict",
+              "modifiers": [
+                "global"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "index",
       "blocks": [
         {
           "label": "type",
