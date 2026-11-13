@@ -10,7 +10,7 @@
   "files": [
     {
       "path": "main.cpp",
-      "text": "template <typename T>\nvoid g(T value) {\n    auto copy = value;\n}\n\nauto make_local() {\n    struct Local {};\n    return Local{};\n}\n\nstruct Pair {\n    int first;\n    int second;\n};\n\nclass Widget {\n    struct Handle {};\n\npublic:\n    static Handle open();\n};\n\nvoid f() {\n    auto callback = [] {};\n    auto local = make_local();\n    auto handle = Widget::open();\n    auto size = sizeof(int);\n    auto [first, second] = Pair{};\n}\n",
+      "text": "template <typename T>\nvoid g(T value) {\n    auto copy = value;\n}\n\nauto make_local() {\n    struct Local {};\n    return Local{};\n}\n\nstruct Pair {\n    int first;\n    int second;\n};\n\nclass Widget {\n    struct Handle {};\n\npublic:\n    static Handle open();\n};\n\ntemplate <int* P>\nstruct Slot {};\n\nclass Registry {\n    static int count;\n\npublic:\n    static auto slot() {\n        return Slot<&count>{};\n    }\n};\n\nvoid f() {\n    auto callback = [] {};\n    auto local = make_local();\n    auto handle = Widget::open();\n    auto size = sizeof(int);\n    auto [first, second] = Pair{};\n    auto slot = Registry::slot();\n}\n",
       "markers": [
         {
           "name": "dependent",
@@ -20,32 +20,38 @@
         },
         {
           "name": "lambda",
-          "begin": 270,
-          "end": 270,
+          "begin": 419,
+          "end": 419,
           "range": false
         },
         {
           "name": "local",
-          "begin": 297,
-          "end": 297,
+          "begin": 446,
+          "end": 446,
           "range": false
         },
         {
           "name": "private",
-          "begin": 328,
-          "end": 328,
+          "begin": 477,
+          "end": 477,
           "range": false
         },
         {
           "name": "size",
-          "begin": 362,
-          "end": 362,
+          "begin": 511,
+          "end": 511,
           "range": false
         },
         {
           "name": "binding",
-          "begin": 391,
-          "end": 391,
+          "begin": 540,
+          "end": 540,
+          "range": false
+        },
+        {
+          "name": "private_argument",
+          "begin": 575,
+          "end": 575,
           "range": false
         }
       ]
@@ -93,6 +99,13 @@
         {
           "label": "binding",
           "marker": "binding",
+          "value": {
+            "code_actions": []
+          }
+        },
+        {
+          "label": "private_argument",
+          "marker": "private_argument",
           "value": {
             "code_actions": []
           }

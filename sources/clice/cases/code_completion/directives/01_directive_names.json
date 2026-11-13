@@ -10,7 +10,7 @@
   "files": [
     {
       "path": "main.cpp",
-      "text": "#\n#in\n#ifndef DIRECTIVE_NAMES\n#el\n#endif\n#ifdef DIRECTIVE_NAMES\n#else\n#e\n#endif\n",
+      "text": "#\n#in\n#ifndef DIRECTIVE_NAMES\n#el\n#endif\n#ifdef DIRECTIVE_NAMES\n#else\n#e\n#endif\n#el\n# // see\n#if DIRECTIVE_NAMES\n#else\n#if DIRECTIVE_OTHER\n#e\n#endif\n#endif\n",
       "markers": [
         {
           "name": "empty",
@@ -34,6 +34,24 @@
           "name": "after_else",
           "begin": 72,
           "end": 72,
+          "range": false
+        },
+        {
+          "name": "after_endif",
+          "begin": 83,
+          "end": 83,
+          "range": false
+        },
+        {
+          "name": "after_comment",
+          "begin": 92,
+          "end": 92,
+          "range": false
+        },
+        {
+          "name": "nested",
+          "begin": 141,
+          "end": 141,
           "range": false
         }
       ]
@@ -160,6 +178,64 @@
           "value": {
             "completion": {
               "items": [
+                {
+                  "label": "endif",
+                  "kind": "Keyword",
+                  "insert": "endif"
+                },
+                {
+                  "label": "error",
+                  "kind": "Keyword",
+                  "insert": "error"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "after_endif",
+          "marker": "after_endif",
+          "value": {
+            "completion": {
+              "items": []
+            }
+          }
+        },
+        {
+          "label": "after_comment",
+          "marker": "after_comment",
+          "value": {
+            "completion": {
+              "items": []
+            }
+          }
+        },
+        {
+          "label": "nested",
+          "marker": "nested",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "elif",
+                  "kind": "Keyword",
+                  "insert": "elif"
+                },
+                {
+                  "label": "elifdef",
+                  "kind": "Keyword",
+                  "insert": "elifdef"
+                },
+                {
+                  "label": "elifndef",
+                  "kind": "Keyword",
+                  "insert": "elifndef"
+                },
+                {
+                  "label": "else",
+                  "kind": "Keyword",
+                  "insert": "else"
+                },
                 {
                   "label": "endif",
                   "kind": "Keyword",
@@ -328,6 +404,68 @@
           "value": {
             "completion": {
               "items": [
+                {
+                  "label": "endif",
+                  "kind": "Snippet",
+                  "insert": "endif"
+                },
+                {
+                  "label": "error message",
+                  "kind": "Snippet",
+                  "insert": "error ${1:message}",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "after_endif",
+          "marker": "after_endif",
+          "value": {
+            "completion": {
+              "items": []
+            }
+          }
+        },
+        {
+          "label": "after_comment",
+          "marker": "after_comment",
+          "value": {
+            "completion": {
+              "items": []
+            }
+          }
+        },
+        {
+          "label": "nested",
+          "marker": "nested",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "elif condition",
+                  "kind": "Snippet",
+                  "insert": "elif ${1:condition}",
+                  "snippet": true
+                },
+                {
+                  "label": "elifdef macro",
+                  "kind": "Snippet",
+                  "insert": "elifdef ${1:macro}",
+                  "snippet": true
+                },
+                {
+                  "label": "elifndef macro",
+                  "kind": "Snippet",
+                  "insert": "elifndef ${1:macro}",
+                  "snippet": true
+                },
+                {
+                  "label": "else",
+                  "kind": "Snippet",
+                  "insert": "else"
+                },
                 {
                   "label": "endif",
                   "kind": "Snippet",

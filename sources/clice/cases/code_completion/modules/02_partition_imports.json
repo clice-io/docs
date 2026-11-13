@@ -25,8 +25,21 @@
     },
     {
       "path": "lib.cppm",
-      "text": "export module lib;\nexport int lib_value();\n",
-      "markers": []
+      "text": "export module lib;\nexport import ;\nexport import a\nexport int lib_value();\n",
+      "markers": [
+        {
+          "name": "exported_bare",
+          "begin": 33,
+          "end": 33,
+          "range": false
+        },
+        {
+          "name": "exported",
+          "begin": 50,
+          "end": 50,
+          "range": false
+        }
+      ]
     },
     {
       "path": "lib_part.cppm",
@@ -62,6 +75,83 @@
     {
       "name": "answers",
       "blocks": [
+        {
+          "label": "exported_bare",
+          "marker": "exported_bare",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": ":part",
+                  "kind": "Module",
+                  "insert": ":part",
+                  "replace": {
+                    "$place": "export import ⟦⟧;",
+                    "path": "lib.cppm",
+                    "range": {
+                      "start": {
+                        "line": 1,
+                        "character": 14
+                      },
+                      "end": {
+                        "line": 1,
+                        "character": 14
+                      }
+                    }
+                  }
+                },
+                {
+                  "label": "app",
+                  "kind": "Module",
+                  "insert": "app",
+                  "replace": {
+                    "$place": "export import ⟦⟧;",
+                    "path": "lib.cppm",
+                    "range": {
+                      "start": {
+                        "line": 1,
+                        "character": 14
+                      },
+                      "end": {
+                        "line": 1,
+                        "character": 14
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "exported",
+          "marker": "exported",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "app",
+                  "kind": "Module",
+                  "insert": "app;",
+                  "replace": {
+                    "$place": "export import ⟦a⟧",
+                    "path": "lib.cppm",
+                    "range": {
+                      "start": {
+                        "line": 2,
+                        "character": 14
+                      },
+                      "end": {
+                        "line": 2,
+                        "character": 15
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
         {
           "label": "names",
           "marker": "names",

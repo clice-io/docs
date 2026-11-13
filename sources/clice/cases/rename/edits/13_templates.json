@@ -10,7 +10,7 @@
   "files": [
     {
       "path": "main.cpp",
-      "text": "struct Circle {\n    double area() const { return 3.0; }\n};\n\nstruct Square {\n    double area() const { return 4.0; }\n};\n\nstruct Triangle {\n    double area() const { return 2.0; }\n};\n\ntemplate <typename T>\ndouble measure(const T& shape) { return shape.area(); }\n\ntemplate <typename T>\ndouble report(const T& shape) { return shape.area(); }\n\ntemplate <typename T>\nstruct Box {\n    double area() const { return 1.0; }\n};\n\ntemplate <typename T>\ndouble size_of(const Box<T>& box) { return box.area(); }\n\nint main() {\n    return static_cast<int>(measure(Circle{}) + report(Square{}) + report(Triangle{}));\n}\n",
+      "text": "struct Circle {\n    double area() const { return 3.0; }\n};\n\nstruct Square {\n    double area() const { return 4.0; }\n};\n\nstruct Triangle {\n    double area() const { return 2.0; }\n};\n\ntemplate <typename T>\ndouble measure(const T& shape) { return shape.area(); }\n\ntemplate <typename T>\ndouble report(const T& shape) { return shape.area(); }\n\ntemplate <typename T>\nstruct Box {\n    double area() const { return 1.0; }\n};\n\ntemplate <typename T>\ndouble size_of(const Box<T>& box) { return box.area(); }\n\ntemplate <typename T>\nstruct Crate {\n    static constexpr int capacity = 1;\n};\n\ntemplate <typename T>\nint load() { return Crate<T>::capacity; }\n\nstruct Polygon {\n    virtual int sides() const { return 0; }\n};\n\nstruct Hexagon : Polygon {\n    int sides() const override { return 6; }\n};\n\ntemplate <typename T>\nint count(const T& shape) { return shape.sides(); }\n\ndouble scale(double value) { return value * 2; }\n\ntemplate <typename T>\ndouble grow(const T& value) { return scale(value); }\n\nint main() {\n    return static_cast<int>(measure(Circle{}) + report(Square{}) + report(Triangle{})) +\n           count(Polygon{}) + count(Hexagon{}) + load<int>();\n}\n",
       "markers": [
         {
           "name": "circle",
@@ -25,9 +25,45 @@
           "range": false
         },
         {
+          "name": "measure_call",
+          "begin": 250,
+          "end": 250,
+          "range": false
+        },
+        {
           "name": "box",
           "begin": 385,
           "end": 385,
+          "range": false
+        },
+        {
+          "name": "size_of_call",
+          "begin": 487,
+          "end": 487,
+          "range": false
+        },
+        {
+          "name": "crate",
+          "begin": 560,
+          "end": 560,
+          "range": false
+        },
+        {
+          "name": "load_call",
+          "begin": 630,
+          "end": 630,
+          "range": false
+        },
+        {
+          "name": "count_call",
+          "begin": 847,
+          "end": 847,
+          "range": false
+        },
+        {
+          "name": "scale",
+          "begin": 866,
+          "end": 866,
           "range": false
         }
       ]
@@ -63,6 +99,64 @@
                 "main.cpp": " template <typename T>\n struct Box {\n-    double area() const { return 1.0; }\n+    double volume() const { return 1.0; }\n };\n"
               },
               "notice": "Spellings of `area` left alone:\n  ${WS}/main.cpp:25: double size_of(const Box<T>& box) { return box.area(); } (in a template, where no instantiation the index saw resolves the name to it)"
+            }
+          }
+        },
+        {
+          "label": "from_instantiated_call",
+          "value": {
+            "rename": {
+              "edits": {
+                "main.cpp": " struct Circle {\n-    double area() const { return 3.0; }\n+    double perimeter() const { return 3.0; }\n };\n\n…\n\n template <typename T>\n-double measure(const T& shape) { return shape.area(); }\n+double measure(const T& shape) { return shape.perimeter(); }\n\n template <typename T>"
+              }
+            }
+          }
+        },
+        {
+          "label": "from_uninstantiated_call",
+          "value": {
+            "prepare_rename": {
+              "error": "no instantiation the index saw resolves the name here; rename from a declaration"
+            }
+          }
+        },
+        {
+          "label": "instantiated_scope",
+          "value": {
+            "rename": {
+              "edits": {
+                "main.cpp": " template <typename T>\n struct Crate {\n-    static constexpr int capacity = 1;\n+    static constexpr int volume = 1;\n };\n\n template <typename T>\n-int load() { return Crate<T>::capacity; }\n+int load() { return Crate<T>::volume; }\n\n struct Polygon {"
+              }
+            }
+          }
+        },
+        {
+          "label": "from_instantiated_scope",
+          "value": {
+            "rename": {
+              "edits": {
+                "main.cpp": " template <typename T>\n struct Crate {\n-    static constexpr int capacity = 1;\n+    static constexpr int volume = 1;\n };\n\n template <typename T>\n-int load() { return Crate<T>::capacity; }\n+int load() { return Crate<T>::volume; }\n\n struct Polygon {"
+              }
+            }
+          }
+        },
+        {
+          "label": "overrides",
+          "value": {
+            "rename": {
+              "edits": {
+                "main.cpp": "\n struct Polygon {\n-    virtual int sides() const { return 0; }\n+    virtual int edges() const { return 0; }\n };\n\n struct Hexagon : Polygon {\n-    int sides() const override { return 6; }\n+    int edges() const override { return 6; }\n };\n\n template <typename T>\n-int count(const T& shape) { return shape.sides(); }\n+int count(const T& shape) { return shape.edges(); }\n\n double scale(double value) { return value * 2; }"
+              }
+            }
+          }
+        },
+        {
+          "label": "lone_candidate",
+          "value": {
+            "rename": {
+              "edits": {
+                "main.cpp": " int count(const T& shape) { return shape.sides(); }\n\n-double scale(double value) { return value * 2; }\n+double stretch(double value) { return value * 2; }\n\n template <typename T>\n-double grow(const T& value) { return scale(value); }\n+double grow(const T& value) { return stretch(value); }\n\n int main() {"
+              }
             }
           }
         }

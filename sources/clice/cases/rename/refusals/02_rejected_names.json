@@ -3,19 +3,25 @@
   "topic": "rename",
   "subtopic": "refusals",
   "title": "New names refused",
-  "summary": "A new name that is no identifier, a keyword, taken in the same scope or a macro is refused with the reason; overloading a function or taking a reserved name is done with a warning",
+  "summary": "A new name that is no identifier, a keyword, taken in the same scope or a macro is refused with the reason; overloading a function or taking a reserved name is done with a warning, and a member may take the name of a sibling class's member",
   "prose": "",
   "status": "supported",
   "issues": [],
   "files": [
     {
       "path": "main.cpp",
-      "text": "#define TWICE(v) ((v) * 2)\n\nstruct Point { int x; };\n\nint compute(int v) { return TWICE(v); }\ndouble other(double v) { return v; }\n\nint main() { return compute(1) + other(2.0); }\n",
+      "text": "#define TWICE(v) ((v) * 2)\n\nstruct Point { int x; };\n\nstruct Base { int own; };\nstruct Derived : Base { int extra; };\nstruct Sibling : Base { int apart; };\n\nint compute(int v) { return TWICE(v); }\ndouble other(double v) { return v; }\n\nint main() { return compute(1) + other(2.0); }\n",
       "markers": [
         {
+          "name": "sibling",
+          "begin": 146,
+          "end": 146,
+          "range": false
+        },
+        {
           "name": "compute",
-          "begin": 58,
-          "end": 58,
+          "begin": 161,
+          "end": 161,
           "range": false
         }
       ]
@@ -42,6 +48,38 @@
           }
         },
         {
+          "label": "_Bool",
+          "value": {
+            "rename": {
+              "error": "cannot rename `compute`: `_Bool` is a keyword"
+            }
+          }
+        },
+        {
+          "label": "char8_t",
+          "value": {
+            "rename": {
+              "error": "cannot rename `compute`: `char8_t` is a keyword"
+            }
+          }
+        },
+        {
+          "label": "co_await",
+          "value": {
+            "rename": {
+              "error": "cannot rename `compute`: `co_await` is a keyword"
+            }
+          }
+        },
+        {
+          "label": "requires",
+          "value": {
+            "rename": {
+              "error": "cannot rename `compute`: `requires` is a keyword"
+            }
+          }
+        },
+        {
           "label": "Point",
           "value": {
             "rename": {
@@ -62,9 +100,9 @@
           "value": {
             "rename": {
               "edits": {
-                "main.cpp": " struct Point { int x; };\n\n-int compute(int v) { return TWICE(v); }\n+int other(int v) { return TWICE(v); }\n double other(double v) { return v; }\n\n-int main() { return compute(1) + other(2.0); }\n+int main() { return other(1) + other(2.0); }"
+                "main.cpp": " struct Sibling : Base { int apart; };\n\n-int compute(int v) { return TWICE(v); }\n+int other(int v) { return TWICE(v); }\n double other(double v) { return v; }\n\n-int main() { return compute(1) + other(2.0); }\n+int main() { return other(1) + other(2.0); }"
               },
-              "notice": "Renaming `compute`:\n  `other` already names a function in the same scope (${WS}/main.cpp:6): the renamed function overloads it, which fails to build in C or when their parameters are the same"
+              "notice": "Renaming `compute`:\n  `other` already names a function in the same scope (${WS}/main.cpp:10): the renamed function overloads it, which fails to build in C or when their parameters are the same"
             }
           }
         },
@@ -73,9 +111,51 @@
           "value": {
             "rename": {
               "edits": {
-                "main.cpp": " struct Point { int x; };\n\n-int compute(int v) { return TWICE(v); }\n+int _Compute(int v) { return TWICE(v); }\n double other(double v) { return v; }\n\n-int main() { return compute(1) + other(2.0); }\n+int main() { return _Compute(1) + other(2.0); }"
+                "main.cpp": " struct Sibling : Base { int apart; };\n\n-int compute(int v) { return TWICE(v); }\n+int _Compute(int v) { return TWICE(v); }\n double other(double v) { return v; }\n\n-int main() { return compute(1) + other(2.0); }\n+int main() { return _Compute(1) + other(2.0); }"
               },
               "notice": "Renaming `compute`:\n  `_Compute` is reserved for the implementation"
+            }
+          }
+        },
+        {
+          "label": "_lower",
+          "value": {
+            "rename": {
+              "edits": {
+                "main.cpp": " struct Sibling : Base { int apart; };\n\n-int compute(int v) { return TWICE(v); }\n+int _lower(int v) { return TWICE(v); }\n double other(double v) { return v; }\n\n-int main() { return compute(1) + other(2.0); }\n+int main() { return _lower(1) + other(2.0); }"
+              },
+              "notice": "Renaming `compute`:\n  `_lower` is reserved for the implementation"
+            }
+          }
+        },
+        {
+          "label": "two__parts",
+          "value": {
+            "rename": {
+              "edits": {
+                "main.cpp": " struct Sibling : Base { int apart; };\n\n-int compute(int v) { return TWICE(v); }\n+int two__parts(int v) { return TWICE(v); }\n double other(double v) { return v; }\n\n-int main() { return compute(1) + other(2.0); }\n+int main() { return two__parts(1) + other(2.0); }"
+              },
+              "notice": "Renaming `compute`:\n  `two__parts` is reserved for the implementation"
+            }
+          }
+        },
+        {
+          "label": "café",
+          "value": {
+            "rename": {
+              "edits": {
+                "main.cpp": " struct Sibling : Base { int apart; };\n\n-int compute(int v) { return TWICE(v); }\n+int café(int v) { return TWICE(v); }\n double other(double v) { return v; }\n\n-int main() { return compute(1) + other(2.0); }\n+int main() { return café(1) + other(2.0); }"
+              }
+            }
+          }
+        },
+        {
+          "label": "sibling_member",
+          "value": {
+            "rename": {
+              "edits": {
+                "main.cpp": " struct Base { int own; };\n struct Derived : Base { int extra; };\n-struct Sibling : Base { int apart; };\n+struct Sibling : Base { int extra; };\n\n int compute(int v) { return TWICE(v); }"
+              }
             }
           }
         }

@@ -22,6 +22,12 @@
           "begin": 19,
           "end": 19,
           "range": false
+        },
+        {
+          "name": "call",
+          "begin": 111,
+          "end": 111,
+          "range": false
         }
       ]
     },
@@ -67,6 +73,28 @@
                 "other.cpp": " #include \"a.h\"\n-int again() { return compute(3); }\n+int again() { return evaluate(3); }"
               },
               "notice": "Spellings of `compute` left alone:\n  ${WS}/a.h:4: #define CALL compute(1) (inside a #define body, which names something else in another expansion)\n  ${WS}/main.cpp:4: int use() { return compute(2) + CALL; } (the name is written here as `CALL`)"
+            }
+          }
+        },
+        {
+          "label": "prepare_macro",
+          "value": {
+            "prepare_rename": {
+              "at": {
+                "$place": "int use() { return compute(2) + ⟦CALL⟧; }",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 3,
+                    "character": 32
+                  },
+                  "end": {
+                    "line": 3,
+                    "character": 36
+                  }
+                }
+              },
+              "placeholder": "CALL"
             }
           }
         }

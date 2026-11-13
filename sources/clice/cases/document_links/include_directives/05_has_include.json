@@ -14,8 +14,13 @@
       "markers": []
     },
     {
+      "path": "header_d.h",
+      "text": "#pragma once\n\nint d = 4;\n",
+      "markers": []
+    },
+    {
       "path": "main.cpp",
-      "text": "#if __has_include(\"header_c.h\")\n#include \"header_c.h\"\n#endif\n",
+      "text": "#if __has_include(\"header_c.h\")\n#include \"header_c.h\"\n#endif\n\n#if __has_include(\"header_c.h\") && __has_include(\"header_d.h\")\n#include \"header_d.h\"\n#endif\n",
       "markers": []
     }
   ],
@@ -60,6 +65,57 @@
                   }
                 },
                 "target": "header_c.h"
+              },
+              {
+                "at": {
+                  "$place": "#if __has_include(⟦\"header_c.h\"⟧) && __has_include(\"header_d.h\")",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 4,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 4,
+                      "character": 30
+                    }
+                  }
+                },
+                "target": "header_c.h"
+              },
+              {
+                "at": {
+                  "$place": "#if __has_include(\"header_c.h\") && __has_include(⟦\"header_d.h\"⟧)",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 4,
+                      "character": 49
+                    },
+                    "end": {
+                      "line": 4,
+                      "character": 61
+                    }
+                  }
+                },
+                "target": "header_d.h"
+              },
+              {
+                "at": {
+                  "$place": "#include ⟦\"header_d.h\"⟧",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 5,
+                      "character": 9
+                    },
+                    "end": {
+                      "line": 5,
+                      "character": 21
+                    }
+                  }
+                },
+                "target": "header_d.h"
               }
             ]
           }

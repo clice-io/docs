@@ -70,6 +70,14 @@
             "stderr": "warning: no churn annotation: Process git ended with exit code 128",
             "exit": 0
           }
+        },
+        {
+          "label": "$ clice analyze modules file app/main.cpp --annotation compile_time.json",
+          "value": {
+            "stdout": "{\n  \"path\": \"app/main.cpp\",\n  \"module\": \"app\",\n  \"source\": true,\n  \"annotations\": [\n    {\n      \"name\": \"compile_time\",\n      \"unit\": \"s\",\n      \"value\": 10\n    }\n  ],\n  \"uses\": [\n    {\n      \"module\": \"core\",\n      \"entities\": [\n        \"Str::n\",\n        \"fast\"\n      ]\n    },\n    {\n      \"module\": \"util\",\n      \"entities\": [\n        \"Clock\",\n        \"Clock::name\"\n      ]\n    }\n  ],\n  \"usedBy\": [],\n  \"affinity\": [\n    {\n      \"module\": \"core\",\n      \"entities\": 2\n    },\n    {\n      \"module\": \"util\",\n      \"entities\": 2\n    }\n  ]\n}",
+            "stderr": "warning: no churn annotation: Process git ended with exit code 128",
+            "exit": 0
+          }
         }
       ]
     }
