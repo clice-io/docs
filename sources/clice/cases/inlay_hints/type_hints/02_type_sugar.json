@@ -180,7 +180,7 @@
       "config": {
         "inlay_hints": {
           "max_length": {
-            "types": 0
+            "types": "unlimited"
           }
         }
       },

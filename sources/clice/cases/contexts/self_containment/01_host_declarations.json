@@ -94,6 +94,78 @@
           }
         }
       ]
+    },
+    {
+      "name": "declared self-contained",
+      "blocks": [
+        {
+          "label": "ruler.h alone",
+          "value": {
+            "diagnostics": [
+              {
+                "at": {
+                  "$place": "inline ⟦Meters⟧ ruler_length() {",
+                  "path": "ruler.h",
+                  "range": {
+                    "start": {
+                      "line": 2,
+                      "character": 7
+                    },
+                    "end": {
+                      "line": 2,
+                      "character": 13
+                    }
+                  }
+                },
+                "severity": "error",
+                "message": "unknown type name 'Meters'",
+                "source": "clang",
+                "code": "err_unknown_typename"
+              },
+              {
+                "at": {
+                  "$place": "return ⟦Meters⟧{SCALE * 0.5};",
+                  "path": "ruler.h",
+                  "range": {
+                    "start": {
+                      "line": 3,
+                      "character": 11
+                    },
+                    "end": {
+                      "line": 3,
+                      "character": 17
+                    }
+                  }
+                },
+                "severity": "error",
+                "message": "use of undeclared identifier 'Meters'",
+                "source": "clang",
+                "code": "err_undeclared_var_use"
+              },
+              {
+                "at": {
+                  "$place": "inline ⟦Meters⟧ unit_length{1.0};",
+                  "path": "ruler.h",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 7
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 13
+                    }
+                  }
+                },
+                "severity": "error",
+                "message": "unknown type name 'Meters'",
+                "source": "clang",
+                "code": "err_unknown_typename"
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 }
