@@ -80,9 +80,28 @@
                   }
                 },
                 "severity": "error",
-                "message": "could not build module 'Bad': use of undeclared identifier 'UNDEFINED_SYMBOL'",
-                "source": "clang",
-                "code": "err_module_not_built"
+                "message": "module 'Bad' does not build: use of undeclared identifier 'UNDEFINED_SYMBOL'",
+                "source": "clice",
+                "code": "module-not-built",
+                "related": [
+                  {
+                    "at": {
+                      "$place": "bad.cppm │ return ⟦⟧UNDEFINED_SYMBOL + good();",
+                      "path": "bad.cppm",
+                      "range": {
+                        "start": {
+                          "line": 4,
+                          "character": 11
+                        },
+                        "end": {
+                          "line": 4,
+                          "character": 11
+                        }
+                      }
+                    },
+                    "message": "the error the module's build failed on"
+                  }
+                ]
               }
             ]
           }
@@ -107,9 +126,9 @@
                   }
                 },
                 "severity": "error",
-                "message": "could not build module 'Bad': use of undeclared identifier 'UNDEFINED_SYMBOL'",
-                "source": "clang",
-                "code": "err_module_not_built"
+                "message": "module 'Bad' does not build: use of undeclared identifier 'UNDEFINED_SYMBOL'",
+                "source": "clice",
+                "code": "module-not-built"
               }
             ]
           }

@@ -1,0 +1,352 @@
+{
+  "id": "code_completion/templates/36_several_instantiations",
+  "topic": "code_completion",
+  "subtopic": "templates",
+  "title": "Several instantiations",
+  "summary": "A template the code calls with several types completes the names every one of them has",
+  "prose": "Each name is listed with the overloads each type declares for it. Inside a\nbranch of an `if constexpr`, only the types that take the branch count. A\ncall written before the template counts as well as one after it; past eight\ntypes, the first eight decide. When one of the types is not a class, no\nname is shared and nothing is offered.",
+  "status": "supported",
+  "issues": [],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "struct Vector {\n    using size_type = int;\n    int size() const;\n    int* data();\n    int at(int index);\n    void push_back(int value);\n};\n\nstruct Span {\n    using size_type = long;\n    int size() const;\n    int* data();\n    int at(long index) const;\n    Span first(int count) const;\n};\n\nstruct Text {\n    int size() const;\n    const char* c_str() const;\n};\n\ntemplate <class T>\nint count(T items);\n\nint before() {\n    return count(Text{});\n}\n\ntemplate <class T>\nint count(T items) {\n    return items.;\n}\n\ntemplate <class T>\nint read(T items) {\n    return items.;\n}\n\ntemplate <class T>\nint measure() {\n    typename T:: size{};\n    return size;\n}\n\ntemplate <class T>\nconstexpr bool growable = false;\n\ntemplate <>\nconstexpr bool growable<Vector> = true;\n\ntemplate <class T>\nvoid fill(T items) {\n    if constexpr(growable<T>) {\n        items.;\n    } else {\n        items.;\n    }\n}\n\ntemplate <int N>\nstruct Slot {\n    int value;\n    int extra;\n};\n\nstruct Last {\n    int value;\n};\n\ntemplate <class T>\nint pick(T slot) {\n    return slot.;\n}\n\ntemplate <class T>\nint probe(T value) {\n    return value.;\n}\n\nstruct Foo {\n    void foo();\n    int get(int, double = 1.0);\n};\n\nstruct Bar {\n    void bar();\n    int get(int);\n    int get(int, const char*);\n};\n\nstruct Lamp {\n    void dim(int level = 0);\n};\n\nstruct Fan {\n    void dim(int level);\n};\n\ntemplate <class T>\nvoid adjust(T device) {\n    device.dim;\n}\n\ntemplate <class F>\nvoid both(F f) {\n    f(Foo{});\n    f(Bar{});\n}\n\nvoid pass() {\n    both([](auto a) { a.; });\n}\n\nvoid use() {\n    count(Vector{});\n    count(Span{});\n    read(Vector{});\n    read(Span{});\n    measure<Vector>();\n    measure<Span>();\n    fill(Vector{});\n    fill(Span{});\n    auto size_of = [](auto items) { return items.; };\n    size_of(Vector{});\n    size_of(Text{});\n    pick(Slot<1>{});\n    pick(Slot<2>{});\n    pick(Slot<3>{});\n    pick(Slot<4>{});\n    pick(Slot<5>{});\n    pick(Slot<6>{});\n    pick(Slot<7>{});\n    pick(Slot<8>{});\n    pick(Last{});\n    probe(Vector{});\n    probe(1);\n    adjust(Lamp{});\n    adjust(Fan{});\n}\n",
+      "markers": [
+        {
+          "name": "call_before_point",
+          "begin": 500,
+          "end": 500,
+          "range": false
+        },
+        {
+          "name": "overloads_differ",
+          "begin": 561,
+          "end": 561,
+          "range": false
+        },
+        {
+          "name": "dependent_scope",
+          "begin": 617,
+          "end": 617,
+          "range": false
+        },
+        {
+          "name": "taken_branch",
+          "begin": 838,
+          "end": 838,
+          "range": false
+        },
+        {
+          "name": "other_branch",
+          "begin": 867,
+          "end": 867,
+          "range": false
+        },
+        {
+          "name": "past_eight",
+          "begin": 1030,
+          "end": 1030,
+          "range": false
+        },
+        {
+          "name": "non_class",
+          "begin": 1092,
+          "end": 1092,
+          "range": false
+        },
+        {
+          "name": "default_argument",
+          "begin": 1390,
+          "end": 1390,
+          "range": false
+        },
+        {
+          "name": "passed_lambda",
+          "begin": 1500,
+          "end": 1500,
+          "range": false
+        },
+        {
+          "name": "generic_lambda",
+          "begin": 1731,
+          "end": 1731,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "answers",
+      "blocks": [
+        {
+          "label": "call_before_point",
+          "marker": "call_before_point",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "size() const",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "size()"
+                },
+                {
+                  "label": "template",
+                  "kind": "Keyword",
+                  "insert": "template"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "overloads_differ",
+          "marker": "overloads_differ",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "at(…) +1 overload",
+                  "kind": "Method",
+                  "insert": "at($0)",
+                  "snippet": true
+                },
+                {
+                  "label": "size() const",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "size()"
+                },
+                {
+                  "label": "data()",
+                  "kind": "Method",
+                  "detail": "int *",
+                  "insert": "data()"
+                },
+                {
+                  "label": "template",
+                  "kind": "Keyword",
+                  "insert": "template"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "dependent_scope",
+          "marker": "dependent_scope",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "at(…) +1 overload",
+                  "kind": "Method",
+                  "insert": "at"
+                },
+                {
+                  "label": "data()",
+                  "kind": "Method",
+                  "detail": "int *",
+                  "insert": "data"
+                },
+                {
+                  "label": "size() const",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "size"
+                },
+                {
+                  "label": "size_type",
+                  "kind": "TypeParameter",
+                  "insert": "size_type"
+                },
+                {
+                  "label": "operator=(…) +3 overloads",
+                  "kind": "Method",
+                  "insert": "operator="
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "taken_branch",
+          "marker": "taken_branch",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "at(int index)",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "at(${1:int index})",
+                  "snippet": true
+                },
+                {
+                  "label": "data()",
+                  "kind": "Method",
+                  "detail": "int *",
+                  "insert": "data()"
+                },
+                {
+                  "label": "push_back(int value)",
+                  "kind": "Method",
+                  "detail": "void",
+                  "insert": "push_back(${1:int value})",
+                  "snippet": true
+                },
+                {
+                  "label": "size() const",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "size()"
+                },
+                {
+                  "label": "template",
+                  "kind": "Keyword",
+                  "insert": "template"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "other_branch",
+          "marker": "other_branch",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "data()",
+                  "kind": "Method",
+                  "detail": "int *",
+                  "insert": "data()"
+                },
+                {
+                  "label": "at(long index) const",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "at(${1:long index})",
+                  "snippet": true
+                },
+                {
+                  "label": "first(int count) const",
+                  "kind": "Method",
+                  "detail": "Span",
+                  "insert": "first(${1:int count})",
+                  "snippet": true
+                },
+                {
+                  "label": "size() const",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "size()"
+                },
+                {
+                  "label": "template",
+                  "kind": "Keyword",
+                  "insert": "template"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "past_eight",
+          "marker": "past_eight",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "extra",
+                  "kind": "Field",
+                  "detail": "int",
+                  "insert": "extra"
+                },
+                {
+                  "label": "value",
+                  "kind": "Field",
+                  "detail": "int",
+                  "insert": "value"
+                },
+                {
+                  "label": "template",
+                  "kind": "Keyword",
+                  "insert": "template"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "non_class",
+          "marker": "non_class",
+          "value": {
+            "completion": {
+              "items": []
+            }
+          }
+        },
+        {
+          "label": "default_argument",
+          "marker": "default_argument",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "dim(…) +1 overload",
+                  "kind": "Method",
+                  "insert": "dim($0)",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "passed_lambda",
+          "marker": "passed_lambda",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "get(…) +2 overloads",
+                  "kind": "Method",
+                  "insert": "get($0)",
+                  "snippet": true
+                },
+                {
+                  "label": "template",
+                  "kind": "Keyword",
+                  "insert": "template"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "generic_lambda",
+          "marker": "generic_lambda",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "size() const",
+                  "kind": "Method",
+                  "detail": "int",
+                  "insert": "size()"
+                },
+                {
+                  "label": "template",
+                  "kind": "Keyword",
+                  "insert": "template"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

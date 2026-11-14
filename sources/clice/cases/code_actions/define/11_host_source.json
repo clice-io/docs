@@ -109,7 +109,7 @@
                   "title": "Define missing members of 'Widget' in main.cpp",
                   "compiles": true,
                   "edits": {
-                    "main.cpp": " void Widget::done() {\n }\n+\n+ns::Widget::Widget(int id) {\n }\n\n+int ns::Widget::id() const {\n+}\n+\n+}\n+\n int main() {\n     ns::Widget w(1);"
+                    "main.cpp": " void Widget::done() {\n }\n+\n+ns::Widget::Widget(int id) {\n }\n\n+int ns::Widget::id() const {\n+}\n+}\n+\n int main() {\n     ns::Widget w(1);"
                   }
                 }
               ]
@@ -137,7 +137,7 @@
                   "title": "Define 'ns::Widget::id' in main.cpp",
                   "compiles": true,
                   "edits": {
-                    "main.cpp": " void Widget::done() {\n }\n+\n+int ns::Widget::id() const {\n }\n\n+}\n+\n int main() {\n     ns::Widget w(1);"
+                    "main.cpp": " void Widget::done() {\n }\n+\n+int ns::Widget::id() const {\n }\n+}\n\n int main() {"
                   }
                 }
               ]

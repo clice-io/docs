@@ -1,0 +1,321 @@
+{
+  "id": "code_completion/scopes/20_written_qualifiers",
+  "topic": "code_completion",
+  "subtopic": "scopes",
+  "title": "Written scopes",
+  "summary": "A name a header the file does not include yet declares completes after the namespace written before it (`std::vec`)",
+  "prose": "It comes with the `#include` that brings it, whether the file already knows\nthe namespace or not. After a namespace alias, a macro or a class, only what\nthe file reaches is offered.",
+  "status": "supported",
+  "issues": [],
+  "files": [
+    {
+      "path": "containers.h",
+      "text": "#pragma once\n\nnamespace store {\n\ntemplate <class T>\nclass vector {};\n\nnamespace inner {\nstruct Vessel {};\n}  // namespace inner\n\n}  // namespace store\n",
+      "markers": []
+    },
+    {
+      "path": "gadgets.h",
+      "text": "#pragma once\n\nnamespace outer {\nstruct Gadget {};\n\nnamespace inner {\nstruct Widget {};\n}  // namespace inner\n}  // namespace outer\n\nstruct Local {\n    static int vessel_spare;\n};\n",
+      "markers": []
+    },
+    {
+      "path": "lib.cpp",
+      "text": "#include \"containers.h\"\n#include \"gadgets.h\"\n",
+      "markers": []
+    },
+    {
+      "path": "main.cpp",
+      "text": "#include \"stream.h\"\n\nnamespace alias = store;\n\n#define NS store\n\nstruct Local {\n    static int vessel_count;\n};\n\nvoid use() {\n    store::vec;\n    ::store::vec;\n    store::inner::Ves;\n    alias::vec;\n    NS::vec;\n    outer::Gad;\n    Local::ves;\n    store::;\n}\n\nnamespace outer {\nvoid nest() {\n    inner::Wid;\n}\n}  // namespace outer\n",
+      "markers": [
+        {
+          "name": "qualified",
+          "begin": 140,
+          "end": 140,
+          "range": false
+        },
+        {
+          "name": "global",
+          "begin": 158,
+          "end": 158,
+          "range": false
+        },
+        {
+          "name": "nested",
+          "begin": 181,
+          "end": 181,
+          "range": false
+        },
+        {
+          "name": "namespace_alias",
+          "begin": 197,
+          "end": 197,
+          "range": false
+        },
+        {
+          "name": "macro_qualifier",
+          "begin": 210,
+          "end": 210,
+          "range": false
+        },
+        {
+          "name": "undeclared_namespace",
+          "begin": 226,
+          "end": 226,
+          "range": false
+        },
+        {
+          "name": "class_scope",
+          "begin": 242,
+          "end": 242,
+          "range": false
+        },
+        {
+          "name": "nothing_typed",
+          "begin": 255,
+          "end": 255,
+          "range": false
+        },
+        {
+          "name": "relative_qualifier",
+          "begin": 306,
+          "end": 306,
+          "range": false
+        }
+      ]
+    },
+    {
+      "path": "stream.h",
+      "text": "#pragma once\n\nnamespace store {\nstruct ostream {};\n}  // namespace store\n",
+      "markers": []
+    }
+  ],
+  "tests": [
+    {
+      "name": "answers",
+      "blocks": [
+        {
+          "label": "qualified",
+          "marker": "qualified",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "vector",
+                  "kind": "Class",
+                  "insert": "vector<$0>",
+                  "snippet": true,
+                  "edits": [
+                    {
+                      "at": {
+                        "$place": "⟦⟧ @-10",
+                        "path": "main.cpp",
+                        "range": {
+                          "start": {
+                            "line": 1,
+                            "character": 0
+                          },
+                          "end": {
+                            "line": 1,
+                            "character": 0
+                          }
+                        }
+                      },
+                      "text": "#include \"containers.h\"\n"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "global",
+          "marker": "global",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "vector",
+                  "kind": "Class",
+                  "insert": "vector<$0>",
+                  "snippet": true,
+                  "edits": [
+                    {
+                      "at": {
+                        "$place": "⟦⟧ @-11",
+                        "path": "main.cpp",
+                        "range": {
+                          "start": {
+                            "line": 1,
+                            "character": 0
+                          },
+                          "end": {
+                            "line": 1,
+                            "character": 0
+                          }
+                        }
+                      },
+                      "text": "#include \"containers.h\"\n"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "nested",
+          "marker": "nested",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Vessel",
+                  "kind": "Class",
+                  "insert": "Vessel",
+                  "edits": [
+                    {
+                      "at": {
+                        "$place": "⟦⟧ @-12",
+                        "path": "main.cpp",
+                        "range": {
+                          "start": {
+                            "line": 1,
+                            "character": 0
+                          },
+                          "end": {
+                            "line": 1,
+                            "character": 0
+                          }
+                        }
+                      },
+                      "text": "#include \"containers.h\"\n"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "namespace_alias",
+          "marker": "namespace_alias",
+          "value": {
+            "completion": {
+              "items": []
+            }
+          }
+        },
+        {
+          "label": "macro_qualifier",
+          "marker": "macro_qualifier",
+          "value": {
+            "completion": {
+              "items": []
+            }
+          }
+        },
+        {
+          "label": "undeclared_namespace",
+          "marker": "undeclared_namespace",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Gadget",
+                  "kind": "Class",
+                  "insert": "Gadget",
+                  "edits": [
+                    {
+                      "at": {
+                        "$place": "⟦⟧ @-15",
+                        "path": "main.cpp",
+                        "range": {
+                          "start": {
+                            "line": 1,
+                            "character": 0
+                          },
+                          "end": {
+                            "line": 1,
+                            "character": 0
+                          }
+                        }
+                      },
+                      "text": "#include \"gadgets.h\"\n"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "class_scope",
+          "marker": "class_scope",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "vessel_count",
+                  "kind": "Variable",
+                  "detail": "int",
+                  "insert": "vessel_count"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "nothing_typed",
+          "marker": "nothing_typed",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "ostream",
+                  "kind": "Class",
+                  "insert": "ostream"
+                }
+              ],
+              "incomplete": true
+            }
+          }
+        },
+        {
+          "label": "relative_qualifier",
+          "marker": "relative_qualifier",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Widget",
+                  "kind": "Class",
+                  "insert": "Widget",
+                  "edits": [
+                    {
+                      "at": {
+                        "$place": "⟦⟧ @-22",
+                        "path": "main.cpp",
+                        "range": {
+                          "start": {
+                            "line": 1,
+                            "character": 0
+                          },
+                          "end": {
+                            "line": 1,
+                            "character": 0
+                          }
+                        }
+                      },
+                      "text": "#include \"gadgets.h\"\n"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
