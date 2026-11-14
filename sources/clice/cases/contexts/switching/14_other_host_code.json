@@ -1089,6 +1089,56 @@
           }
         }
       ]
+    },
+    {
+      "name": "own context by rule",
+      "blocks": [
+        {
+          "label": "by rule",
+          "value": {
+            "context": {
+              "context": {
+                "label": "fast_host.cpp",
+                "description": "${WS}/fast_host.cpp",
+                "host": "fast_host.cpp"
+              },
+              "automatic": true,
+              "other_contexts": false
+            },
+            "hover": {}
+          }
+        },
+        {
+          "label": "shown again",
+          "value": {
+            "context": {
+              "context": {
+                "label": "fast_host.cpp",
+                "description": "${WS}/fast_host.cpp",
+                "host": "fast_host.cpp"
+              },
+              "automatic": true
+            },
+            "hover": {
+              "markdown": "**function** `slow_path`\n\n```cpp\ninline int slow_path()\n```",
+              "range": {
+                "$place": "inline int ⟦slow_path⟧() {",
+                "path": "shared.h",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 11
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 20
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   ]
 }

@@ -78,11 +78,6 @@
   "tests": [
     {
       "name": "navigation",
-      "config": {
-        "project": {
-          "enable_indexing": false
-        }
-      },
       "blocks": [
         {
           "label": "chained",
