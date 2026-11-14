@@ -43,21 +43,21 @@
         {
           "label": "$ clice query references Box::open",
           "value": {
-            "stdout": "{\n  \"result\": {\n    \"name\": \"open\",\n    \"kind\": \"Method\",\n    \"symbol\": \"#66ed736b7a4ce853\",\n    \"references\": [\n      {\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 9,\n        \"context\": \"    item.open();\",\n        \"function\": \"twice\",\n        \"via\": \"instantiation\"\n      },\n      {\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 10,\n        \"context\": \"    box.open();\",\n        \"function\": \"twice\"\n      },\n      {\n        \"file\": \"${WS}/measure.h\",\n        \"line\": 5,\n        \"context\": \"    item.open();\",\n        \"function\": \"measure\",\n        \"via\": \"instantiation\"\n      }\n    ],\n    \"total\": 3\n  },\n  \"stale\": []\n}",
+            "stdout": "{\n  \"result\": {\n    \"name\": \"open\",\n    \"kind\": \"Method\",\n    \"symbol\": \"#d5936eb98e669dd1\",\n    \"references\": [\n      {\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 9,\n        \"context\": \"    item.open();\",\n        \"function\": \"twice\",\n        \"via\": \"instantiation\"\n      },\n      {\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 10,\n        \"context\": \"    box.open();\",\n        \"function\": \"twice\"\n      },\n      {\n        \"file\": \"${WS}/measure.h\",\n        \"line\": 5,\n        \"context\": \"    item.open();\",\n        \"function\": \"measure\",\n        \"via\": \"instantiation\"\n      }\n    ],\n    \"total\": 3\n  },\n  \"stale\": []\n}",
             "exit": 0
           }
         },
         {
           "label": "$ clice query call-graph Box::open --direction callers",
           "value": {
-            "stdout": "{\n  \"result\": {\n    \"root\": {\n      \"name\": \"open\",\n      \"signature\": \"()\",\n      \"kind\": \"Method\",\n      \"file\": \"${WS}/main.cpp\",\n      \"line\": 3,\n      \"symbol\": \"#66ed736b7a4ce853\"\n    },\n    \"callers\": [\n      {\n        \"name\": \"measure\",\n        \"signature\": \"(T &item)\",\n        \"kind\": \"Function\",\n        \"file\": \"${WS}/measure.h\",\n        \"line\": 4,\n        \"symbol\": \"#64a3c7bc5112a824\",\n        \"via\": \"instantiation\"\n      },\n      {\n        \"name\": \"twice\",\n        \"signature\": \"(T &item, Box &box)\",\n        \"kind\": \"Function\",\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 8,\n        \"symbol\": \"#395c652bed3c1db9\"\n      }\n    ],\n    \"callees\": []\n  },\n  \"stale\": []\n}",
+            "stdout": "{\n  \"result\": {\n    \"root\": {\n      \"name\": \"open\",\n      \"signature\": \"()\",\n      \"kind\": \"Method\",\n      \"file\": \"${WS}/main.cpp\",\n      \"line\": 3,\n      \"symbol\": \"#d5936eb98e669dd1\"\n    },\n    \"callers\": [\n      {\n        \"name\": \"twice\",\n        \"signature\": \"(T &item, Box &box)\",\n        \"kind\": \"Function\",\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 8,\n        \"symbol\": \"#2f7e45a1226fa2de\"\n      },\n      {\n        \"name\": \"measure\",\n        \"signature\": \"(T &item)\",\n        \"kind\": \"Function\",\n        \"file\": \"${WS}/measure.h\",\n        \"line\": 4,\n        \"symbol\": \"#43a3e46351e06f6d\",\n        \"via\": \"instantiation\"\n      }\n    ],\n    \"callees\": []\n  },\n  \"stale\": []\n}",
             "exit": 0
           }
         },
         {
           "label": "$ clice query references reset",
           "value": {
-            "stdout": "{\n  \"result\": {\n    \"name\": \"reset\",\n    \"kind\": \"Function\",\n    \"symbol\": \"#e241f31da004350a\",\n    \"references\": [\n      {\n        \"file\": \"${WS}/box.h\",\n        \"line\": 9,\n        \"context\": \"#define RESET_ALL reset()\",\n        \"function\": null,\n        \"via\": \"expansion\"\n      },\n      {\n        \"file\": \"${WS}/use.cpp\",\n        \"line\": 6,\n        \"context\": \"    RESET_ALL;\",\n        \"function\": \"use\"\n      }\n    ],\n    \"total\": 2\n  },\n  \"stale\": []\n}",
+            "stdout": "{\n  \"result\": {\n    \"name\": \"reset\",\n    \"kind\": \"Function\",\n    \"symbol\": \"#c8fd46bdc716df43\",\n    \"references\": [\n      {\n        \"file\": \"${WS}/box.h\",\n        \"line\": 9,\n        \"context\": \"#define RESET_ALL reset()\",\n        \"function\": null,\n        \"via\": \"expansion\"\n      },\n      {\n        \"file\": \"${WS}/use.cpp\",\n        \"line\": 6,\n        \"context\": \"    RESET_ALL;\",\n        \"function\": \"use\"\n      }\n    ],\n    \"total\": 2\n  },\n  \"stale\": []\n}",
             "exit": 0
           }
         }

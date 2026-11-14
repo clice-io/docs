@@ -33,7 +33,7 @@
         {
           "label": "$ clice query project-files",
           "value": {
-            "stdout": "{\n  \"result\": {\n    \"files\": [\n      {\n        \"path\": \"${WS}/main.cpp\",\n        \"kind\": \"source\",\n        \"moduleName\": null\n      },\n      {\n        \"path\": \"${WS}/a.h\",\n        \"kind\": \"header\",\n        \"moduleName\": null\n      }\n    ],\n    \"total\": 2\n  },\n  \"stale\": []\n}",
+            "stdout": "{\n  \"result\": {\n    \"files\": [\n      {\n        \"path\": \"${WS}/a.h\",\n        \"kind\": \"header\",\n        \"moduleName\": null\n      },\n      {\n        \"path\": \"${WS}/main.cpp\",\n        \"kind\": \"source\",\n        \"moduleName\": null\n      }\n    ],\n    \"total\": 2\n  },\n  \"stale\": []\n}",
             "exit": 0
           }
         },

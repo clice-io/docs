@@ -40,14 +40,14 @@
         {
           "label": "$ clice query symbol-search extra --fresh",
           "value": {
-            "stdout": "{\n  \"result\": {\n    \"symbols\": [\n      {\n        \"name\": \"extra\",\n        \"signature\": \"()\",\n        \"kind\": \"Function\",\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 5,\n        \"container\": null,\n        \"symbol\": \"#c9be3d07e9d6b64f\"\n      }\n    ]\n  },\n  \"stale\": []\n}",
+            "stdout": "{\n  \"result\": {\n    \"symbols\": [\n      {\n        \"name\": \"extra\",\n        \"signature\": \"()\",\n        \"kind\": \"Function\",\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 5,\n        \"container\": null,\n        \"symbol\": \"#407a5db4652e9057\"\n      }\n    ]\n  },\n  \"stale\": []\n}",
             "exit": 0
           }
         },
         {
           "label": "$ clice query symbol-search extra",
           "value": {
-            "stdout": "{\n  \"result\": {\n    \"symbols\": [\n      {\n        \"name\": \"extra\",\n        \"signature\": \"()\",\n        \"kind\": \"Function\",\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 5,\n        \"container\": null,\n        \"symbol\": \"#c9be3d07e9d6b64f\"\n      }\n    ]\n  },\n  \"stale\": []\n}",
+            "stdout": "{\n  \"result\": {\n    \"symbols\": [\n      {\n        \"name\": \"extra\",\n        \"signature\": \"()\",\n        \"kind\": \"Function\",\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 5,\n        \"container\": null,\n        \"symbol\": \"#407a5db4652e9057\"\n      }\n    ]\n  },\n  \"stale\": []\n}",
             "exit": 0
           }
         }
@@ -60,20 +60,20 @@
           "label": "$ clice index",
           "value": {
             "stderr": "error: another clice process (pid #) holds the index writer lock at .clice; retry when it is done",
-            "exit": 1
+            "exit": 2
           }
         },
         {
           "label": "$ clice query symbol-search compute --fresh",
           "value": {
             "stdout": "{\n  \"error\": \"another clice process (pid #) holds the index writer lock at ${WS}/.clice; retry when it is done\",\n  \"stale\": []\n}",
-            "exit": 1
+            "exit": 2
           }
         },
         {
           "label": "$ clice query symbol-search compute",
           "value": {
-            "stdout": "{\n  \"result\": {\n    \"symbols\": [\n      {\n        \"name\": \"compute\",\n        \"signature\": \"()\",\n        \"kind\": \"Function\",\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 4,\n        \"container\": null,\n        \"symbol\": \"#81df9416985c4402\"\n      }\n    ]\n  },\n  \"stale\": []\n}",
+            "stdout": "{\n  \"result\": {\n    \"symbols\": [\n      {\n        \"name\": \"compute\",\n        \"signature\": \"()\",\n        \"kind\": \"Function\",\n        \"file\": \"${WS}/main.cpp\",\n        \"line\": 4,\n        \"container\": null,\n        \"symbol\": \"#dedd7a0cf92bcd53\"\n      }\n    ]\n  },\n  \"stale\": []\n}",
             "exit": 0
           }
         }

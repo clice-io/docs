@@ -33,7 +33,7 @@
         {
           "label": "$ clice query definition checksum",
           "value": {
-            "stdout": "{\n  \"result\": {\n    \"name\": \"checksum\",\n    \"kind\": \"Function\",\n    \"symbol\": \"#2ac638334627aaf7\",\n    \"documentation\": null,\n    \"definition\": {\n      \"file\": \"${WS}/lib.h\",\n      \"startLine\": 1,\n      \"endLine\": 1,\n      \"text\": \"int checksum(const int* data, int size)\"\n    }\n  },\n  \"stale\": []\n}",
+            "stdout": "{\n  \"result\": {\n    \"name\": \"checksum\",\n    \"kind\": \"Function\",\n    \"symbol\": \"#d66a02363978a7d7\",\n    \"documentation\": null,\n    \"definition\": {\n      \"file\": \"${WS}/lib.h\",\n      \"startLine\": 1,\n      \"endLine\": 1,\n      \"text\": \"int checksum(const int* data, int size)\"\n    }\n  },\n  \"stale\": []\n}",
             "exit": 0
           }
         }

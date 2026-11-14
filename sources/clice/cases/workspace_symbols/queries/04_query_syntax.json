@@ -4,7 +4,7 @@
   "subtopic": "queries",
   "title": "Query syntax",
   "summary": "Quotes, wildcards, scopes and filters narrow a search",
-  "prose": "`\"process\"` matches the whole name only and `proc*` whatever it globs;\n`io::*` lists a namespace's members and `io::**` its whole subtree;\n`kind:function` keeps one kind. Terms combine, separated by spaces.",
+  "prose": "`\"process\"` matches the whole name only and `proc*` whatever it globs;\n`io::*` lists a namespace's members and `io::**` its whole subtree;\n`kind:function` keeps one kind. Terms combine, separated by spaces.\nVS Code's symbol search sends only the first term of a query and filters the\nanswers by it: there, terms after the first, and a filter alone, find\nnothing.",
   "status": "supported",
   "issues": [],
   "files": [

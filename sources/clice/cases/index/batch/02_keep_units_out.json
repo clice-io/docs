@@ -4,7 +4,7 @@
   "subtopic": "batch",
   "title": "Keep units out of indexing",
   "summary": "A rule with `index = false` keeps its units out; they still compile when opened",
-  "prose": "",
+  "prose": "Every file a compilation database lists is a unit, a header too: one the\nbuild lists (as some generators do) compiles and indexes on its own, beside\nthe sources including it. A rule over `**/*.h` with `index = false` keeps\nthose out.",
   "status": "supported",
   "issues": [],
   "files": [
