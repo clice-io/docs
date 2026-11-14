@@ -4,7 +4,7 @@
   "subtopic": "templates",
   "title": "Generic lambda parameters",
   "summary": "An `auto` parameter of a lambda completes the members of the type the lambda is called with",
-  "prose": "The call can come after the lambda, or be the algorithm the lambda is\npassed to. A lambda called with several types completes nothing.",
+  "prose": "The call can come after the lambda, or be the algorithm the lambda is\npassed to. A lambda called with several types completes the names every one\nof them has.",
   "status": "supported",
   "issues": [
     "clangd#493",

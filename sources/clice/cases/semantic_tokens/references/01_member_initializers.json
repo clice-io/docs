@@ -47,6 +47,7 @@
               "text": "width",
               "type": "field",
               "modifiers": [
+                "modification",
                 "member"
               ]
             }
@@ -73,6 +74,7 @@
               "text": "height",
               "type": "field",
               "modifiers": [
+                "modification",
                 "member"
               ]
             }

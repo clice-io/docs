@@ -4,11 +4,9 @@
   "subtopic": "references",
   "title": "Reference enclosing context",
   "summary": "Each reference reaches the editor as a bare location, without the function that encloses it",
-  "prose": "clangd attaches the enclosing function through an extension field\n(`containerName`) for a client that declares support for it; clice does not\nread that declaration yet. `clice query references` names the function each\nreference lies in.",
-  "status": "unsupported",
-  "issues": [
-    "clangd#177"
-  ],
+  "prose": "`clice query references` names the function each reference lies in.",
+  "status": "supported",
+  "issues": [],
   "files": [
     {
       "path": "main.cpp",
@@ -31,7 +29,6 @@
           "label": "variable",
           "marker": "variable",
           "value": {
-            "wrong": "each reference should name the function it lies in, as clice query references does (clangd#177)",
             "references": [
               {
                 "$place": "int ⟦shared_value⟧ = 0;",

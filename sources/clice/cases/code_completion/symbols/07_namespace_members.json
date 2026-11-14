@@ -45,7 +45,8 @@
                   "label": "Point",
                   "kind": "Class"
                 }
-              ]
+              ],
+              "incomplete": true
             }
           }
         }

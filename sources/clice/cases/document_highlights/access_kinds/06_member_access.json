@@ -4,7 +4,7 @@
   "subtopic": "access_kinds",
   "title": "Member access",
   "summary": "Writing through `object.member` writes the member and reads the object",
-  "prose": "A designated initializer or a constructor's member initializer names the field without writing it. Fields of an anonymous union highlight like any other field.",
+  "prose": "A designated initializer or a constructor's member initializer writes the field. Fields of an anonymous union highlight like any other field.",
   "status": "supported",
   "issues": [],
   "files": [
@@ -131,7 +131,7 @@
                     }
                   }
                 },
-                "kind": "read"
+                "kind": "write"
               }
             ]
           }
@@ -215,7 +215,7 @@
                     }
                   }
                 },
-                "kind": "read"
+                "kind": "write"
               }
             ]
           }

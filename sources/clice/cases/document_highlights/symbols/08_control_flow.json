@@ -3,12 +3,10 @@
   "topic": "document_highlights",
   "subtopic": "symbols",
   "title": "Control flow keywords",
-  "summary": "A `break` or `continue` does not highlight the loop it leaves yet",
+  "summary": "A `break` or `continue` does not highlight the loop it leaves",
   "prose": "",
-  "status": "unsupported",
-  "issues": [
-    "clangd#1921"
-  ],
+  "status": "supported",
+  "issues": [],
   "files": [
     {
       "path": "main.cpp",
@@ -37,7 +35,6 @@
           "label": "break",
           "marker": "break",
           "value": {
-            "wrong": "should highlight the loop it leaves (clangd#1921)",
             "highlights": []
           }
         },
@@ -45,7 +42,6 @@
           "label": "continue",
           "marker": "continue",
           "value": {
-            "wrong": "should highlight the loop it continues (clangd#1921)",
             "highlights": []
           }
         }
