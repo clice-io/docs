@@ -48,7 +48,7 @@
         {
           "label": "$ clice analyze modules edge util core",
           "value": {
-            "stdout": "{\n  \"from\": \"util\",\n  \"to\": \"core\",\n  \"entities\": [\n    {\n      \"id\": \"#478ec97a46ae1c6f\",\n      \"entity\": \"Str\",\n      \"owner\": \"core/str.h\",\n      \"users\": [\n        \"util/clock.h:5\",\n        \"util/fmt.cpp:3\"\n      ],\n      \"interface\": true\n    },\n    {\n      \"id\": \"#b244f96089a92435\",\n      \"entity\": \"length\",\n      \"owner\": \"core/str.h\",\n      \"users\": [\n        \"util/clock.h:8\",\n        \"util/fmt.cpp:4\"\n      ],\n      \"interface\": true\n    }\n  ]\n}",
+            "stdout": "{\n  \"from\": \"util\",\n  \"to\": \"core\",\n  \"entities\": [\n    {\n      \"id\": \"#420db0ed7345959b\",\n      \"entity\": \"Str\",\n      \"owner\": \"core/str.h\",\n      \"users\": [\n        \"util/clock.h:5\",\n        \"util/fmt.cpp:3\"\n      ],\n      \"interface\": true\n    },\n    {\n      \"id\": \"#d69f5b35b3206fc4\",\n      \"entity\": \"length\",\n      \"owner\": \"core/str.h\",\n      \"users\": [\n        \"util/clock.h:8\",\n        \"util/fmt.cpp:4\"\n      ],\n      \"interface\": true\n    }\n  ]\n}",
             "exit": 0
           }
         }

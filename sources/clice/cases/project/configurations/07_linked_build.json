@@ -332,7 +332,7 @@
           "label": "$ clice index --jobs 2",
           "value": {
             "stderr": "error: request failed: the compilation databases of the running clice server now resolve to another build, which it opens once it restarts",
-            "exit": 1
+            "exit": 2
           }
         },
         {

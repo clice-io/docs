@@ -1,0 +1,84 @@
+{
+  "id": "navigation/macros/12_disabled_assert",
+  "topic": "navigation",
+  "subtopic": "macros",
+  "title": "Disabled assertions",
+  "summary": "The names inside a disabled `assert` go nowhere",
+  "prose": "Under `NDEBUG`, `assert(...)` expands to nothing and its argument is never\ncompiled: the names it spells have no definition to go to and are not among\nthe references. clice does not guess what they would name.",
+  "status": "partial",
+  "issues": [],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "#define NDEBUG\n\n#ifdef NDEBUG\n#define assert(condition) ((void)0)\n#else\n#define assert(condition) ((condition) ? (void)0 : __builtin_trap())\n#endif\n\nint limit = 10;\n\nvoid check(int value) {\n    assert(value < limit);\n}\n",
+      "markers": [
+        {
+          "name": "definition",
+          "begin": 153,
+          "end": 153,
+          "range": false
+        },
+        {
+          "name": "use",
+          "begin": 209,
+          "end": 209,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "answers",
+      "blocks": [
+        {
+          "label": "definition",
+          "marker": "definition",
+          "value": {
+            "definition": [
+              {
+                "$place": "int ⟦limit⟧ = 10;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 9
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "int ⟦limit⟧ = 10;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 9
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "use",
+          "marker": "use",
+          "value": {
+            "wrong": "limit names the variable above, yet goes nowhere: under NDEBUG the assert's argument is never compiled, and clice does not guess what it would name",
+            "definition": [],
+            "references": []
+          }
+        }
+      ]
+    }
+  ]
+}
