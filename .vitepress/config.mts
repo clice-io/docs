@@ -192,7 +192,7 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
                 nav: [
                     ...projectNav("zh"),
                     { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
-                    { text: "博客", link: "/zh/blog" },
+                    { text: "blog", link: "/zh/blog" },
                 ],
                 sidebar: genSidebar(projects, "zh"),
                 // VitePress's own words, which it otherwise shows in English.
