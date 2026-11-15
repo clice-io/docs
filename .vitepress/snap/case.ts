@@ -108,6 +108,7 @@ const TEXT = {
         more: (n: number) => `${n} more`,
         matches: (n: number) => (n === 1 ? "1 match" : `${n} matches`),
         lines: (n: number) => `${n} lines`,
+        line: (n: number) => `line ${n}`,
         compiles: "compiles",
         fails: "does not compile",
         preferred: "preferred",
@@ -149,6 +150,7 @@ const TEXT = {
         more: (n: number) => `另有 ${n} 项`,
         matches: (n: number) => `${n} 个匹配`,
         lines: (n: number) => `${n} 行`,
+        line: (n: number) => `第 ${n} 行`,
         compiles: "可编译",
         fails: "无法编译",
         preferred: "首选",
@@ -175,6 +177,52 @@ const TEXT = {
 };
 
 type Texts = (typeof TEXT)["en"];
+
+/** What an answer is, in words, over its part of a result; a name of a
+ *  test's own shows as itself. */
+const NAMES: Record<string, Record<string, string>> = {
+    en: {
+        definition: "Go to definition",
+        declaration: "Go to declaration",
+        type_definition: "Go to type definition",
+        implementation: "Go to implementation",
+        references: "References",
+        incoming_calls: "Called by",
+        outgoing_calls: "Calls",
+        supertypes: "Base types",
+        subtypes: "Derived types",
+        call_hierarchy: "Call hierarchy of",
+        type_hierarchy: "Type hierarchy of",
+        symbols: "Symbols in the index",
+        inactive: "Inactive code",
+        inactive_lines: "Inactive code",
+        menu: "Build configurations",
+        configurations: "Build configurations",
+    },
+    zh: {
+        definition: "跳转到定义",
+        declaration: "跳转到声明",
+        type_definition: "跳转到类型定义",
+        implementation: "跳转到实现",
+        references: "引用",
+        incoming_calls: "被谁调用",
+        outgoing_calls: "调用了谁",
+        supertypes: "基类",
+        subtypes: "派生类",
+        call_hierarchy: "调用层级的起点",
+        type_hierarchy: "类型层级的起点",
+        symbols: "索引中的符号",
+        inactive: "未启用的代码",
+        inactive_lines: "未启用的代码",
+        menu: "构建配置",
+        configurations: "构建配置",
+    },
+};
+
+function heading(ctx: Ctx, key: string): string {
+    const lang = ctx.t === TEXT.zh ? "zh" : "en";
+    return `<span class="case-rel-name">${escapeHtml(NAMES[lang]![key] ?? key)}</span>`;
+}
 
 const SOURCE = /\.(c|cc|cpp|cxx|cppm|ixx|h|hh|hpp|hxx)$/;
 const HIDDEN = /(^|\/)compile_commands\.json$|\.jsonl$/;
@@ -469,7 +517,7 @@ function locations(ctx: Ctx, value: CardValue, key: string): Piece {
     const rows = places.map((place) => placeRow(ctx, place, "mark-range mark-nav"));
     return {
         html:
-            `<div class="case-rel"><span class="case-rel-name">${escapeHtml(key)}</span>` +
+            `<div class="case-rel">${heading(ctx, key)}` +
             (rows.length ? `<ul class="case-places">${rows.join("")}</ul>` : none(ctx.t.none)) +
             `</div>`,
         where: "inline",
@@ -499,20 +547,20 @@ function hierarchy(ctx: Ctx, value: CardValue, key: string): Piece {
             if (at) span(ctx, at, "mark-range mark-nav", keysOf(ctx, [id]));
             for (const site of listOf(item.sites).filter(isPlace))
                 span(ctx, site, "mark-range mark-word", keysOf(ctx, [id]));
+            // The item once, as its signature when it has one, and where it is.
+            const shown = str(item.detail) || str(item.name);
+            const where = at
+                ? `<span class="case-file">${escapeHtml(at.path !== ctx.query ? `${at.path}:${at.range.start.line + 1}` : ctx.t.line(at.range.start.line + 1))}</span>`
+                : "";
             return (
                 `<li class="case-place"${id ? ` data-mark="${id}"` : ""}>` +
-                `<span class="case-item">${kindIcon("sym", str(item.kind))}<span class="sym-name">${escapeHtml(str(item.name))}</span>` +
-                (str(item.detail) && str(item.detail) !== str(item.name)
-                    ? `<span class="sym-detail">${escapeHtml(str(item.detail))}</span>`
-                    : "") +
-                `</span>` +
-                (at ? excerpt(ctx, at) : "") +
+                `<span class="case-item">${kindIcon("sym", str(item.kind))}<code class="sym-name">${escapeHtml(shown)}</code>${where}</span>` +
                 `</li>`
             );
         });
     return {
         html:
-            `<div class="case-rel"><span class="case-rel-name">${escapeHtml(key)}</span>` +
+            `<div class="case-rel">${heading(ctx, key)}` +
             (rows.length ? `<ul class="case-places">${rows.join("")}</ul>` : none(ctx.t.none)) +
             `</div>`,
         where: "inline",
@@ -812,7 +860,7 @@ function workspaceSymbols(ctx: Ctx, value: CardValue, key: string): Piece {
     const list = rows.length ? `<ul class="sym-list">${rows.join("")}</ul>` : none(ctx.t.noSymbols);
     if (key !== "workspace_symbols") {
         return {
-            html: `<div class="case-rel"><span class="case-rel-name">${escapeHtml(key)}</span>${list}</div>`,
+            html: `<div class="case-rel">${heading(ctx, key)}${list}</div>`,
             where: "side",
         };
     }
@@ -927,7 +975,10 @@ function configurationMenu(ctx: Ctx, value: CardValue, key: string): Piece {
             (shares ? `<span class="sym-detail">${escapeHtml(ctx.t.sharesIndex(shares))}</span>` : "") +
             `</div>`;
     }
-    return { html: `<ul class="menu-list">${rows.join("")}</ul>${build}`, where: "side" };
+    return {
+        html: `<div class="case-rel">${heading(ctx, key)}<ul class="menu-list">${rows.join("")}</ul>${build}</div>`,
+        where: "side",
+    };
 }
 
 /** Places listed under the key, each lighting its place in the code. */
@@ -937,7 +988,7 @@ function placeList(ctx: Ctx, value: CardValue, key: string, cls = "mark-range ma
         .map((place) => placeRow(ctx, place, cls));
     return {
         html:
-            `<div class="case-rel"><span class="case-rel-name">${escapeHtml(key)}</span>` +
+            `<div class="case-rel">${heading(ctx, key)}` +
             (rows.length ? `<ul class="case-places">${rows.join("")}</ul>` : none(ctx.t.none)) +
             `</div>`,
         where: "inline",
@@ -1008,12 +1059,12 @@ function raw(ctx: Ctx, value: CardValue, key: string): Piece {
     if (list.length > 0 && list.every(isPlace)) return placeList(ctx, value, key);
     if (list.length > 0 && list.every((item) => isTable(item) && typeof item.message === "string")) {
         return {
-            html: `<div class="case-rel"><span class="case-rel-name">${escapeHtml(key)}</span><ul class="diag-list">${diagnosticRows(ctx, list)}</ul></div>`,
+            html: `<div class="case-rel">${heading(ctx, key)}<ul class="diag-list">${diagnosticRows(ctx, list)}</ul></div>`,
             where: "side",
         };
     }
     return {
-        html: `<div class="case-rel"><span class="case-rel-name">${escapeHtml(key)}</span><pre class="snap-raw"><code>${escapeHtml(JSON.stringify(plainOf(value), null, 2))}</code></pre></div>`,
+        html: `<div class="case-rel">${heading(ctx, key)}<pre class="snap-raw"><code>${escapeHtml(JSON.stringify(plainOf(value), null, 2))}</code></pre></div>`,
         where: ctx.marker ? "tip" : "side",
     };
 }
@@ -1281,7 +1332,9 @@ function codeOf(md: MarkdownIt, shown: CardFile[], drawn: Drawn): Map<string, st
     return html;
 }
 
-const LAYOUT: Rendered["layout"][] = ["single", "tooltip", "inline", "stack", "split"];
+// A pin's answer shows under the code, the first one from the start, rather
+// than in a tip that stays hidden until a pin is hovered.
+const LAYOUT: Rendered["layout"][] = ["single", "inline", "inline", "stack", "split"];
 
 export function renderCard(md: MarkdownIt, card: Card, lang: string): CaseRendered {
     const t = lang === "zh" ? TEXT.zh : TEXT.en;

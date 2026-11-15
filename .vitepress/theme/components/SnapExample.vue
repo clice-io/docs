@@ -399,11 +399,22 @@ onBeforeUnmount(unlisten)
             @click.stop="toggleFile(file)"
           >{{ file.name }}</button>
         </div>
+        <!-- Every pin's answer, stacked in one cell so the panel keeps the
+             height of the tallest; the one whose pin is up shows. -->
         <div v-if="payload.layout === 'inline'" class="snap-active">
-          <template v-if="tip">
-            <i>{{ indexOf(tip.result.name) + 1 }}</i>
-            <div class="snap-active-body" v-html="tip.result.html" />
-          </template>
+          <div
+            v-for="r in results"
+            :key="r.name"
+            class="snap-active-item"
+            :class="{ on: tip?.result.name === r.name }"
+            :aria-hidden="tip?.result.name !== r.name"
+          >
+            <i>{{ indexOf(r.name) + 1 }}</i>
+            <div class="snap-active-body">
+              <span v-if="r.meta" class="snap-meta">{{ r.meta }}</span>
+              <div class="snap-card" v-html="r.html" />
+            </div>
+          </div>
         </div>
         <div v-if="view.notes?.length" class="snap-notes" v-html="view.notes.join('')" />
         <div v-if="view.legend.length" class="snap-legend">
@@ -444,7 +455,7 @@ onBeforeUnmount(unlisten)
         <p v-else class="snap-empty">{{ zh ? '尚未记录快照' : 'No snapshot recorded yet' }}</p>
       </div>
       <div class="snap-foot">
-        <span v-if="pins" class="snap-hint">{{ zh ? '悬停或点击编号查看结果' : 'Hover or tap a number for the result' }}</span>
+        <span v-if="pins" class="snap-hint">{{ zh ? '悬停或点击其他编号切换结果' : 'Hover or tap another number for its answer' }}</span>
         <a class="snap-link" :href="sourceUrl" target="_blank" rel="noopener noreferrer"
           ><template v-for="(part, i) in payload.source.split('/')" :key="i"><wbr v-if="i > 0" />{{ i > 0 ? '/' : '' }}{{ part }}</template></a
         >
@@ -545,9 +556,9 @@ onBeforeUnmount(unlisten)
 .snap-tabs button {
   max-width: 100%;
   padding: 1px 9px;
-  border: var(--line-thin) solid var(--line-color);
+  border: var(--line-thin) solid transparent;
   border-radius: 4px;
-  background: var(--paper);
+  background: transparent;
   font-family: var(--vp-font-family-base);
   font-size: 13px;
   font-weight: 600;
@@ -563,11 +574,15 @@ onBeforeUnmount(unlisten)
 }
 
 .snap-tabs button.on {
-  border-color: var(--line-color);
-  background: var(--straw);
-  color: #2b3040;
+  border: var(--line) solid var(--line-color);
+  padding: 0 8px;
+  background: var(--panel);
+  color: var(--ink);
   font-weight: 800;
-  box-shadow: 2px 2px 0 var(--shadow-color);
+}
+
+.dark .snap-tabs button.on {
+  background: var(--paper);
 }
 
 /* Narrow, the tabs make one row that scrolls sideways. */
@@ -626,14 +641,30 @@ onBeforeUnmount(unlisten)
   color: var(--ink-3);
 }
 
+/* Under a card taller than the window, the answer stays at the window's
+   bottom while the code scrolls by, so a pin's answer is in view. */
 .snap-active {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: grid;
+  padding: 10px 16px 6px;
+  border-top: var(--line-thin) dashed var(--line-color);
+  background: var(--paper-2);
+  font-size: 13px;
+}
+
+.snap-active-item {
+  grid-area: 1 / 1;
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  min-height: 42px;
-  padding: 10px 16px 6px;
-  border-top: var(--line-thin) dashed var(--line-color);
-  font-size: 13px;
+  min-width: 0;
+  visibility: hidden;
+}
+
+.snap-active-item.on {
+  visibility: visible;
 }
 
 .snap-active i {
@@ -675,6 +706,19 @@ onBeforeUnmount(unlisten)
   color: #ffffff;
 }
 
+/* the night accent is light: dark numbers on it */
+.dark .snap-source :deep(.pin.on i),
+.dark .inline .snap-source :deep(.pin:hover i),
+.dark .tooltip .snap-source :deep(.pin:hover i) {
+  background: var(--bow);
+  color: #1d212d;
+}
+
+.dark .snap-active i,
+.dark .snap-result-head i {
+  color: #1d212d;
+}
+
 .snap-tip {
   position: absolute;
   z-index: 20;
@@ -703,7 +747,7 @@ onBeforeUnmount(unlisten)
 }
 
 .snap-tip .snap-card {
-  padding: 8px 10px;
+  padding: 2px 2px 0;
 }
 
 .snap-card :deep([class*='language-'] code) {
@@ -847,9 +891,10 @@ button.snap-file-name:hover {
   padding: 0 8px;
   border: var(--line-thin) solid var(--line-color);
   border-radius: 4px;
-  background: var(--straw-soft);
+  background: var(--paper);
   font-family: var(--vp-font-family-mono);
   font-size: 11px;
+  color: var(--ink-2);
 }
 
 .snap-entry-name {
@@ -881,9 +926,9 @@ button.snap-file-name:hover {
   height: 15px;
   padding: 0 3px;
   border-radius: 999px;
-  border: 1px solid var(--line-color);
-  background: var(--straw);
-  color: #2b3040;
+  border: 1px solid var(--ink-2);
+  background: var(--panel);
+  color: var(--ink);
   font-family: var(--clice-font-display);
   font-style: normal;
   font-weight: 900;
@@ -892,9 +937,13 @@ button.snap-file-name:hover {
   text-align: center;
 }
 
+.dark .snap-source :deep(.pin i) {
+  background: var(--paper);
+}
+
 .snap-source :deep(.pin-range) {
-  background: var(--straw-soft);
-  border-bottom: 2px solid var(--straw-dark);
+  background: var(--pinafore-soft);
+  border-bottom: 2px solid var(--pinafore);
   border-radius: 2px;
 }
 
@@ -954,8 +1003,8 @@ button.snap-file-name:hover {
   padding: 0 3px;
   border-radius: 999px;
   border: 1px solid var(--line-color);
-  background: var(--straw);
-  color: #2b3040;
+  background: var(--bow);
+  color: #ffffff;
   font-family: var(--clice-font-display);
   font-style: normal;
   font-weight: 900;
@@ -985,18 +1034,10 @@ button.snap-file-name:hover {
   color: var(--ink-3);
 }
 
-/* the recorded result, drawn like an editor tooltip */
+/* the recorded result, on the results panel without a frame of its own */
 .snap-card {
-  padding: 10px 12px;
-  border: var(--line-thin) solid var(--line-color);
-  border-radius: 4px;
-  background: var(--paper);
   font-size: 13.5px;
   line-height: 1.55;
-}
-
-.dark .snap-card {
-  background: var(--paper-2);
 }
 
 .snap-card :deep(h1),
@@ -1050,6 +1091,12 @@ button.snap-file-name:hover {
   background: transparent !important;
   font-size: 12.5px;
   overflow-x: auto;
+}
+
+/* A hover's code under the code wraps rather than scrolls. */
+.snap-card :deep(div[class*='language-'] :is(pre, code)) {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .snap-card :deep(:not(pre) > code) {
