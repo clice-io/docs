@@ -1640,10 +1640,15 @@ html[lang^="zh"] {
 
 .VPSidebarItem.level-0 > .item > .text .chapter-icon {
   display: inline-block;
-  width: 22px;
-  height: 22px;
-  margin: -4px 8px 0 0;
+  width: 20px;
+  height: 20px;
+  margin: -3px 8px 0 0;
   vertical-align: middle;
+  fill: none;
+  stroke: var(--bow);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* `.results` outranks the box's own scoped `padding: 12px`, which loads later */
