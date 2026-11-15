@@ -1,6 +1,6 @@
 // https://vitepress.dev/guide/custom-theme
 import { h } from 'vue'
-import type { Theme } from 'vitepress'
+import { onContentUpdated, type Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import BlogPostList from './components/BlogPostList.vue'
 import HomeLanding from './components/HomeLanding.vue'
@@ -29,6 +29,17 @@ export default {
       // https://vitepress.dev/guide/extending-default-theme#layout-slots
       'layout-bottom': () => h(SiteFooter),
       'aside-outline-after': () => h(OutlineFollow)
+    })
+  },
+  setup() {
+    // A page's `<video autoplay muted>` (clice's what-is-clice demos) is put
+    // in by Vue, not by the HTML parser, and Chrome then leaves it paused,
+    // though a muted video may autoplay: start it once the page is in.
+    onContentUpdated(() => {
+      for (const video of document.querySelectorAll<HTMLVideoElement>('.vp-doc video[autoplay]')) {
+        if (video.hasAttribute('muted')) video.muted = true
+        if (video.paused) video.play().catch(() => {})
+      }
     })
   },
   enhanceApp({ app }) {
