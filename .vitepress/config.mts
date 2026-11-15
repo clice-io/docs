@@ -42,7 +42,6 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
         ["link", { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png?v=2" }],
         ["meta", { property: "og:type", content: "website" }],
         ["meta", { property: "og:site_name", content: "clice.io" }],
-        ["meta", { name: "twitter:card", content: "summary_large_image" }],
         ["meta", { name: "theme-color", content: "#4568a7" }],
     ],
     transformPageData(pageData, { siteConfig }) {
@@ -61,12 +60,20 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
         const head = [
             ["meta", { property: "og:title", content: title ? `${title} | clice.io` : "clice.io" }],
             ["meta", { property: "og:url", content: url(isZh ? path : en) }],
-            ["meta", { property: "og:image", content: `${SITE}/og.png` }],
-            ["meta", { property: "og:image:width", content: "1200" }],
-            ["meta", { property: "og:image:height", content: "630" }],
             ["meta", { property: "og:locale", content: isZh ? "zh_CN" : "en_US" }],
             ["link", { rel: "canonical", href: url(isZh ? path : en) }],
         ];
+        // The share card's art (the mascot) belongs to the portal page alone,
+        // as the mascot does; another page's link preview shows its title and
+        // description.
+        if (en === "") {
+            head.push(["meta", { property: "og:image", content: `${SITE}/og.png` }]);
+            head.push(["meta", { property: "og:image:width", content: "1200" }]);
+            head.push(["meta", { property: "og:image:height", content: "630" }]);
+            head.push(["meta", { name: "twitter:card", content: "summary_large_image" }]);
+        } else {
+            head.push(["meta", { name: "twitter:card", content: "summary" }]);
+        }
         if (hasEn) {
             head.push(["link", { rel: "alternate", hreflang: "en", href: url(en) }]);
             head.push(["link", { rel: "alternate", hreflang: "x-default", href: url(en) }]);
