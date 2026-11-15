@@ -525,13 +525,17 @@ onBeforeUnmount(() => observer?.disconnect())
   position: relative;
   background:
     var(--screentone) 0 0 / 10px 10px,
-    #ffffff;
+    var(--figure-paper);
   border-bottom: var(--line) solid var(--line-color);
   display: flex;
   justify-content: center;
   align-items: flex-end;
   padding: 24px 24px 0;
   min-height: 320px;
+}
+
+.dark .hero-figure img {
+  filter: brightness(0.92);
 }
 
 .hero-figure img {
