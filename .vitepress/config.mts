@@ -62,18 +62,9 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
             ["meta", { property: "og:url", content: url(isZh ? path : en) }],
             ["meta", { property: "og:locale", content: isZh ? "zh_CN" : "en_US" }],
             ["link", { rel: "canonical", href: url(isZh ? path : en) }],
+            // No share image: a link preview shows the page's title and description.
+            ["meta", { name: "twitter:card", content: "summary" }],
         ];
-        // The share card's art (the mascot) belongs to the portal page alone,
-        // as the mascot does; another page's link preview shows its title and
-        // description.
-        if (en === "") {
-            head.push(["meta", { property: "og:image", content: `${SITE}/og.png` }]);
-            head.push(["meta", { property: "og:image:width", content: "1200" }]);
-            head.push(["meta", { property: "og:image:height", content: "630" }]);
-            head.push(["meta", { name: "twitter:card", content: "summary_large_image" }]);
-        } else {
-            head.push(["meta", { name: "twitter:card", content: "summary" }]);
-        }
         if (hasEn) {
             head.push(["link", { rel: "alternate", hreflang: "en", href: url(en) }]);
             head.push(["link", { rel: "alternate", hreflang: "x-default", href: url(en) }]);
