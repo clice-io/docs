@@ -3,7 +3,7 @@
   "topic": "workspace_symbols",
   "subtopic": "queries",
   "title": "Search by mangled (linker) name",
-  "summary": "Mangled linker names do not resolve to their source functions yet",
+  "summary": "Mangled linker names do not resolve to their source functions",
   "prose": "",
   "status": "unsupported",
   "issues": [],

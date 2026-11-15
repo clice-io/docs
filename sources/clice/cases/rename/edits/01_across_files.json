@@ -3,7 +3,7 @@
   "topic": "rename",
   "subtopic": "edits",
   "title": "Rename across files",
-  "summary": "Renaming a function edits its declaration, its definition and every call in the workspace; a spelling inside a macro is left alone and named in a message",
+  "summary": "Renaming a function edits its declaration, its definition and every call in the project; a spelling inside a macro is left alone and named in a message",
   "prose": "",
   "status": "supported",
   "issues": [],

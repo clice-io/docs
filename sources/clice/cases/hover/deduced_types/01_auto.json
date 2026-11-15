@@ -4,7 +4,7 @@
   "subtopic": "deduced_types",
   "title": "`auto`",
   "summary": "Hovering `auto` shows the type it stands for, in a template as the template would write it",
-  "prose": "A type only instantiation can work out, such as that of `value + 1`, is not deduced yet.",
+  "prose": "A type only instantiation can work out, such as that of `value + 1`, is not deduced.",
   "status": "supported",
   "issues": [],
   "files": [

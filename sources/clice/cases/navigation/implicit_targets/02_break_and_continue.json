@@ -3,7 +3,7 @@
   "topic": "navigation",
   "subtopic": "implicit_targets",
   "title": "`break` / `continue`",
-  "summary": "`break` and `continue` do not navigate to their enclosing control statement yet",
+  "summary": "`break` and `continue` do not navigate to their enclosing control statement",
   "prose": "Go-to-definition on `break` or `continue` does not reach the head of the\nloop or switch it controls.",
   "status": "unsupported",
   "issues": [
