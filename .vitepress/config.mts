@@ -10,6 +10,7 @@ import { capabilityCards } from "./capability";
 import { mermaidFences } from "./mermaid";
 import { literalBraces } from "./braces";
 import { pairedAnchors } from "./anchors";
+import { excerptOf } from "./excerpt";
 
 const SITE = "https://docs.clice.io";
 const projects = ["clice", "catter", "xclang"];
@@ -55,10 +56,15 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
         const source = pageData.relativePath.replace(/^zh\//, "");
         const hasEn = fs.existsSync(`${siteConfig.srcDir}/en/${source}`);
         const hasZh = fs.existsSync(`${siteConfig.srcDir}/zh/${source}`);
-        const title = pageData.frontmatter.title ?? pageData.title;
-        const description = pageData.frontmatter.description ?? pageData.description;
+        // A project home has no heading: its hero names it.
+        const title = pageData.frontmatter.title ?? (pageData.title || pageData.frontmatter.hero?.name);
+        // A page without a description of its own previews with its hero or
+        // first paragraph (see excerpt.ts), not the site's tagline.
+        const description =
+            pageData.frontmatter.description ?? (excerptOf(`${siteConfig.srcDir}/${pageData.filePath}`) || pageData.description);
+        if (description) pageData.description = description;
         const head = [
-            ["meta", { property: "og:title", content: title ? `${title} | clice.io` : "clice.io" }],
+            ["meta", { property: "og:title", content: title && title !== "clice.io" ? `${title} | clice.io` : "clice.io" }],
             ["meta", { property: "og:url", content: url(isZh ? path : en) }],
             ["meta", { property: "og:locale", content: isZh ? "zh_CN" : "en_US" }],
             ["link", { rel: "canonical", href: url(isZh ? path : en) }],
