@@ -15,8 +15,10 @@ import { decorate, escapeHtml, mergeVariants, pinInserts, type Insert, type Rend
  * help, code actions, outlines, command transcripts) are result cards. A
  * case's tests, and the two clients of a test that pins them apart, are
  * its variants: stacked in each result when they draw the same code,
- * tabs over the code when they do not. A test run with options is
- * labelled with them as clice.toml spells them, `key = value`.
+ * tabs over the card when they do not. A test run with options is
+ * labelled with them as clice.toml spells them, `key = value`. What a
+ * case scrubs from command output as changing from run to run shows as
+ * placeholders (see `scrubbed`).
  */
 
 export interface CardMarker {
@@ -116,6 +118,18 @@ const TEXT = {
         server: "server",
         insertRange: "insert",
         replaceRange: "replace",
+        varies: "varies from run to run",
+        workspace: "workspace",
+        session: "session",
+        defaultConfig: "default",
+        selected: "selected",
+        build: "build",
+        sharesIndex: (name: string) => `shares the index of ${name}`,
+        automatic: "automatic",
+        chosen: "chosen",
+        placeholder: "placeholder",
+        noRename: "Cannot rename here",
+        noEdits: "No edits",
     },
     zh: {
         read: "读",
@@ -145,6 +159,18 @@ const TEXT = {
         server: "服务器",
         insertRange: "插入",
         replaceRange: "替换",
+        varies: "每次运行都不同",
+        workspace: "工作区",
+        session: "会话",
+        defaultConfig: "默认",
+        selected: "已选",
+        build: "构建",
+        sharesIndex: (name: string) => `与 ${name} 共用索引`,
+        automatic: "自动",
+        chosen: "手动选择",
+        placeholder: "占位文本",
+        noRename: "这里不能重命名",
+        noEdits: "没有编辑",
     },
 };
 
@@ -203,6 +229,27 @@ function langOf(file: string): string {
     if (/\.jsonc?$/.test(file)) return "json";
     if (/(^|\/)\.clang-(format|tidy)$|\.ya?ml$/.test(file)) return "yaml";
     return "text";
+}
+
+/**
+ * Output text as HTML, with what the cases scrub from it because it
+ * changes from run to run drawn as placeholders: `#` for a number (`#s`,
+ * `# KB`, `pid #`), `${WS}` for the workspace's path, `${SESSION}` for a
+ * session's name. A `#` that starts a word (`#define`, a hash) is text.
+ */
+function scrubbed(t: Texts, text: string): string {
+    const slot = (shown: string) => `<span class="case-var" title="${escapeHtml(t.varies)}">${shown}</span>`;
+    return escapeHtml(text)
+        .replace(/(?<![\w#&])#(?=(?:ms|s)?(?!\w))/g, slot("…"))
+        .replaceAll("${WS}", slot(`&lt;${escapeHtml(t.workspace)}&gt;`))
+        .replaceAll("${SESSION}", slot(`&lt;${escapeHtml(t.session)}&gt;`));
+}
+
+/** Highlighted code with the scrubbed paths drawn as in `scrubbed`; a
+ *  scrubbed number stays as the string `"#"` it is. */
+function scrubbedCode(t: Texts, html: string): string {
+    const slot = (shown: string) => `<span class="case-var" title="${escapeHtml(t.varies)}">&lt;${escapeHtml(shown)}&gt;</span>`;
+    return html.replaceAll("${WS}", slot(t.workspace)).replaceAll("${SESSION}", slot(t.session));
 }
 
 function none(text: string): string {
@@ -454,7 +501,11 @@ function hierarchy(ctx: Ctx, value: CardValue, key: string): Piece {
                 span(ctx, site, "mark-range mark-word", keysOf(ctx, [id]));
             return (
                 `<li class="case-place"${id ? ` data-mark="${id}"` : ""}>` +
-                `<span class="case-item">${kindIcon("sym", str(item.kind))}<span class="sym-name">${escapeHtml(str(item.name))}</span></span>` +
+                `<span class="case-item">${kindIcon("sym", str(item.kind))}<span class="sym-name">${escapeHtml(str(item.name))}</span>` +
+                (str(item.detail) && str(item.detail) !== str(item.name)
+                    ? `<span class="sym-detail">${escapeHtml(str(item.detail))}</span>`
+                    : "") +
+                `</span>` +
                 (at ? excerpt(ctx, at) : "") +
                 `</li>`
             );
@@ -742,7 +793,8 @@ function documentLinks(ctx: Ctx, value: CardValue): Piece {
     return { html: rows.length ? `<ul class="link-list">${rows.join("")}</ul>` : none(ctx.t.none), where: "side" };
 }
 
-function workspaceSymbols(ctx: Ctx, value: CardValue): Piece {
+/** workspace_symbols, and a list of the symbols an index holds. */
+function workspaceSymbols(ctx: Ctx, value: CardValue, key: string): Piece {
     const symbols = listOf(value).filter(isTable);
     const rows = symbols.map((symbol) => {
         const at = isPlace(symbol.at) ? symbol.at : undefined;
@@ -757,11 +809,14 @@ function workspaceSymbols(ctx: Ctx, value: CardValue): Piece {
             `</li>`
         );
     });
-    return {
-        html: rows.length ? `<ul class="sym-list">${rows.join("")}</ul>` : none(ctx.t.noSymbols),
-        where: "side",
-        meta: rows.length ? ctx.t.matches(rows.length) : "",
-    };
+    const list = rows.length ? `<ul class="sym-list">${rows.join("")}</ul>` : none(ctx.t.noSymbols);
+    if (key !== "workspace_symbols") {
+        return {
+            html: `<div class="case-rel"><span class="case-rel-name">${escapeHtml(key)}</span>${list}</div>`,
+            where: "side",
+        };
+    }
+    return { html: list, where: "side", meta: rows.length ? ctx.t.matches(rows.length) : "" };
 }
 
 function counterparts(ctx: Ctx, value: CardValue): Piece {
@@ -820,11 +875,123 @@ function contexts(ctx: Ctx, value: CardValue): Piece {
         .map(
             (context) =>
                 `<li class="cp-item"><span class="cp-head"><b>${escapeHtml(str(context.label))}</b></span>` +
-                `<span class="sym-detail">${escapeHtml(str(context.description))}</span>` +
+                `<span class="sym-detail">${scrubbed(ctx.t, str(context.description))}</span>` +
                 (str(context.host) ? `<code class="cp-path">${escapeHtml(str(context.host))}</code>` : "") +
                 `</li>`,
         );
     return { html: rows.length ? `<ul class="cp-list">${rows.join("")}</ul>` : none(ctx.t.none), where: "side" };
+}
+
+/** The context a header is read in, and whether clice picked it. */
+function contextChoice(ctx: Ctx, value: CardValue): Piece {
+    if (!isTable(value) || !isTable(value.context)) return { html: none(ctx.t.none), where: "side" };
+    const context = value.context;
+    const how = typeof value.automatic === "boolean" ? (value.automatic ? ctx.t.automatic : ctx.t.chosen) : "";
+    return {
+        html:
+            `<ul class="cp-list"><li class="cp-item"><span class="cp-head"><b>${escapeHtml(str(context.label))}</b>` +
+            (how ? `<span class="case-token-mod">${escapeHtml(how)}</span>` : "") +
+            `</span><span class="sym-detail">${scrubbed(ctx.t, str(context.description))}</span></li></ul>`,
+        where: "side",
+    };
+}
+
+/** The build configurations as the editor's switch lists them: the
+ *  active one checked, the default and a persisted selection tagged, and
+ *  the build the active configuration's links resolve to. */
+function configurationMenu(ctx: Ctx, value: CardValue, key: string): Piece {
+    if (!isTable(value)) return raw(ctx, value, key);
+    const active = str(value.active);
+    const selected = str(value.selected);
+    const fallback = str(value.default);
+    const rows = listOf(value.menu)
+        .map(str)
+        .map((name) => {
+            const tags = [name === fallback ? ctx.t.defaultConfig : "", name === selected ? ctx.t.selected : ""]
+                .filter(Boolean)
+                .map((tag) => `<span class="case-token-mod">${escapeHtml(tag)}</span>`)
+                .join("");
+            return (
+                `<li class="menu-item${name === active ? " on" : ""}"><span class="menu-check">${name === active ? "✓" : ""}</span>` +
+                `<code>${escapeHtml(name)}</code>${tags}</li>`
+            );
+        });
+    let build = "";
+    if (isTable(value.build)) {
+        const shares = str(value.build.configuration);
+        build =
+            `<div class="menu-build"><span class="case-rel-name">${escapeHtml(ctx.t.build)}</span>` +
+            listOf(value.build.databases)
+                .map((db) => `<code class="cp-path">${escapeHtml(str(db)).replaceAll("/", "/<wbr>")}</code>`)
+                .join(" ") +
+            (shares ? `<span class="sym-detail">${escapeHtml(ctx.t.sharesIndex(shares))}</span>` : "") +
+            `</div>`;
+    }
+    return { html: `<ul class="menu-list">${rows.join("")}</ul>${build}`, where: "side" };
+}
+
+/** Places listed under the key, each lighting its place in the code. */
+function placeList(ctx: Ctx, value: CardValue, key: string, cls = "mark-range mark-nav"): Piece {
+    const rows = listOf(value)
+        .filter(isPlace)
+        .map((place) => placeRow(ctx, place, cls));
+    return {
+        html:
+            `<div class="case-rel"><span class="case-rel-name">${escapeHtml(key)}</span>` +
+            (rows.length ? `<ul class="case-places">${rows.join("")}</ul>` : none(ctx.t.none)) +
+            `</div>`,
+        where: "inline",
+    };
+}
+
+function inactiveLines(ctx: Ctx, value: CardValue, key: string): Piece {
+    return placeList(ctx, value, key, "mark-range mark-inactive");
+}
+
+/** Where a rename starts and the name an editor offers to edit. */
+function prepareRename(ctx: Ctx, value: CardValue): Piece {
+    const table: Table = isTable(value) ? value : {};
+    if (typeof table.error === "string") {
+        return { html: `<p class="case-error">${scrubbed(ctx.t, table.error)}</p>`, where: "inline" };
+    }
+    if (!isPlace(table.at)) return { html: none(ctx.t.noRename), where: "inline" };
+    const placeholder = str(table.placeholder);
+    return {
+        html:
+            `<ul class="case-places">${placeRow(ctx, table.at, "mark-range mark-nav")}</ul>` +
+            (placeholder
+                ? `<div class="case-token"><span class="case-token-mod">${escapeHtml(ctx.t.placeholder)}</span><code>${escapeHtml(placeholder)}</code></div>`
+                : ""),
+        where: "inline",
+    };
+}
+
+/** A rename's edits file by file, whether the result compiles, and what
+ *  it left alone; or why it refused. */
+function rename(ctx: Ctx, value: CardValue): Piece {
+    const table: Table = isTable(value) ? value : {};
+    if (typeof table.error === "string") {
+        return { html: `<p class="case-error">${scrubbed(ctx.t, table.error)}</p>`, where: "side" };
+    }
+    const compiles =
+        typeof table.compiles === "boolean"
+            ? `<div class="ca-head"><span class="ca-check ${table.compiles ? "ok" : "no"}">${table.compiles ? "✓" : "✗"} ${escapeHtml(table.compiles ? ctx.t.compiles : ctx.t.fails)}</span></div>`
+            : "";
+    const edits = editsHtml(ctx.md, table.edits);
+    const notice = str(table.notice);
+    return {
+        html:
+            compiles +
+            (edits || none(ctx.t.noEdits)) +
+            (notice ? `<pre class="case-notice">${scrubbed(ctx.t, notice)}</pre>` : ""),
+        where: "side",
+    };
+}
+
+/** A file's formatting: its diff. */
+function formatting(ctx: Ctx, value: CardValue): Piece {
+    const diff = str(value);
+    return { html: diff ? diffHtml(ctx.md, diff, ctx.query) : none(ctx.t.noEdits), where: "side" };
 }
 
 /** Text, lines or a number a test shows. */
@@ -832,10 +999,19 @@ function text(ctx: Ctx, value: CardValue): Piece {
     const body = Array.isArray(value)
         ? value.map((line) => str(line)).join("\n")
         : str(value) || JSON.stringify(plainOf(value));
-    return { html: `<pre class="snap-raw"><code>${escapeHtml(body)}</code></pre>`, where: ctx.marker ? "tip" : "side" };
+    return { html: `<pre class="snap-raw"><code>${scrubbed(ctx.t, body)}</code></pre>`, where: ctx.marker ? "tip" : "side" };
 }
 
 function raw(ctx: Ctx, value: CardValue, key: string): Piece {
+    // An answer under a name of the test's own, read by its shape.
+    const list = listOf(value);
+    if (list.length > 0 && list.every(isPlace)) return placeList(ctx, value, key);
+    if (list.length > 0 && list.every((item) => isTable(item) && typeof item.message === "string")) {
+        return {
+            html: `<div class="case-rel"><span class="case-rel-name">${escapeHtml(key)}</span><ul class="diag-list">${diagnosticRows(ctx, list)}</ul></div>`,
+            where: "side",
+        };
+    }
     return {
         html: `<div class="case-rel"><span class="case-rel-name">${escapeHtml(key)}</span><pre class="snap-raw"><code>${escapeHtml(JSON.stringify(plainOf(value), null, 2))}</code></pre></div>`,
         where: ctx.marker ? "tip" : "side",
@@ -871,11 +1047,29 @@ const ANSWERS: Record<string, Answer> = {
     contexts,
     code_actions: codeActions,
     value: text,
+    // under the names some tests give them
+    call_hierarchy: hierarchy,
+    type_hierarchy: hierarchy,
+    symbols: workspaceSymbols,
+    outline: documentSymbols,
+    links: documentLinks,
+    tokens: semanticTokens,
+    folds: foldingRanges,
+    menu: configurationMenu,
+    configurations: configurationMenu,
+    context: contextChoice,
+    current_context: contextChoice,
+    inactive: inactiveLines,
+    inactive_lines: inactiveLines,
+    prepare_rename: prepareRename,
+    rename,
+    formatting,
 };
 
 /** A command's run as a terminal shows it, and the files it wrote. */
 function transcript(ctx: Ctx, label: string, value: Table): string {
-    const command = label.replace(/^\$\s*/, "");
+    // A command run again in one test is labelled `… #2`, `… #3`.
+    const command = label.replace(/^\$\s*/, "").replace(/ #\d+$/, "");
     const exit = typeof value.exit === "number" ? value.exit : undefined;
     const status =
         exit !== undefined
@@ -887,15 +1081,15 @@ function transcript(ctx: Ctx, label: string, value: Table): string {
     const json = /^[[{]/.test(stdout.trim());
     const out = stdout
         ? json
-            ? `<div class="term-json">${decorate(ctx.md, stdout, [], new Map(), false, "json")}</div>`
-            : `<pre class="term-out">${escapeHtml(stdout)}</pre>`
+            ? `<div class="term-json">${scrubbedCode(ctx.t, decorate(ctx.md, stdout, [], new Map(), true, "json"))}</div>`
+            : `<pre class="term-out">${scrubbed(ctx.t, stdout)}</pre>`
         : "";
     const stderr = str(value.stderr);
     const files = editsHtml(ctx.md, value.files);
     return (
         `<div class="term"><div class="term-cmd"><span class="term-prompt">$</span><code>${escapeHtml(command)}</code>${status}</div>` +
         out +
-        (stderr ? `<pre class="term-err">${escapeHtml(stderr)}</pre>` : "") +
+        (stderr ? `<pre class="term-err">${scrubbed(ctx.t, stderr)}</pre>` : "") +
         `</div>${files}`
     );
 }
@@ -913,6 +1107,7 @@ interface Block {
 
 interface View {
     key: string;
+    /** HTML: the options a test set read as code. */
     label: string;
     blocks: Block[];
 }
@@ -952,10 +1147,8 @@ function viewsOf(card: Card, t: Texts): View[] {
         card.tests.length < 2
             ? ""
             : test.config
-              ? pairsOf(test.config).join(", ")
-              : test.name === "default"
-                ? t.default
-                : test.name;
+              ? `<code>${escapeHtml(pairsOf(test.config).join(", "))}</code>`
+              : escapeHtml(test.name === "default" ? t.default : test.name);
     return card.tests.flatMap((test) => {
         const shared = test.blocks.filter((block) => !isClient(block));
         const clients = test.blocks.filter(isClient);
@@ -973,7 +1166,9 @@ function viewsOf(card: Card, t: Texts): View[] {
         if (clients.length === 0) return [{ key: test.name, label: testLabel(test), blocks: shared }];
         return clients.map((client) => ({
             key: `${test.name}/${client.label}`,
-            label: [testLabel(test), client.label === "server" ? t.server : t.inspect].filter(Boolean).join(" · "),
+            label: [testLabel(test), escapeHtml(client.label === "server" ? t.server : t.inspect)]
+                .filter(Boolean)
+                .join(" · "),
             blocks: [...shared, ...expand(client)],
         }));
     });
@@ -1023,7 +1218,12 @@ function drawView(md: MarkdownIt, card: Card, view: View, t: Texts, entry: CardF
         const pieces: Piece[] = command
             ? [{ html: transcript(ctx, block.label, answer), where: "below" }]
             : Object.entries(answer).map(([key, value]) => (ANSWERS[key] ?? raw)(ctx, value, key));
-        let html = pieces.map((piece) => piece.html).join("");
+        // Several answers in one result each get a section of it.
+        const shown = pieces.filter((piece) => piece.html);
+        let html =
+            shown.length > 1
+                ? shown.map((piece) => `<div class="case-piece">${piece.html}</div>`).join("")
+                : (shown[0]?.html ?? "");
         let where = pieces.reduce<Where>(
             (best, piece) => (RANK[piece.where] > RANK[best] ? piece.where : best),
             "none",
@@ -1074,7 +1274,8 @@ function codeOf(md: MarkdownIt, shown: CardFile[], drawn: Drawn): Map<string, st
         const text = file.text.replace(/\n$/, "");
         html.set(
             file.path,
-            decorate(md, text, inserts, new Map(), drawn.canvas.blockLines.has(file.path), langOf(file.path)),
+            // Lines as blocks, so a long one wraps with a hanging indent.
+            decorate(md, text, inserts, new Map(), true, langOf(file.path)),
         );
     }
     return html;
@@ -1097,7 +1298,7 @@ export function renderCard(md: MarkdownIt, card: Card, lang: string): CaseRender
     const rendered = drawn.map((d, i): CaseView => {
         const html = codeOf(md, shown, d);
         return {
-            label: escapeHtml(views[i]!.label) + (d.wrong ? ' <span class="case-wrong-mark">✗</span>' : ""),
+            label: views[i]!.label + (d.wrong ? ' <span class="case-wrong-mark">✗</span>' : ""),
             code: entry ? (html.get(entry.path) ?? "") : "",
             files: shown
                 .filter((file) => file !== entry)

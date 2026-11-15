@@ -175,14 +175,18 @@ export function decorate(
         list.push(ins);
         byLine.set(ins.line, list);
     }
+    // As blocks, a line carries its indent (tabs as 4 columns), so that
+    // when it wraps it goes on further in than it starts.
+    const indents = code.split("\n").map((line) => /^[ \t]*/.exec(line)![0].replaceAll("\t", "    ").length);
     let lineNo = -1;
     const out = html.replace(/<span class="line">([\s\S]*?)<\/span>(?=\n|<\/code>)/g, (whole, inner: string) => {
         lineNo += 1;
         const here = byLine.get(lineNo);
         const classes = lineClasses.get(lineNo);
-        if (!here && !classes) return whole;
+        const indent = blockLines && indents[lineNo] ? ` style="--indent:${indents[lineNo]}"` : "";
+        if (!here && !classes && !indent) return whole;
         const cls = ["line", ...(classes ?? [])].join(" ");
-        return `<span class="${cls}">${here ? applyInserts(inner, here) : inner}</span>`;
+        return `<span class="${cls}"${indent}>${here ? applyInserts(inner, here) : inner}</span>`;
     });
     if (!blockLines) return out;
     // Lines as blocks (no newline text between them), so a folded line
