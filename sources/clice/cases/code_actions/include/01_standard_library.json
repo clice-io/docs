@@ -6,9 +6,7 @@
   "summary": "An unresolved standard library name offers the header declaring it, from the standard library mapping",
   "prose": "The directive goes after the includes at the top of the file.",
   "status": "supported",
-  "issues": [
-    "clangd#1017"
-  ],
+  "issues": [],
   "files": [
     {
       "path": "config.h",

@@ -3,7 +3,7 @@
   "topic": "signature_help",
   "subtopic": "call_contexts",
   "title": "Subscript operators",
-  "summary": "An overloaded `operator[]` shows no signature help yet",
+  "summary": "An overloaded `operator[]` shows no signature help",
   "prose": "",
   "status": "unsupported",
   "issues": [

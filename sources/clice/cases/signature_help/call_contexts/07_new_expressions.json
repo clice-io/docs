@@ -4,7 +4,7 @@
   "subtopic": "call_contexts",
   "title": "New expression",
   "summary": "A new-expression's constructor arguments drive signature help",
-  "prose": "Written with parentheses, it lists the constructors; written with braces, it\nshows nothing yet.",
+  "prose": "Written with parentheses, it lists the constructors; written with braces, it\nshows nothing.",
   "status": "partial",
   "issues": [
     "clangd#1967"

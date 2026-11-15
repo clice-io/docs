@@ -6,9 +6,7 @@
   "summary": "A Doxygen formula shows as code, without its `@f$` markers",
   "prose": "",
   "status": "supported",
-  "issues": [
-    "clangd#2669"
-  ],
+  "issues": [],
   "files": [
     {
       "path": "main.cpp",

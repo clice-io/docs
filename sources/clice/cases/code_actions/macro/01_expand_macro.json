@@ -6,9 +6,7 @@
   "summary": "A macro invocation is replaced by the tokens it expands to",
   "prose": "Arguments are substituted; the action is offered from the macro name or anywhere inside its arguments.",
   "status": "supported",
-  "issues": [
-    "clangd#820"
-  ],
+  "issues": [],
   "files": [
     {
       "path": "main.cpp",
