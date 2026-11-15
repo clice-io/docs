@@ -2095,8 +2095,8 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   margin-left: 6px;
   padding: 0 6px;
   border-radius: 999px;
-  background: var(--straw);
-  color: #2b3040;
+  background: var(--paper-3);
+  color: var(--ink-2);
   font-size: 11px;
 }
 
@@ -2258,8 +2258,8 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   margin: 0 2px;
   padding: 0 6px;
   border-radius: 999px;
-  background: var(--straw);
-  color: #2b3040;
+  background: var(--paper-3);
+  color: var(--ink-2);
   font-size: 11px;
 }
 
@@ -2408,7 +2408,8 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
 
 .snap.case .cmp-item .cmp-insert {
   flex: 1 0 100%;
-  margin: 0 0 0 26px;
+  margin: 0;
+  padding-left: 26px;
   overflow-wrap: anywhere;
 }
 
@@ -2440,11 +2441,6 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   color: var(--ink-3);
 }
 
-.snap.case :is(.cmp-File, .cmp-Folder, .cmp-Module, .sym-File, .sym-Module, .sym-Package, .cmp-TypeParameter, .sym-TypeParameter, .cmp-Interface) { background: var(--aqua-soft); }
-.snap.case :is(.cmp-Property, .sym-Property, .cmp-Value, .cmp-Unit) { background: var(--straw-soft); }
-.snap.case :is(.cmp-Operator, .sym-Operator, .cmp-Text) { background: var(--ribbon-soft); }
-.dark .snap.case :is(.cmp-Function, .cmp-Method, .cmp-Constructor, .sym-Function, .sym-Method, .sym-Constructor) { background: rgba(179, 167, 240, 0.24); }
-.dark .snap.case :is(.cmp-EnumMember, .sym-EnumMember) { background: rgba(230, 179, 106, 0.24); }
 
 /* signature help: the active signature marked, the others quieter */
 .snap.case .sig-item:not(.sig-current) {
@@ -2458,7 +2454,7 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
 .snap.case .sig-item .sig-active {
   padding: 0 1px;
   border-radius: 3px;
-  background: var(--straw);
+  background: var(--pinafore-soft);
 }
 
 .snap.case .sig-item .sig-active span {
@@ -2466,7 +2462,7 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
 }
 
 .dark .snap.case .sig-item .sig-active {
-  background: color-mix(in srgb, var(--straw) 30%, transparent);
+  background: var(--pinafore-soft);
 }
 
 /* the token at a pin, as an editor's token inspector shows it */
@@ -2676,7 +2672,7 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   padding: 0 8px;
   border: var(--line-thin) solid var(--line-color);
   border-radius: 4px;
-  background: var(--straw-soft);
+  background: var(--paper);
   font-family: var(--vp-font-family-mono);
   font-size: 11px;
 }
@@ -2898,7 +2894,7 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   font-family: var(--vp-font-family-mono);
   font-size: 11px;
   font-weight: 700;
-  color: var(--bow);
+  color: var(--ink-2);
 }
 
 .snap-variant-label code {
@@ -3028,7 +3024,7 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
 }
 
 .cmp-item:first-child {
-  background: var(--straw-soft);
+  background: var(--pinafore-soft);
 }
 
 .cmp-kind,
@@ -3038,7 +3034,7 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   height: 18px;
   border-radius: 4px;
   border: 1px solid var(--line-color);
-  background: var(--pinafore-soft);
+  background: var(--paper-3);
   font-family: var(--clice-font-display);
   font-size: 11px;
   font-weight: 900;
@@ -3047,11 +3043,6 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   color: var(--ink);
 }
 
-.cmp-Function, .cmp-Method, .cmp-Constructor, .sym-Function, .sym-Method, .sym-Constructor { background: #dcd6f5; }
-.cmp-Variable, .cmp-Field, .cmp-Constant, .sym-Variable, .sym-Field, .sym-Constant { background: var(--straw-soft); }
-.cmp-Class, .cmp-Struct, .cmp-Enum, .sym-Class, .sym-Struct, .sym-Enum, .sym-Namespace, .sym-Interface { background: var(--aqua-soft); }
-.cmp-Keyword, .cmp-Snippet { background: var(--ribbon-soft); }
-.cmp-EnumMember, .sym-EnumMember { background: #f3dcb8; }
 
 .cmp-label,
 .sym-name {
@@ -3088,8 +3079,8 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
 .sig-active {
   padding: 0 2px;
   border-radius: 3px;
-  background: var(--straw);
-  color: #2b3040;
+  background: var(--pinafore-soft);
+  color: var(--ink);
   font-weight: 700;
 }
 
