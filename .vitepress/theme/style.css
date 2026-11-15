@@ -561,9 +561,10 @@
 }
 
 /* The block's corner: the language sticker and, at its right end, the
-   copy button, drawn as one sticker over the frame. Both stay put: the
-   button is always shown (a touch screen has no hover) and sits in the
-   top strip, so it fits a one-line block and focusing it scrolls nothing. */
+   copy button, drawn as one sticker over the frame. The button sits in the
+   top strip, so it fits a one-line block and focusing it scrolls nothing.
+   With a mouse it shows while the block is hovered or focused, the sticker
+   making room for it; a touch screen has no hover, so there it stays. */
 .vp-doc div[class*="language-"] {
   --corner-h: 28px;
   --copy-w: 34px;
@@ -608,6 +609,27 @@
 
 .dark .vp-doc div[class*="language-"] > button.copy:hover {
   background-color: var(--paper-3);
+}
+
+@media (hover: hover) {
+  .vp-doc div[class*="language-"] > span.lang {
+    right: -2px;
+    transition: right 0.15s ease;
+  }
+
+  .vp-doc div[class*="language-"] > button.copy {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .vp-doc div[class*="language-"]:is(:hover, :focus-within) > span.lang {
+    right: calc(var(--copy-w) - 4px);
+  }
+
+  .vp-doc div[class*="language-"]:is(:hover, :focus-within) > button.copy,
+  .vp-doc div[class*="language-"] > button.copy.copied {
+    opacity: 1;
+  }
 }
 
 /* Copied: the check in the button, the word over the language sticker. */
