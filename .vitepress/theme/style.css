@@ -454,6 +454,20 @@
   border-left: var(--line) solid var(--line-color);
 }
 
+/* The outline column sticks while the article scrolls and leaves with it
+   at the article's end, so the site footer comes up below both. VitePress
+   fixes it to the window, and the footer slid over it. */
+@media (min-width: 1280px) {
+  .VPDoc .aside .aside-container {
+    position: sticky;
+  }
+
+  /* its fade at the window's bottom would lie over the footer */
+  .VPDoc .aside .aside-curtain {
+    display: none;
+  }
+}
+
 /* ---------------------------------------------------------------------------
  * Document body
  * ------------------------------------------------------------------------ */

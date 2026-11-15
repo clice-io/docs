@@ -5,6 +5,7 @@ import DefaultTheme from 'vitepress/theme'
 import BlogPostList from './components/BlogPostList.vue'
 import HomeLanding from './components/HomeLanding.vue'
 import Mermaid from './components/Mermaid.vue'
+import OutlineFollow from './components/OutlineFollow.vue'
 import SiteFooter from './components/SiteFooter.vue'
 import SnapExample from './components/SnapExample.vue'
 import '@fontsource/nunito/400.css'
@@ -26,7 +27,8 @@ export default {
   Layout: () => {
     return h(DefaultTheme.Layout, null, {
       // https://vitepress.dev/guide/extending-default-theme#layout-slots
-      'layout-bottom': () => h(SiteFooter)
+      'layout-bottom': () => h(SiteFooter),
+      'aside-outline-after': () => h(OutlineFollow)
     })
   },
   enhanceApp({ app }) {
