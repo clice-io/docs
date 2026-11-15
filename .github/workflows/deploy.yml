@@ -31,6 +31,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      # VitePress checks that a linked page exists, not the section a link names.
+      - name: Check section links
+        run: node tools/check-anchors.mjs
+
       - name: Deploy to GitHub Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
