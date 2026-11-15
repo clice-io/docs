@@ -25,7 +25,7 @@ const columns = computed<Column[]>(() => [
       { text: 'clice', href: guide('clice') },
       { text: 'catter', href: guide('catter') },
       { text: 'xclang', href: guide('xclang') },
-      { text: zh.value ? '博客' : 'Blog', href: `${p.value}/blog` }
+      { text: zh.value ? '博客' : 'blog', href: `${p.value}/blog` }
     ]
   },
   {
@@ -41,8 +41,7 @@ const columns = computed<Column[]>(() => [
     title: zh.value ? '社区' : 'Community',
     links: [
       { text: 'Discord', href: 'https://discord.gg/UgnwYqXWqT', icon: 'discord', external: true },
-      { text: zh.value ? '参与贡献' : 'Contributing', href: `${p.value}/clice/dev/contribution` },
-      { text: zh.value ? '问题反馈' : 'Issues', href: 'https://github.com/clice-io/clice/issues', external: true }
+      { text: zh.value ? '问题反馈' : 'issues', href: 'https://github.com/clice-io/clice/issues', external: true }
     ]
   }
 ])

@@ -23,7 +23,7 @@ const content = {
   en: {
     bubble: 'Next Generation C++ Tooling',
     lead:
-      'C++ tooling has long been a mess. We\u2019re building new tools to fix it: a language server that understands your whole project, a build interceptor that gets compile commands out of any build, and the C++23 library beneath them both.',
+      'C++ tooling has long been a mess. We\u2019re building new tools to fix it: a language server that understands your whole project, a build interceptor that gets compile commands out of any build, a Clang toolchain that cross-compiles out of the box, and the C++23 library beneath them.',
     start: { text: 'Get started with clice', href: '/clice/guide/quick-start' },
     projectsTitle: 'Projects',
     projects: [
@@ -57,6 +57,16 @@ const content = {
         external: true,
         more: 'On GitHub',
         accent: 'straw'
+      },
+      {
+        id: 'xclang',
+        title: 'xclang',
+        label: 'Clang toolchain',
+        narration: 'And under all of it, the compiler that builds it: xclang.',
+        summary: 'Clang with sysroots and runtimes for eight targets in one archive: Linux, Windows and macOS on x64 and arm64. Cross-compiling takes one --target, and import std just works.',
+        href: '/xclang/guide/what-is-xclang',
+        more: 'Read the docs',
+        accent: 'ribbon'
       }
     ] satisfies Project[],
     handoff: 'compile_commands.json'
@@ -64,7 +74,7 @@ const content = {
   zh: {
     bubble: '下一代 C++ 工具链',
     lead:
-      'C++ 的工具生态一直很混乱。我们正在开发一组全新的 C++ 工具来改变它：一个读懂整个项目的语言服务器，一个能从任何构建里拿到编译命令的拦截器，以及撑起它们俩的 C++23 基础库。',
+      'C++ 的工具生态一直很混乱。我们正在开发一组全新的 C++ 工具来改变它：一个读懂整个项目的语言服务器，一个能从任何构建里拿到编译命令的拦截器，一套开箱即用的交叉编译 Clang 工具链，以及撑起它们的 C++23 基础库。',
     start: { text: '上手 clice', href: '/zh/clice/guide/quick-start' },
     projectsTitle: '项目',
     projects: [
@@ -98,6 +108,16 @@ const content = {
         external: true,
         more: '去 GitHub',
         accent: 'straw'
+      },
+      {
+        id: 'xclang',
+        title: 'xclang',
+        label: 'Clang 工具链',
+        narration: '而把这一切编译出来的，是 xclang。',
+        summary: '一个压缩包装下 Clang 和八个目标的 sysroot 与运行时：Linux、Windows、macOS，x64 与 arm64 各一份。交叉编译只需一个 --target，import std 开箱即用。',
+        href: '/zh/xclang/guide/what-is-xclang',
+        more: '看文档',
+        accent: 'ribbon'
       }
     ] satisfies Project[],
     handoff: 'compile_commands.json'
@@ -233,10 +253,11 @@ function drawPage(): void {
       nextLabels.push({ text: page.value.handoff, x: x - 110, y })
     }
   }
-  // kotatsu holds up whatever sits directly above it, under that portrait.
-  const k = byId.get('kotatsu')
-  const ki = rowOf('kotatsu')
-  if (k && ki > 0) {
+  // kotatsu holds up whatever sits directly above it, under that portrait,
+  // and xclang, which compiles everything, holds up kotatsu.
+  for (const id of ['kotatsu', 'xclang']) {
+    const ki = rowOf(id)
+    if (!byId.get(id) || ki <= 0) continue
     for (const r of rows[ki - 1]) {
       const pr = portraitOf(r.id)
       if (!pr) continue
@@ -249,7 +270,8 @@ function drawPage(): void {
 }
 
 // Line icons drawn on a 24 px grid with the site's ink stroke: code brackets
-// for clice, a cat for catter, a kotatsu with a mikan.
+// for clice, a cat for catter, a kotatsu with a mikan, and for xclang one
+// stem branching to three targets.
 const LINE_ICONS: Record<string, string> = {
   clice: '<path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/>',
   catter:
@@ -257,7 +279,10 @@ const LINE_ICONS: Record<string, string> = {
     '<circle class="dot" cx="9" cy="14" r="1.1"/><circle class="dot" cx="15" cy="14" r="1.1"/>',
   kotatsu:
     '<path d="M2 12h20M4.5 12L3 19.5q2.25-1.4 4.5 0t4.5 0 4.5 0 4.5 0L19.5 12"/>' +
-    '<circle cx="12" cy="7.6" r="2.6"/><path d="M12 5l1.6-1.6"/>'
+    '<circle cx="12" cy="7.6" r="2.6"/><path d="M12 5l1.6-1.6"/>',
+  xclang:
+    '<path d="M12 21v-8M12 13L5.5 6.5M12 13l6.5-6.5M12 13V4"/>' +
+    '<path d="M5.5 10.5v-4h4M18.5 10.5v-4h-4M9.2 6.3L12 3.5l2.8 2.8"/>'
 }
 
 // Layout position within `root`. offsetLeft/Top ignore transforms, so the
@@ -694,7 +719,8 @@ onBeforeUnmount(() => observer?.disconnect())
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     grid-template-areas:
       'catter clice'
-      'kotatsu kotatsu';
+      'kotatsu kotatsu'
+      'xclang xclang';
     gap: 34px 38px;
   }
 
@@ -709,10 +735,14 @@ onBeforeUnmount(() => observer?.disconnect())
   .panel.kotatsu {
     grid-area: kotatsu;
   }
+
+  .panel.xclang {
+    grid-area: xclang;
+  }
 }
 
 /* Panel order follows the story: the build, then clice, then what holds
-   them up. */
+   them up, then what compiles it all. */
 .panel.catter {
   order: 1;
 }
@@ -723,6 +753,10 @@ onBeforeUnmount(() => observer?.disconnect())
 
 .panel.kotatsu {
   order: 3;
+}
+
+.panel.xclang {
+  order: 4;
 }
 
 .page-frames,
@@ -821,6 +855,10 @@ onBeforeUnmount(() => observer?.disconnect())
 
 .aqua {
   --accent: var(--aqua);
+}
+
+.ribbon {
+  --accent: var(--ribbon);
 }
 
 .straw {
@@ -956,10 +994,10 @@ onBeforeUnmount(() => observer?.disconnect())
   transform: translateX(4px);
 }
 
-/* kotatsu's panel runs the full width: its name on the left, the
-   description beside it. */
+/* kotatsu's and xclang's panels run the full width: the name on the left,
+   the description beside it. */
 @media (min-width: 960px) {
-  .panel.kotatsu .panel-body {
+  .panel:is(.kotatsu, .xclang) .panel-body {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
     grid-template-areas:
@@ -968,24 +1006,24 @@ onBeforeUnmount(() => observer?.disconnect())
     column-gap: 32px;
   }
 
-  .panel.kotatsu .project-head {
+  .panel:is(.kotatsu, .xclang) .project-head {
     grid-area: head;
     align-self: center;
   }
 
-  .panel.kotatsu .summary,
-  .panel.kotatsu .more {
+  .panel:is(.kotatsu, .xclang) .summary,
+  .panel:is(.kotatsu, .xclang) .more {
     padding-left: 28px;
     border-left: var(--line-thin) dashed var(--line-color);
   }
 
-  .panel.kotatsu .summary {
+  .panel:is(.kotatsu, .xclang) .summary {
     grid-area: summary;
     margin: 0;
     align-self: end;
   }
 
-  .panel.kotatsu .more {
+  .panel:is(.kotatsu, .xclang) .more {
     grid-area: more;
     justify-self: start;
     margin: 0;

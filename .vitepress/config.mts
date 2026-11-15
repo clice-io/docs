@@ -121,7 +121,31 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
         zhProjects,
         outline: "deep",
         search: {
-            provider: "local"
+            provider: "local",
+            options: {
+                locales: {
+                    zh: {
+                        translations: {
+                            button: { buttonText: "搜索", buttonAriaLabel: "搜索" },
+                            modal: {
+                                displayDetails: "显示详细列表",
+                                resetButtonTitle: "清除查询",
+                                backButtonTitle: "关闭搜索",
+                                noResultsText: "没有找到结果",
+                                footer: {
+                                    selectText: "选择",
+                                    selectKeyAriaLabel: "回车",
+                                    navigateText: "切换",
+                                    navigateUpKeyAriaLabel: "上方向键",
+                                    navigateDownKeyAriaLabel: "下方向键",
+                                    closeText: "关闭",
+                                    closeKeyAriaLabel: "Esc",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         socialLinks: [
             { icon: "github", link: "https://github.com/clice-io" },
@@ -134,10 +158,11 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
             lang: "en-US",
             link: "/",
             themeConfig: {
+                // The projects, then the blog.
                 nav: [
-                    { text: "blog", link: "/blog" },
                     ...projectNav("en"),
                     { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
+                    { text: "blog", link: "/blog" },
                 ],
                 sidebar: genSidebar(projects, "en"),
             },
@@ -148,11 +173,28 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
             link: "/zh",
             themeConfig: {
                 nav: [
-                    { text: "博客", link: "/zh/blog" },
                     ...projectNav("zh"),
                     { text: "kotatsu", link: "https://github.com/clice-io/kotatsu" },
+                    { text: "博客", link: "/zh/blog" },
                 ],
                 sidebar: genSidebar(projects, "zh"),
+                // VitePress's own words, which it otherwise shows in English.
+                outline: { level: "deep", label: "本页目录" },
+                docFooter: { prev: "上一页", next: "下一页" },
+                lastUpdated: { text: "最后更新于" },
+                darkModeSwitchLabel: "外观",
+                lightModeSwitchTitle: "切换到浅色模式",
+                darkModeSwitchTitle: "切换到深色模式",
+                sidebarMenuLabel: "菜单",
+                returnToTopLabel: "回到顶部",
+                langMenuLabel: "切换语言",
+                skipToContentLabel: "跳到正文",
+                notFound: {
+                    title: "页面不存在",
+                    quote: "这里什么也没有。也许它搬走了，也许链接写错了。",
+                    linkLabel: "回到首页",
+                    linkText: "回到首页",
+                },
             },
         },
     },
