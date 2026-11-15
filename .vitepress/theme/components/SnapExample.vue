@@ -33,6 +33,11 @@ const payload = computed<Payload | null>(() => {
 
 const open = ref(false)
 const tab = ref(0)
+// A tab picked in a row that scrolls comes fully into view.
+function pick(i: number, event: MouseEvent): void {
+  tab.value = i
+  ;(event.currentTarget as HTMLElement).scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+}
 const view = computed<View | null>(() => payload.value?.variants?.[tab.value] ?? payload.value)
 
 // Files shown open, as the card says or as the reader toggled them; a
@@ -43,11 +48,32 @@ const openFiles = computed(() => (view.value?.files ?? []).filter(isOpen))
 const shutFiles = computed(() => (view.value?.files ?? []).filter((file) => !isOpen(file)))
 function toggleFile(file: File): void {
   toggled.value = new Map(toggled.value).set(file.name, !isOpen(file))
+  void balance()
 }
 // Pins answer on hover and tap: in a tip over the code, or inline below it.
 const pins = computed(() => payload.value?.layout === 'tooltip' || payload.value?.layout === 'inline')
 const inline = computed(() => payload.value?.layout === 'inline')
 const codeEl = ref<HTMLElement | null>(null)
+const resultsEl = ref<HTMLElement | null>(null)
+
+// Side by side, the shorter column would leave a void beside the longer
+// one. Results much shorter than the code go under it, full width; code
+// shorter than its results stays in view beside them while they scroll.
+const stacked = ref(false)
+const sticky = ref(false)
+async function balance(): Promise<void> {
+  stacked.value = false
+  sticky.value = false
+  if (payload.value?.layout !== 'split' || typeof window === 'undefined') return
+  await nextTick()
+  const code = codeEl.value
+  const results = resultsEl.value
+  if (!code || !results || !window.matchMedia('(min-width: 900px)').matches) return
+  const codeHeight = code.offsetHeight
+  const resultsHeight = Array.from(results.children).reduce((sum, el) => sum + (el as HTMLElement).offsetHeight, 0)
+  if (codeHeight > 240 && resultsHeight < codeHeight * 0.55) stacked.value = true
+  else if (resultsHeight > codeHeight * 1.25 && codeHeight < window.innerHeight - 160) sticky.value = true
+}
 
 const indexOf = (name: string): number => payload.value?.markers.indexOf(name) ?? -1
 const results = computed(() =>
@@ -258,6 +284,13 @@ function onLayoutChange(): void {
   pinned.value = false
 }
 
+let resizeTimer: ReturnType<typeof setTimeout> | undefined
+function onResize(): void {
+  onLayoutChange()
+  clearTimeout(resizeTimer)
+  resizeTimer = setTimeout(() => void balance(), 150)
+}
+
 // Inline, the first pin with a result answers until another is hovered.
 async function showFirst(): Promise<void> {
   tip.value = null
@@ -275,13 +308,14 @@ function scrollers(): Element[] {
 
 function unlisten(): void {
   document.removeEventListener('click', onDocClick)
-  window.removeEventListener('resize', onLayoutChange)
+  window.removeEventListener('resize', onResize)
+  clearTimeout(resizeTimer)
   for (const pre of scrollers()) pre.removeEventListener('scroll', onLayoutChange)
 }
 
 function listen(): void {
   document.addEventListener('click', onDocClick)
-  window.addEventListener('resize', onLayoutChange)
+  window.addEventListener('resize', onResize)
   for (const pre of scrollers()) pre.addEventListener('scroll', onLayoutChange, { passive: true })
 }
 
@@ -291,6 +325,7 @@ watch(open, async (value) => {
   if (value) {
     await nextTick()
     listen()
+    await balance()
     await showFirst()
   } else {
     unlisten()
@@ -301,6 +336,7 @@ watch(tab, async () => {
   unlisten()
   await nextTick()
   listen()
+  await balance()
   await showFirst()
 })
 
@@ -316,7 +352,23 @@ onBeforeUnmount(unlisten)
       <span class="chev" aria-hidden="true">▶</span>
       {{ open ? (zh ? '收起示例' : 'Hide example') : (zh ? '查看示例' : 'Show example') }}
     </button>
-    <div v-if="open && view" class="snap-body" :class="payload.layout">
+    <div
+      v-if="open && view"
+      class="snap-body"
+      :class="[payload.layout, { tabbed: !!payload.variants, stacked, sticky }]"
+    >
+      <div v-if="payload.variants" class="snap-tabs" role="tablist">
+        <button
+          v-for="(variant, i) in payload.variants"
+          :key="i"
+          type="button"
+          role="tab"
+          :aria-selected="tab === i"
+          :class="{ on: tab === i }"
+          @click.stop="pick(i, $event)"
+          v-html="variant.label"
+        />
+      </div>
       <div
         ref="codeEl"
         class="snap-code"
@@ -324,18 +376,6 @@ onBeforeUnmount(unlisten)
         @mouseout="onCodeOut"
         @click="onCodeClick"
       >
-        <div v-if="payload.variants" class="snap-tabs" role="tablist">
-          <button
-            v-for="(variant, i) in payload.variants"
-            :key="i"
-            type="button"
-            role="tab"
-            :aria-selected="tab === i"
-            :class="{ on: tab === i }"
-            @click.stop="tab = i"
-            v-html="variant.label"
-          />
-        </div>
         <span v-if="payload.codeName && view.code" class="snap-file-name snap-entry-name">{{ payload.codeName }}</span>
         <div v-if="view.code" class="snap-source" v-html="view.code" />
         <div v-for="file in openFiles" :key="file.name" class="snap-file">
@@ -369,10 +409,6 @@ onBeforeUnmount(unlisten)
         <div v-if="view.legend.length" class="snap-legend">
           <span v-for="item in view.legend" :key="item.label" :class="item.cls">{{ item.label }}</span>
         </div>
-        <div class="snap-foot">
-          <span v-if="pins" class="snap-hint">{{ zh ? '悬停或点击编号查看结果' : 'Hover or tap a number for the result' }}</span>
-          <a class="snap-link" :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ payload.source }}</a>
-        </div>
         <div
           v-if="tip && payload.layout === 'tooltip'"
           ref="tipEl"
@@ -388,7 +424,13 @@ onBeforeUnmount(unlisten)
           <div class="snap-card" v-html="tip.result.html" />
         </div>
       </div>
-      <div v-if="payload.layout === 'split' || payload.layout === 'stack'" class="snap-results" @mouseover="onResultOver" @mouseout="onResultOut">
+      <div
+        v-if="payload.layout === 'split' || payload.layout === 'stack'"
+        ref="resultsEl"
+        class="snap-results"
+        @mouseover="onResultOver"
+        @mouseout="onResultOut"
+      >
         <template v-if="results.length > 0">
           <div v-for="r in results" :key="r.name" class="snap-result">
             <div v-if="indexOf(r.name) >= 0 || (r.label ?? r.name) !== '' || r.meta" class="snap-result-head">
@@ -400,6 +442,12 @@ onBeforeUnmount(unlisten)
           </div>
         </template>
         <p v-else class="snap-empty">{{ zh ? '尚未记录快照' : 'No snapshot recorded yet' }}</p>
+      </div>
+      <div class="snap-foot">
+        <span v-if="pins" class="snap-hint">{{ zh ? '悬停或点击编号查看结果' : 'Hover or tap a number for the result' }}</span>
+        <a class="snap-link" :href="sourceUrl" target="_blank" rel="noopener noreferrer"
+          ><template v-for="(part, i) in payload.source.split('/')" :key="i"><wbr v-if="i > 0" />{{ i > 0 ? '/' : '' }}{{ part }}</template></a
+        >
       </div>
     </div>
   </div>
@@ -441,64 +489,131 @@ onBeforeUnmount(unlisten)
 }
 
 .snap-body {
+  --inner-radius: calc(var(--radius) - var(--line));
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   margin-top: 12px;
   border: var(--line) solid var(--line-color);
   border-radius: var(--radius);
+  background: var(--paper-2);
   box-shadow: var(--hard-shadow);
 }
 
-.snap-code {
-  border-radius: var(--radius) var(--radius) 0 0;
-}
-
-.single .snap-code,
-.tooltip .snap-code {
-  border-radius: var(--radius);
-}
-
-@media (min-width: 900px) {
-  .split .snap-code {
-    border-radius: var(--radius) 0 0 var(--radius);
-  }
-}
-
-.snap-results {
-  border-radius: 0 0 var(--radius) var(--radius);
-}
-
-@media (min-width: 900px) {
-  .split .snap-results {
-    border-radius: 0 var(--radius) var(--radius) 0;
-  }
-}
-
-@media (min-width: 900px) {
-  .snap-body.split {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-  }
-}
-
+/* The code sits on the card's paper; the results panel draws the rule
+   between the two, under the code or beside it. */
 .snap-code {
   position: relative;
   min-width: 0;
-  background: var(--paper-2);
-  border-bottom: var(--line) solid var(--line-color);
 }
 
-.single .snap-code,
-.tooltip .snap-code {
-  border-bottom: none;
+@media (min-width: 900px) {
+  .snap-body.split:not(.stacked) {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+
+  .snap-body.split:not(.stacked) .snap-results {
+    border-top: none;
+    border-left: var(--line) solid var(--line-color);
+  }
+
+  .snap-body.split:not(.stacked):not(.tabbed) .snap-results {
+    border-top-right-radius: var(--inner-radius);
+  }
+
+  .snap-body.split:not(.stacked) .snap-code {
+    align-self: start;
+  }
+
+  .snap-body.split.sticky .snap-code {
+    position: sticky;
+    top: calc(var(--vp-nav-height) + 16px);
+  }
+}
+
+/* Tests of a case: a strip of tabs over both columns. */
+.snap-tabs {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: var(--line) solid var(--line-color);
+  border-radius: var(--inner-radius) var(--inner-radius) 0 0;
+  background: var(--paper-3);
+}
+
+.snap-tabs button {
+  max-width: 100%;
+  padding: 1px 9px;
+  border: var(--line-thin) solid var(--line-color);
+  border-radius: 4px;
+  background: var(--paper);
+  font-family: var(--vp-font-family-base);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: left;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.snap-tabs button:hover {
+  border-color: var(--bow);
+  color: var(--ink);
+}
+
+.snap-tabs button.on {
+  border-color: var(--line-color);
+  background: var(--straw);
+  color: #2b3040;
+  font-weight: 800;
+  box-shadow: 2px 2px 0 var(--shadow-color);
+}
+
+/* Narrow, the tabs make one row that scrolls sideways. */
+@media (max-width: 639px) {
+  .snap-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .snap-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .snap-tabs {
+    align-items: flex-start;
+  }
+
+  /* A long name takes two lines rather than the whole row. */
+  .snap-tabs button {
+    flex: none;
+    width: max-content;
+    max-width: min(240px, 80%);
+  }
+}
+
+.snap-tabs button :deep(code) {
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .snap-foot {
+  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 4px 12px;
-  padding: 6px 16px 10px;
+  padding: 6px 16px 8px;
   min-width: 0;
+  border-top: var(--line-thin) dashed var(--line-color);
+}
+
+.snap-results + .snap-foot {
+  border-top: var(--line) solid var(--line-color);
 }
 
 .snap-foot > * {
@@ -546,11 +661,6 @@ onBeforeUnmount(unlisten)
 
 .snap-active-body :deep(p) {
   margin: 0 0 4px;
-}
-
-.inline .snap-code {
-  border-radius: var(--radius);
-  border-bottom: none;
 }
 
 .inline .snap-source :deep(.pin),
@@ -630,17 +740,6 @@ onBeforeUnmount(unlisten)
   list-style: none;
 }
 
-@media (min-width: 900px) {
-  .split .snap-code {
-    border-bottom: none;
-    border-right: var(--line) solid var(--line-color);
-  }
-}
-
-.single .snap-code {
-  border-bottom: none;
-}
-
 .snap-legend {
   display: flex;
   flex-wrap: wrap;
@@ -668,6 +767,32 @@ onBeforeUnmount(unlisten)
 
 .snap-source :deep(code) {
   font-family: var(--vp-font-family-mono);
+}
+
+/* A case card's lines wrap rather than scroll out of a narrow column: a
+   wrapped line goes on two columns in from its own indent (counted up to
+   12, or a macro's aligned backslashes would push it out of the card). */
+.case .snap-source :deep(pre),
+.case .snap-source :deep(pre code) {
+  white-space: break-spaces;
+  overflow-wrap: anywhere;
+}
+
+.case .snap-source :deep(.block-lines) {
+  --gutter: 0px;
+}
+
+.case .snap-source :deep(.block-lines:has(.fold-mark)) {
+  --gutter: 22px;
+}
+
+.case .snap-source :deep(.block-lines .line) {
+  padding-left: calc(var(--gutter) + (min(var(--indent, 0), 12) + 2) * 1ch);
+  text-indent: calc((min(var(--indent, 0), 12) + 2) * -1ch);
+}
+
+.case .snap-source :deep(.block-lines .line *) {
+  text-indent: 0;
 }
 
 .snap-file {
@@ -705,6 +830,7 @@ button.snap-file-name:hover {
 }
 
 .snap-file-row .snap-file-name {
+  max-width: 100%;
   margin: 0;
 }
 
@@ -714,6 +840,9 @@ button.snap-file-name:hover {
 
 .snap-file-name {
   display: inline-block;
+  max-width: calc(100% - 32px);
+  overflow-wrap: anywhere;
+  text-align: left;
   margin: 8px 0 0 16px;
   padding: 0 8px;
   border: var(--line-thin) solid var(--line-color);
@@ -729,39 +858,6 @@ button.snap-file-name:hover {
 
 .snap-entry-name + .snap-source :deep(pre) {
   padding-top: 8px;
-}
-
-.snap-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 10px 16px 0;
-}
-
-.snap-tabs button {
-  padding: 1px 10px;
-  border: var(--line-thin) solid var(--line-color);
-  border-radius: 999px;
-  background: var(--paper);
-  font-family: var(--vp-font-family-mono);
-  font-size: 11.5px;
-  color: var(--ink-2);
-  cursor: pointer;
-}
-
-.snap-tabs button:hover {
-  color: var(--bow);
-  border-color: var(--bow);
-}
-
-.snap-tabs button.on {
-  background: var(--bow);
-  border-color: var(--bow);
-  color: #ffffff;
-}
-
-.dark .snap-tabs button.on {
-  color: var(--paper-3);
 }
 
 .snap-notes {
@@ -803,8 +899,9 @@ button.snap-file-name:hover {
 }
 
 .snap-results {
-  background: var(--panel);
   min-width: 0;
+  border-top: var(--line) solid var(--line-color);
+  background: var(--panel);
 }
 
 .dark .snap-results {
@@ -831,8 +928,8 @@ button.snap-file-name:hover {
   color: var(--bow) !important;
 }
 
-.case .snap-link {
-  line-break: anywhere;
+.snap-link {
+  overflow-wrap: anywhere;
 }
 
 .snap-code > .snap-file:first-child {
@@ -925,6 +1022,7 @@ button.snap-file-name:hover {
 
 .snap-card :deep(p) {
   margin: 4px 0;
+  line-height: inherit;
 }
 
 .snap-card :deep(hr) {
@@ -965,13 +1063,45 @@ button.snap-file-name:hover {
   font-family: var(--vp-font-family-mono);
 }
 
-.snap-card :deep(.snap-raw) {
+.snap :deep(.snap-raw) {
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .snap-empty {
   margin: 0;
   padding: 16px;
   color: var(--ink-3);
+}
+
+/* Narrow, the example spans its capability card from the status stripe
+   to the frame (see .capability in style.css: 24px padding left, the
+   stripe's edge 6px in, 20px padding right), its sides drawn by the card,
+   so the code is not boxed in twice. */
+@media (max-width: 639px) {
+  .capability .snap-body {
+    margin-right: -20px;
+    margin-left: -18px;
+    border-right: none;
+    border-left: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .capability .snap-tabs {
+    border-radius: 0;
+  }
+
+  .snap-source :deep(pre) {
+    padding: 12px 12px 12px 14px;
+  }
+
+  .snap-file-name {
+    margin-left: 14px;
+  }
+
+  .snap-result {
+    padding: 12px 12px 14px 14px;
+  }
 }
 </style>

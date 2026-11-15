@@ -2168,14 +2168,15 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   background: none;
 }
 
-/* a place in a result: its line, the place set off */
+/* a place in a result: its line, the place set off; a long one wraps */
 .snap.case .case-code {
   padding: 0;
   border: none;
   background: none;
   font-family: var(--vp-font-family-mono);
   font-size: 12.5px;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .snap.case .case-hit {
@@ -2192,6 +2193,7 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
 }
 
 .snap.case .case-file {
+  overflow-wrap: anywhere;
   margin-right: 8px;
   font-family: var(--vp-font-family-mono);
   font-size: 11.5px;
@@ -2231,7 +2233,12 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   margin: 0;
   padding: 2px 8px;
   border-radius: 4px;
-  overflow-x: auto;
+}
+
+.snap.case .case-place > .case-code {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .snap.case .case-place:hover,
@@ -2255,8 +2262,12 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
 
 .snap.case .case-item {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  gap: 0 6px;
   margin-right: 8px;
   font-family: var(--vp-font-family-mono);
   font-size: 12.5px;
@@ -2370,13 +2381,22 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   color: var(--ink-2);
 }
 
-/* outlines and symbol lists */
+/* outlines and symbol lists: a long detail goes on under the name
+   rather than being cut to a few letters */
 .snap.case .sym-item {
+  flex-wrap: wrap;
   align-items: center;
   border-radius: 4px;
 }
 
+.snap.case .sym-item .sym-detail {
+  flex: 1 1 8em;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .snap.case .sym-file {
+  overflow-wrap: anywhere;
   margin-left: auto;
   padding-left: 8px;
   color: var(--ink-3);
@@ -2421,6 +2441,7 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
 
 .snap.case .cp-path {
   font-size: 12.5px;
+  overflow-wrap: anywhere;
 }
 
 .snap.case .cp-preferred {
@@ -2450,29 +2471,38 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   padding: 0;
 }
 
+/* a diagnostic: its severity dot, the message, where it comes from
+   under it */
 .snap.case .diag-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 9px minmax(0, 1fr);
   align-items: baseline;
-  gap: 8px;
+  gap: 0 8px;
   margin: 0;
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 13px;
+  line-height: 1.5;
 }
 
 .snap.case .diag-icon {
-  flex: 0 0 auto;
   width: 9px;
   height: 9px;
   border-radius: 999px;
   background: var(--sev);
 }
 
+.snap.case .diag-message {
+  overflow-wrap: anywhere;
+}
+
 .snap.case .diag-origin {
-  margin-left: auto;
+  grid-column: 2;
   font-family: var(--vp-font-family-mono);
   font-size: 11px;
+  line-height: 1.4;
   color: var(--ink-3);
+  overflow-wrap: anywhere;
 }
 
 .snap.case .diag-push + .diag-push {
@@ -2508,6 +2538,7 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
 .dark .snap.case .ca-check.no { color: #ef7d72; }
 
 .snap.case .ca-kind {
+  overflow-wrap: anywhere;
   font-family: var(--vp-font-family-mono);
   font-size: 11px;
   color: var(--ink-3);
@@ -2549,19 +2580,28 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   background: transparent !important;
   font-size: 12.5px;
   line-height: 1.6;
-  overflow-x: auto;
+}
+
+/* a long line wraps, indented under its start */
+.snap.case .case-diff :is(pre, code) {
+  white-space: break-spaces;
+  overflow-wrap: anywhere;
 }
 
 .snap.case .case-diff code {
   display: block;
-  min-width: max-content;
 }
 
 .snap.case .case-diff .line {
   display: block;
   min-height: 1.6em;
-  padding: 0 12px 0 26px;
+  padding: 0 12px 0 calc(26px + (min(var(--indent, 0), 12) + 2) * 1ch);
+  text-indent: calc((min(var(--indent, 0), 12) + 2) * -1ch);
   position: relative;
+}
+
+.snap.case .case-diff .line * {
+  text-indent: 0;
 }
 
 .snap.case .case-diff .line::before {
@@ -2647,6 +2687,18 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   overflow-wrap: anywhere;
 }
 
+/* JSON output: a long line wraps, indented under its start */
+.snap.case .term-json .line {
+  display: block;
+  min-height: 1.55em;
+  padding-left: calc((min(var(--indent, 0), 12) + 2) * 1ch);
+  text-indent: calc((min(var(--indent, 0), 12) + 2) * -1ch);
+}
+
+.snap.case .term-json .line * {
+  text-indent: 0;
+}
+
 .snap.case .term-err {
   color: #b5443b;
 }
@@ -2728,6 +2780,111 @@ html[lang^="zh"] .vp-doc li.task-list-item:has(input:checked)::before {
   font-size: 11px;
   font-weight: 700;
   color: var(--bow);
+}
+
+.snap-variant-label code {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* a configuration menu, as the editor's switch lists it */
+.snap.case .menu-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.snap.case .menu-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.snap.case .menu-item.on {
+  background: var(--pinafore-soft);
+  font-weight: 700;
+}
+
+.snap.case .menu-check {
+  flex: 0 0 12px;
+  color: var(--bow);
+  font-weight: 900;
+}
+
+.snap.case .menu-item code {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 12.5px;
+}
+
+.snap.case .menu-build {
+  margin-top: 6px;
+  padding: 0 8px;
+}
+
+.snap.case .menu-build code {
+  display: inline;
+  overflow-wrap: normal;
+  margin-right: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 12.5px;
+}
+
+.snap.case .menu-build .sym-detail {
+  display: block;
+  white-space: normal;
+}
+
+/* one result answering several things: a section each */
+.snap.case .case-piece + .case-piece {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: var(--line-thin) dashed var(--line-color);
+}
+
+/* a refusal, and what a rename left alone */
+.snap.case .case-error {
+  margin: 0;
+  color: #b5443b;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.dark .snap.case .case-error {
+  color: #ef9d93;
+}
+
+.snap.case .case-notice {
+  margin: 8px 0 0;
+  padding: 6px 0 0;
+  border-top: var(--line-thin) dashed var(--line-color);
+  background: none !important;
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* a block of code a configuration leaves out, lit from its row */
+.mark-inactive { --frame: transparent; --fill: color-mix(in srgb, var(--ink) 8%, transparent); }
+
+/* what a case scrubs from its output, changing from run to run */
+.snap.case .case-var {
+  color: var(--ink-3);
+  font-style: italic;
+  cursor: help;
 }
 
 /* completion popup */
