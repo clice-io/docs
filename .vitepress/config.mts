@@ -21,10 +21,18 @@ const projects = ["clice", "catter", "xclang"];
 // next to .vitepress: srcDir is not set, so it is the site root.
 const zhProjects = projects.filter((p) => fs.existsSync(new URL(`../zh/${p}`, import.meta.url)));
 
+/** A project's pages in a language: zh, if the project publishes zh. */
+function projectBase(p: string, lang: "en" | "zh"): string {
+    return lang === "zh" && zhProjects.includes(p) ? `/zh/${p}` : `/${p}`;
+}
+
+// A project opens on its "What is" page: its home page only redirects
+// there (see transformPageData and the theme's setup).
 function projectNav(lang: "en" | "zh"): DefaultTheme.NavItem[] {
     return projects.map((p) => ({
         text: p,
-        link: lang === "zh" && zhProjects.includes(p) ? `/zh/${p}/` : `/${p}/`,
+        link: `${projectBase(p, lang)}/guide/what-is-${p}`,
+        activeMatch: `^${projectBase(p, lang)}/`,
     }));
 }
 
@@ -34,7 +42,12 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
     cleanUrls: true,
     srcExclude: ["README.md", "art/**", "output/**", "sources/**", "tools/**", "check-translations/**"],
     lastUpdated: true,
-    sitemap: { hostname: SITE },
+    sitemap: {
+        hostname: SITE,
+        // A project's home only redirects to its "What is" page.
+        transformItems: (items) =>
+            items.filter((item) => !new RegExp(`^/?(zh/)?(${projects.join("|")})/?$`).test(item.url)),
+    },
     head: [
         // Browsers cache favicons apart from the page; bump v when the icons change.
         ["link", { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png?v=2" }],
@@ -63,11 +76,16 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
         const description =
             pageData.frontmatter.description ?? (excerptOf(`${siteConfig.srcDir}/${pageData.filePath}`) || pageData.description);
         if (description) pageData.description = description;
+        // A project's home page goes straight to its "What is" page: GitHub
+        // Pages has no redirects, so the page refreshes to it before showing
+        // anything (the theme redirects navigation within the site).
+        const home = projects.find((p) => en.replace(/\/$/, "") === p);
+        const target = home ? `${isZh ? "/zh" : ""}/${home}/guide/what-is-${home}` : "";
         const head = [
             ["meta", { property: "og:title", content: title && title !== "clice.io" ? `${title} | clice.io` : "clice.io" }],
             ["meta", { property: "og:url", content: url(isZh ? path : en) }],
             ["meta", { property: "og:locale", content: isZh ? "zh_CN" : "en_US" }],
-            ["link", { rel: "canonical", href: url(isZh ? path : en) }],
+            ["link", { rel: "canonical", href: target ? `${SITE}${target}` : url(isZh ? path : en) }],
             // No share image: a link preview shows the page's title and description.
             ["meta", { name: "twitter:card", content: "summary" }],
         ];
@@ -81,13 +99,12 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
         if (description) {
             head.push(["meta", { property: "og:description", content: description }]);
         }
-        pageData.frontmatter.head = [...(pageData.frontmatter.head ?? []), ...head];
-        // Temporary: hide the mascot art on the project home pages until new
-        // hero art exists. The pages are synced from the project repos, so the
-        // image is dropped here rather than in their frontmatter.
-        if (projects.includes(en.split("/")[0]) && pageData.frontmatter.hero) {
-            delete pageData.frontmatter.hero.image;
+        if (target) {
+            head.push(["meta", { "http-equiv": "refresh", content: `0; url=${target}` }]);
+            // Nothing of the synced home (hero, feature cards) shows meanwhile.
+            pageData.frontmatter = { layout: "page", search: false, sidebar: false, aside: false };
         }
+        pageData.frontmatter.head = [...(pageData.frontmatter.head ?? []), ...head];
     },
     markdown: {
         config: (md) => {
