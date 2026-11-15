@@ -1,4 +1,5 @@
 import * as fs from "node:fs";
+import { fileURLToPath } from "node:url";
 import { defineConfigWithTheme, type DefaultTheme } from "vitepress";
 import cjkFriendly from "markdown-it-cjk-friendly";
 import footnote from "markdown-it-footnote";
@@ -8,6 +9,7 @@ import { statusStickers } from "./status";
 import { capabilityCards } from "./capability";
 import { mermaidFences } from "./mermaid";
 import { literalBraces } from "./braces";
+import { pairedAnchors } from "./anchors";
 
 const SITE = "https://docs.clice.io";
 const projects = ["clice", "catter", "xclang"];
@@ -91,6 +93,7 @@ export default defineConfigWithTheme<DefaultTheme.Config & { zhProjects?: string
             md.use(statusStickers);
             md.use(capabilityCards);
             md.use(mermaidFences);
+            md.use(pairedAnchors, fileURLToPath(new URL("..", import.meta.url)));
             // Last, so it wraps whatever text and inline code renderers are in place.
             md.use(literalBraces);
             // Override caption only (display text) so repeated refs show [1] not [1:1]; leaves id/href intact.
