@@ -1,0 +1,71 @@
+{
+  "id": "code_actions/special_members/05_template",
+  "topic": "code_actions",
+  "subtopic": "special_members",
+  "title": "Class templates",
+  "summary": "A class template's operations follow the language's rules, `= default` where the compiler would declare them, and each instantiation deletes those it cannot perform",
+  "prose": "`Box<int>` still copies and `Box<MoveOnly>` still only moves. Declaring a move deletes the implicit copies in every instantiation, so a template that declares its move constructor gets `= delete` copy declarations.",
+  "status": "supported",
+  "issues": [
+    "clice#1111"
+  ],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "struct MoveOnly {\n    MoveOnly() = default;\n    MoveOnly(MoveOnly&&) = default;\n    MoveOnly& operator=(MoveOnly&&) = default;\n};\n\ntemplate <typename T>\nstruct Box {\n    Box(T value) : value(static_cast<T&&>(value)) {}\n\n    T value;\n};\n\ntemplate <typename T>\nstruct Unique {\n    Unique(T* pointer) : pointer(pointer) {}\n    Unique(Unique&& other) : pointer(other.pointer) {}\n\n    T* pointer;\n};\n\nvoid use(Box<int>& numbers, Box<MoveOnly>& handles) {\n    Box<int> copy = numbers;\n    copy = numbers;\n    Box<MoveOnly> moved = static_cast<Box<MoveOnly>&&>(handles);\n    moved = static_cast<Box<MoveOnly>&&>(handles);\n}\n",
+      "markers": [
+        {
+          "name": "box",
+          "begin": 160,
+          "end": 160,
+          "range": false
+        },
+        {
+          "name": "unique",
+          "begin": 266,
+          "end": 266,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "answers",
+      "blocks": [
+        {
+          "label": "box",
+          "marker": "box",
+          "value": {
+            "code_actions": [
+              {
+                "kind": "refactor.rewrite.declareSpecialMembers",
+                "title": "Declare the implicit special members of 'Box'",
+                "compiles": true,
+                "edits": {
+                  "main.cpp": "\n     T value;\n+    Box(const Box&) = default;\n+    Box(Box&&) = default;\n+    Box& operator=(const Box&) = default;\n+    Box& operator=(Box&&) = default;\n };\n"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "unique",
+          "marker": "unique",
+          "value": {
+            "code_actions": [
+              {
+                "kind": "refactor.rewrite.declareSpecialMembers",
+                "title": "Declare the implicit special members of 'Unique'",
+                "compiles": true,
+                "edits": {
+                  "main.cpp": "\n     T* pointer;\n+    Unique(const Unique&) = delete;\n+    Unique& operator=(const Unique&) = delete;\n };\n"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

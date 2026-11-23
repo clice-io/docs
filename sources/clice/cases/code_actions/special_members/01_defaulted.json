@@ -1,0 +1,49 @@
+{
+  "id": "code_actions/special_members/01_defaulted",
+  "topic": "code_actions",
+  "subtopic": "special_members",
+  "title": "Members made explicit",
+  "summary": "A class whose members copy and move gains explicit `= default` declarations of its copy and move operations",
+  "prose": "The declarations are appended to the end of the class body: the default constructor when the class has no constructor, then the copy constructor, move constructor, copy assignment and move assignment. They declare what the compiler declared implicitly, so the uses of the class compile and behave as before; only an aggregate loses its aggregate initialization.",
+  "status": "supported",
+  "issues": [
+    "clice#1111"
+  ],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "struct Point {\n    int x;\n    int y;\n};\n\nstruct Record {\n    Record(int id, Point point, const char* label) : id(id), point(point), label(label) {}\n\n    int id;\n    Point point;\n    const char* label;\n};\n\nvoid use(Record& record) {\n    Record copy = record;\n    Record moved = static_cast<Record&&>(copy);\n    copy = moved;\n    moved = static_cast<Record&&>(copy);\n}\n",
+      "markers": [
+        {
+          "name": "record",
+          "begin": 48,
+          "end": 48,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "answers",
+      "blocks": [
+        {
+          "label": "record",
+          "marker": "record",
+          "value": {
+            "code_actions": [
+              {
+                "kind": "refactor.rewrite.declareSpecialMembers",
+                "title": "Declare the implicit special members of 'Record'",
+                "compiles": true,
+                "edits": {
+                  "main.cpp": "     Point point;\n     const char* label;\n+    Record(const Record&) = default;\n+    Record(Record&&) = default;\n+    Record& operator=(const Record&) = default;\n+    Record& operator=(Record&&) = default;\n };\n"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

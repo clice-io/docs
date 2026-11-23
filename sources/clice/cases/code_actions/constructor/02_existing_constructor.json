@@ -29,16 +29,7 @@
           "label": "point",
           "marker": "point",
           "value": {
-            "code_actions": [
-              {
-                "kind": "refactor.rewrite.define.missing",
-                "title": "Define missing members of 'Point'",
-                "compiles": true,
-                "edits": {
-                  "main.cpp": "     int y;\n };\n+\n+Point::Point(int x, int y) {\n+}"
-                }
-              }
-            ]
+            "code_actions": []
           }
         }
       ]
