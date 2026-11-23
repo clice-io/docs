@@ -1,0 +1,71 @@
+{
+  "id": "code_actions/special_members/03_partial",
+  "topic": "code_actions",
+  "subtopic": "special_members",
+  "title": "Only the missing members",
+  "summary": "A class that already declares some operations gets the declarations it lacks, as the compiler has them",
+  "prose": "A class declaring its move operations gets two `= delete` copy declarations: declaring a move deletes the implicit copies. A class declaring its copy constructor gets its copy assignment and no move declaration: the compiler declares no move there, rvalues are copied by the user's constructor, and a declared move would change that.",
+  "status": "supported",
+  "issues": [
+    "clice#1111"
+  ],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "struct MoveDeclared {\n    MoveDeclared(MoveDeclared&&) = default;\n    MoveDeclared& operator=(MoveDeclared&&) = default;\n\n    int value;\n};\n\nstruct CopyDeclared {\n    CopyDeclared(int value) : value(value) {}\n    CopyDeclared(const CopyDeclared& other) : value(other.value) {}\n\n    int value;\n};\n\nvoid use(CopyDeclared& declared) {\n    CopyDeclared copy = static_cast<CopyDeclared&&>(declared);\n    copy = static_cast<CopyDeclared&&>(declared);\n}\n",
+      "markers": [
+        {
+          "name": "move_declared",
+          "begin": 7,
+          "end": 7,
+          "range": false
+        },
+        {
+          "name": "copy_declared",
+          "begin": 148,
+          "end": 148,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "answers",
+      "blocks": [
+        {
+          "label": "move_declared",
+          "marker": "move_declared",
+          "value": {
+            "code_actions": [
+              {
+                "kind": "refactor.rewrite.declareSpecialMembers",
+                "title": "Declare the implicit special members of 'MoveDeclared'",
+                "compiles": true,
+                "edits": {
+                  "main.cpp": "\n     int value;\n+    MoveDeclared(const MoveDeclared&) = delete;\n+    MoveDeclared& operator=(const MoveDeclared&) = delete;\n };\n"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "copy_declared",
+          "marker": "copy_declared",
+          "value": {
+            "code_actions": [
+              {
+                "kind": "refactor.rewrite.declareSpecialMembers",
+                "title": "Declare the implicit special members of 'CopyDeclared'",
+                "compiles": true,
+                "edits": {
+                  "main.cpp": "\n     int value;\n+    CopyDeclared& operator=(const CopyDeclared&) = default;\n };\n"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

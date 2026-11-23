@@ -1,0 +1,93 @@
+{
+  "id": "code_actions/special_members/02_deleted",
+  "topic": "code_actions",
+  "subtopic": "special_members",
+  "title": "Impossible operations deleted",
+  "summary": "A copy operation a member makes impossible is declared `= delete`, and a move it makes impossible is left undeclared",
+  "prose": "A member class that only moves makes the copy operations impossible; a reference member or a `const` member makes the assignments impossible. The move assignment then stays undeclared: overload resolution never chooses a move the compiler deletes, but would choose one declared `= delete`.",
+  "status": "supported",
+  "issues": [
+    "clice#1111"
+  ],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "struct Handle {\n    Handle(int value) : value(value) {}\n\n    Handle(Handle&&) = default;\n    Handle& operator=(Handle&&) = default;\n    Handle(const Handle&) = delete;\n    Handle& operator=(const Handle&) = delete;\n\n    int value;\n};\n\nstruct Reference {\n    Reference(int& ref) : ref(ref) {}\n\n    int& ref;\n};\n\nstruct Constant {\n    Constant(int limit) : limit(limit) {}\n\n    const int limit;\n};\n\nstruct Holder {\n    Holder(int value) : handle(value) {}\n\n    Handle handle;\n};\n\nvoid use(Reference& reference, Constant& constant, Holder& holder) {\n    Reference other_reference = static_cast<Reference&&>(reference);\n    Constant other_constant = static_cast<Constant&&>(constant);\n    Holder other_holder = static_cast<Holder&&>(holder);\n    other_holder = static_cast<Holder&&>(holder);\n}\n",
+      "markers": [
+        {
+          "name": "reference",
+          "begin": 242,
+          "end": 242,
+          "range": false
+        },
+        {
+          "name": "constant",
+          "begin": 318,
+          "end": 318,
+          "range": false
+        },
+        {
+          "name": "holder",
+          "begin": 404,
+          "end": 404,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "answers",
+      "blocks": [
+        {
+          "label": "reference",
+          "marker": "reference",
+          "value": {
+            "code_actions": [
+              {
+                "kind": "refactor.rewrite.declareSpecialMembers",
+                "title": "Declare the implicit special members of 'Reference'",
+                "compiles": true,
+                "edits": {
+                  "main.cpp": "\n     int& ref;\n+    Reference(const Reference&) = default;\n+    Reference(Reference&&) = default;\n+    Reference& operator=(const Reference&) = delete;\n };\n"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "constant",
+          "marker": "constant",
+          "value": {
+            "code_actions": [
+              {
+                "kind": "refactor.rewrite.declareSpecialMembers",
+                "title": "Declare the implicit special members of 'Constant'",
+                "compiles": true,
+                "edits": {
+                  "main.cpp": "\n     const int limit;\n+    Constant(const Constant&) = default;\n+    Constant(Constant&&) = default;\n+    Constant& operator=(const Constant&) = delete;\n };\n"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "holder",
+          "marker": "holder",
+          "value": {
+            "code_actions": [
+              {
+                "kind": "refactor.rewrite.declareSpecialMembers",
+                "title": "Declare the implicit special members of 'Holder'",
+                "compiles": true,
+                "edits": {
+                  "main.cpp": "\n     Handle handle;\n+    Holder(const Holder&) = delete;\n+    Holder(Holder&&) = default;\n+    Holder& operator=(const Holder&) = delete;\n+    Holder& operator=(Holder&&) = default;\n };\n"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -39,14 +39,6 @@
                 "edits": {
                   "main.cpp": " struct Circle : Shape {\n     double radius;\n+    double area() const override;\n+    void scale(double factor) noexcept override;\n };"
                 }
-              },
-              {
-                "kind": "refactor.rewrite.generateMemberwiseConstructor",
-                "title": "Generate a memberwise constructor for 'Circle'",
-                "compiles": true,
-                "edits": {
-                  "main.cpp": " struct Circle : Shape {\n     double radius;\n+    explicit Circle(double radius) : radius(radius) {}\n };"
-                }
               }
             ]
           }
