@@ -164,7 +164,13 @@ runs:
     - name: Enable auto-merge
       if: inputs.mode == 'publish' && steps.create-pr.outputs.pull-request-number
       shell: bash
-      run: gh pr merge ${{ steps.create-pr.outputs.pull-request-number }} --auto --squash
+      run: |
+        # Publishes close together share the PR: an earlier one's auto-merge
+        # may land between this run's create-pr and this step.
+        if ! gh pr merge "$PR" --auto --squash; then
+          [[ "$(gh pr view "$PR" --json state --jq .state)" == MERGED ]]
+        fi
       env:
+        PR: ${{ steps.create-pr.outputs.pull-request-number }}
         GH_TOKEN: ${{ inputs.token }}
         GH_REPO: clice-io/docs
