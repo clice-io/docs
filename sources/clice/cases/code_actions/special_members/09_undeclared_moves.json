@@ -1,0 +1,93 @@
+{
+  "id": "code_actions/special_members/09_undeclared_moves",
+  "topic": "code_actions",
+  "subtopic": "special_members",
+  "title": "Rvalues keep copying",
+  "summary": "A move the compiler does not declare, or declares deleted, is left undeclared, and rvalues keep copying",
+  "prose": "A declared destructor or copy operation suppresses the implicit moves; a member that cannot move deletes them, and overload resolution then passes over them. Either way an rvalue is copied today. `= delete` would make it fail to compile, and `= default` on a class with a destructor would move members the user's code copied.",
+  "status": "supported",
+  "issues": [
+    "clice#1111"
+  ],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "struct Resource {\n    Resource(int id) : id(id) {}\n    ~Resource() {}\n\n    int id;\n};\n\nstruct Assigned {\n    Assigned(int id) : id(id) {}\n    Assigned& operator=(const Assigned& other) {\n        id = other.id;\n        return *this;\n    }\n\n    int id;\n};\n\nstruct Pinned {\n    Pinned() = default;\n    Pinned(const Pinned&) = default;\n    Pinned(Pinned&&) = delete;\n};\n\nstruct Holder {\n    Holder(int id) : id(id) {}\n\n    Pinned pinned;\n    int id;\n};\n\nResource make(int id) {\n    Resource resource(id);\n    return resource;\n}\n\nvoid use(Resource& resource, Assigned& assigned, Holder& holder) {\n    Resource copy = static_cast<Resource&&>(resource);\n    copy = static_cast<Resource&&>(resource);\n    Assigned other = static_cast<Assigned&&>(assigned);\n    other = static_cast<Assigned&&>(assigned);\n    Holder moved = static_cast<Holder&&>(holder);\n}\n",
+      "markers": [
+        {
+          "name": "resource",
+          "begin": 7,
+          "end": 7,
+          "range": false
+        },
+        {
+          "name": "assigned",
+          "begin": 94,
+          "end": 94,
+          "range": false
+        },
+        {
+          "name": "holder",
+          "begin": 374,
+          "end": 374,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "answers",
+      "blocks": [
+        {
+          "label": "resource",
+          "marker": "resource",
+          "value": {
+            "code_actions": [
+              {
+                "kind": "refactor.rewrite.declareSpecialMembers",
+                "title": "Declare the implicit special members of 'Resource'",
+                "compiles": true,
+                "edits": {
+                  "main.cpp": "\n     int id;\n+    Resource(const Resource&) = default;\n+    Resource& operator=(const Resource&) = default;\n };\n"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "assigned",
+          "marker": "assigned",
+          "value": {
+            "code_actions": [
+              {
+                "kind": "refactor.rewrite.declareSpecialMembers",
+                "title": "Declare the implicit special members of 'Assigned'",
+                "compiles": true,
+                "edits": {
+                  "main.cpp": "\n     int id;\n+    Assigned(const Assigned&) = default;\n };\n"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "holder",
+          "marker": "holder",
+          "value": {
+            "code_actions": [
+              {
+                "kind": "refactor.rewrite.declareSpecialMembers",
+                "title": "Declare the implicit special members of 'Holder'",
+                "compiles": true,
+                "edits": {
+                  "main.cpp": "     Pinned pinned;\n     int id;\n+    Holder(const Holder&) = default;\n+    Holder& operator=(const Holder&) = delete;\n };\n"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
