@@ -1,0 +1,749 @@
+{
+  "id": "navigation/constructor_calls/01_initializers",
+  "topic": "navigation",
+  "subtopic": "constructor_calls",
+  "title": "Initializer lists",
+  "summary": "A delegating or base initializer's name leads to the constructor it calls",
+  "prose": "Go-to-definition, declaration, hover, highlights and references on the\nclass name of `Widget() : Widget(1, 2)` or `: Base(size)` answer the constructor\nthe initializer calls; go-to-type-definition answers the class. Its\nparenthesis still leads to the constructor, without counting as a second\nreference.",
+  "status": "supported",
+  "issues": [
+    "clice#1152"
+  ],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "struct Base {\n    Base(int x);\n};\n\nstruct Widget : Base {\n    Widget(int width, int height);\n    Widget(int size) : Base(size) {}\n    Widget() : Widget(1, 2) {}\n};\n",
+      "markers": [
+        {
+          "name": "base",
+          "begin": 116,
+          "end": 116,
+          "range": false
+        },
+        {
+          "name": "base_paren",
+          "begin": 120,
+          "end": 120,
+          "range": false
+        },
+        {
+          "name": "delegating",
+          "begin": 145,
+          "end": 145,
+          "range": false
+        },
+        {
+          "name": "delegating_paren",
+          "begin": 151,
+          "end": 151,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "cards",
+      "blocks": [
+        {
+          "label": "base",
+          "marker": "base",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Base` · struct `Base`\n\n```cpp\nBase(int x)\n```",
+              "range": {
+                "$place": "Widget(int size) : ⟦Base⟧(size) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 23
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 27
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Base⟧(int x);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 8
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "Widget(int size) : ⟦Base⟧(size) {}",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 23
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 27
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Base",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "base_paren",
+          "marker": "base_paren",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Base` · struct `Base`\n\n```cpp\nBase(int x)\n```",
+              "range": {
+                "$place": "Widget(int size) : Base⟦(⟧size) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 27
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 28
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Base⟧(int x);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 8
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "Widget(int size) : ⟦Base⟧(size) {}",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 23
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 27
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "(",
+              "type": "none"
+            }
+          }
+        },
+        {
+          "label": "delegating",
+          "marker": "delegating",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int width, int height)\n```",
+              "range": {
+                "$place": "Widget() : ⟦Widget⟧(1, 2) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 15
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 21
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Widget⟧(int width, int height);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 5,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 5,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "Widget() : ⟦Widget⟧(1, 2) {}",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 15
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 21
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Widget",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "delegating_paren",
+          "marker": "delegating_paren",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int width, int height)\n```",
+              "range": {
+                "$place": "Widget() : Widget⟦(⟧1, 2) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 21
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 22
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Widget⟧(int width, int height);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 5,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 5,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "Widget() : ⟦Widget⟧(1, 2) {}",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 15
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 21
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "(",
+              "type": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "navigation",
+      "blocks": [
+        {
+          "label": "base",
+          "marker": "base",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Base⟧(int x);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Base⟧(int x);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Base⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 11
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Base⟧(int x);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              },
+              {
+                "$place": "Widget(int size) : ⟦Base⟧(size) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 23
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 27
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "base_paren",
+          "marker": "base_paren",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Base⟧(int x);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Base⟧(int x);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Base⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 11
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Base⟧(int x);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              },
+              {
+                "$place": "Widget(int size) : ⟦Base⟧(size) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 23
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 27
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "delegating",
+          "marker": "delegating",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Widget⟧(int width, int height);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Widget⟧(int width, int height);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ : Base {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 4,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 4,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Widget⟧(int width, int height);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "Widget() : ⟦Widget⟧(1, 2) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 15
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 21
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "delegating_paren",
+          "marker": "delegating_paren",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Widget⟧(int width, int height);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Widget⟧(int width, int height);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ : Base {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 4,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 4,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Widget⟧(int width, int height);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "Widget() : ⟦Widget⟧(1, 2) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 15
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 21
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "index cards",
+      "blocks": [
+        {
+          "label": "base",
+          "marker": "base",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Base` · struct `Base`\n\n```cpp\nBase(int x)\n```",
+              "range": {
+                "$place": "Widget(int size) : ⟦Base⟧(size) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 23
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 27
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "base_paren",
+          "marker": "base_paren",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Base` · struct `Base`\n\n```cpp\nBase(int x)\n```",
+              "range": {
+                "$place": "Widget(int size) : Base⟦(⟧size) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 27
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 28
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "delegating",
+          "marker": "delegating",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int width, int height)\n```",
+              "range": {
+                "$place": "Widget() : ⟦Widget⟧(1, 2) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 15
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 21
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "delegating_paren",
+          "marker": "delegating_paren",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int width, int height)\n```",
+              "range": {
+                "$place": "Widget() : Widget⟦(⟧1, 2) {}",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 21
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 22
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

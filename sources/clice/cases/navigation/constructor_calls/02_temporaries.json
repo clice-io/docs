@@ -1,0 +1,1177 @@
+{
+  "id": "navigation/constructor_calls/02_temporaries",
+  "topic": "navigation",
+  "subtopic": "constructor_calls",
+  "title": "Temporaries",
+  "summary": "The class name of a temporary leads to the constructor it calls",
+  "prose": "`Widget(1)`, `Widget(2, 3)`, `Widget{4}` and `Widget()` call a constructor\nby the class's name: go-to-definition, declaration, hover, highlights and\nreferences there answer that constructor, and go-to-type-definition the\nclass, a qualified name and a template's specialization alike.",
+  "status": "supported",
+  "issues": [],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "namespace shapes {\nstruct Circle {\n    Circle(int radius);\n};\n}  // namespace shapes\n\nstruct Widget {\n    Widget();\n    Widget(int size);\n    Widget(int width, int height);\n};\n\ntemplate <typename T>\nstruct Box {\n    Box(T value);\n};\n\nvoid build() {\n    auto a = Widget(1);\n    auto b = Widget(2, 3);\n    auto c = Widget{4};\n    auto d = Widget();\n    auto e = shapes::Circle(5);\n    auto f = Box<int>(6);\n}\n",
+      "markers": [
+        {
+          "name": "cast",
+          "begin": 262,
+          "end": 262,
+          "range": false
+        },
+        {
+          "name": "temporary",
+          "begin": 286,
+          "end": 286,
+          "range": false
+        },
+        {
+          "name": "braced",
+          "begin": 313,
+          "end": 313,
+          "range": false
+        },
+        {
+          "name": "empty",
+          "begin": 337,
+          "end": 337,
+          "range": false
+        },
+        {
+          "name": "qualified",
+          "begin": 368,
+          "end": 368,
+          "range": false
+        },
+        {
+          "name": "specialization",
+          "begin": 392,
+          "end": 392,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "cards",
+      "blocks": [
+        {
+          "label": "cast",
+          "marker": "cast",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto a = ⟦Widget⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 18,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 18,
+                    "character": 19
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Widget⟧(int size);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 8,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 8,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto a = ⟦Widget⟧(1);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 18,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 18,
+                      "character": 19
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto c = ⟦Widget⟧{4};",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 20,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 20,
+                      "character": 19
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Widget",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "temporary",
+          "marker": "temporary",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int width, int height)\n```",
+              "range": {
+                "$place": "auto b = ⟦Widget⟧(2, 3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 19,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 19,
+                    "character": 19
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Widget⟧(int width, int height);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 9,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 9,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto b = ⟦Widget⟧(2, 3);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 19,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 19,
+                      "character": 19
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Widget",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "braced",
+          "marker": "braced",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto c = ⟦Widget⟧{4};",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 20,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 20,
+                    "character": 19
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Widget⟧(int size);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 8,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 8,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto a = ⟦Widget⟧(1);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 18,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 18,
+                      "character": 19
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto c = ⟦Widget⟧{4};",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 20,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 20,
+                      "character": 19
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Widget",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "empty",
+          "marker": "empty",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget()\n```",
+              "range": {
+                "$place": "auto d = ⟦Widget⟧();",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 21,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 21,
+                    "character": 19
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Widget⟧();",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto d = ⟦Widget⟧();",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 21,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 21,
+                      "character": 19
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Widget",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "qualified",
+          "marker": "qualified",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Circle` · struct `shapes::Circle`\n\n```cpp\nCircle(int radius)\n```",
+              "range": {
+                "$place": "auto e = shapes::⟦Circle⟧(5);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 22,
+                    "character": 21
+                  },
+                  "end": {
+                    "line": 22,
+                    "character": 27
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Circle⟧(int radius);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 2,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 2,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto e = shapes::⟦Circle⟧(5);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 22,
+                      "character": 21
+                    },
+                    "end": {
+                      "line": 22,
+                      "character": 27
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Circle",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "specialization",
+          "marker": "specialization",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Box` · struct `Box<…>`\n\n```cpp\nBox(T value)\n```\n**Template arguments:**\n```cpp\nT = int\n```",
+              "range": {
+                "$place": "auto f = ⟦Box⟧<int>(6);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 23,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 23,
+                    "character": 16
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Box⟧(T value);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 14,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 14,
+                      "character": 7
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto f = ⟦Box⟧<int>(6);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 23,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 23,
+                      "character": 16
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Box",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "navigation",
+      "blocks": [
+        {
+          "label": "cast",
+          "marker": "cast",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "auto a = ⟦Widget⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 18,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 18,
+                    "character": 19
+                  }
+                }
+              },
+              {
+                "$place": "auto c = ⟦Widget⟧{4};",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 20,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 20,
+                    "character": 19
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "temporary",
+          "marker": "temporary",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Widget⟧(int width, int height);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Widget⟧(int width, int height);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Widget⟧(int width, int height);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "auto b = ⟦Widget⟧(2, 3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 19,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 19,
+                    "character": 19
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "braced",
+          "marker": "braced",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "auto a = ⟦Widget⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 18,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 18,
+                    "character": 19
+                  }
+                }
+              },
+              {
+                "$place": "auto c = ⟦Widget⟧{4};",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 20,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 20,
+                    "character": 19
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "empty",
+          "marker": "empty",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Widget⟧();",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Widget⟧();",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Widget⟧();",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "auto d = ⟦Widget⟧();",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 21,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 21,
+                    "character": 19
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "qualified",
+          "marker": "qualified",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Circle⟧(int radius);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Circle⟧(int radius);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Circle⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Circle⟧(int radius);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "auto e = shapes::⟦Circle⟧(5);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 22,
+                    "character": 21
+                  },
+                  "end": {
+                    "line": 22,
+                    "character": 27
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "specialization",
+          "marker": "specialization",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Box⟧(T value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 14,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 14,
+                    "character": 7
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Box⟧(T value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 14,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 14,
+                    "character": 7
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Box⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 13,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 13,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Box⟧(T value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 14,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 14,
+                    "character": 7
+                  }
+                }
+              },
+              {
+                "$place": "auto f = ⟦Box⟧<int>(6);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 23,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 23,
+                    "character": 16
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "index cards",
+      "blocks": [
+        {
+          "label": "cast",
+          "marker": "cast",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto a = ⟦Widget⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 18,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 18,
+                    "character": 19
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "temporary",
+          "marker": "temporary",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int width, int height)\n```",
+              "range": {
+                "$place": "auto b = ⟦Widget⟧(2, 3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 19,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 19,
+                    "character": 19
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "braced",
+          "marker": "braced",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto c = ⟦Widget⟧{4};",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 20,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 20,
+                    "character": 19
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "empty",
+          "marker": "empty",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget()\n```",
+              "range": {
+                "$place": "auto d = ⟦Widget⟧();",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 21,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 21,
+                    "character": 19
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "qualified",
+          "marker": "qualified",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Circle` · struct `shapes::Circle`\n\n```cpp\nCircle(int radius)\n```",
+              "range": {
+                "$place": "auto e = shapes::⟦Circle⟧(5);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 22,
+                    "character": 21
+                  },
+                  "end": {
+                    "line": 22,
+                    "character": 27
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "specialization",
+          "marker": "specialization",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Box` · struct `Box`\n\n```cpp\nBox(T value)\n```",
+              "range": {
+                "$place": "auto f = ⟦Box⟧<int>(6);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 23,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 23,
+                    "character": 16
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
