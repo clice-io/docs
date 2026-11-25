@@ -1,0 +1,519 @@
+{
+  "id": "navigation/constructor_calls/05_inherited_constructors",
+  "topic": "navigation",
+  "subtopic": "constructor_calls",
+  "title": "Inherited constructors",
+  "summary": "A class's name calling a constructor it inherits leads to the base's",
+  "prose": "`Derived(1)`, where `Derived` inherits its constructors with\n`using Base::Base`, runs the constructor `Base` declares: the name leads\nthere, and go-to-type-definition to `Derived`, the class it constructs.",
+  "status": "supported",
+  "issues": [],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "struct Base {\n    Base(int value);\n};\n\nstruct Derived : Base {\n    using Base::Base;\n};\n\nvoid build() {\n    auto a = Derived(1);\n    auto* b = new Derived(2);\n}\n",
+      "markers": [
+        {
+          "name": "cast",
+          "begin": 117,
+          "end": 117,
+          "range": false
+        },
+        {
+          "name": "allocated",
+          "begin": 147,
+          "end": 147,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "cards",
+      "blocks": [
+        {
+          "label": "cast",
+          "marker": "cast",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Base` · struct `Base`\n\n```cpp\nBase(int value)\n```",
+              "range": {
+                "$place": "auto a = ⟦Derived⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 20
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Base⟧(int value);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 8
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "using Base::⟦Base⟧;",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 5,
+                      "character": 16
+                    },
+                    "end": {
+                      "line": 5,
+                      "character": 20
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto a = ⟦Derived⟧(1);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 9,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 9,
+                      "character": 20
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* b = new ⟦Derived⟧(2);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 10,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 10,
+                      "character": 25
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Derived",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "allocated",
+          "marker": "allocated",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Base` · struct `Base`\n\n```cpp\nBase(int value)\n```",
+              "range": {
+                "$place": "auto* b = new ⟦Derived⟧(2);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 10,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 10,
+                    "character": 25
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Base⟧(int value);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 8
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "using Base::⟦Base⟧;",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 5,
+                      "character": 16
+                    },
+                    "end": {
+                      "line": 5,
+                      "character": 20
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto a = ⟦Derived⟧(1);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 9,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 9,
+                      "character": 20
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* b = new ⟦Derived⟧(2);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 10,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 10,
+                      "character": 25
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Derived",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "navigation",
+      "blocks": [
+        {
+          "label": "cast",
+          "marker": "cast",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Base⟧(int value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Base⟧(int value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Derived⟧ : Base {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 4,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 4,
+                    "character": 14
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Base⟧(int value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              },
+              {
+                "$place": "using Base::⟦Base⟧;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 16
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 20
+                  }
+                }
+              },
+              {
+                "$place": "auto a = ⟦Derived⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 20
+                  }
+                }
+              },
+              {
+                "$place": "auto* b = new ⟦Derived⟧(2);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 10,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 10,
+                    "character": 25
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "allocated",
+          "marker": "allocated",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Base⟧(int value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Base⟧(int value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Derived⟧ : Base {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 4,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 4,
+                    "character": 14
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Base⟧(int value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 8
+                  }
+                }
+              },
+              {
+                "$place": "using Base::⟦Base⟧;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 16
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 20
+                  }
+                }
+              },
+              {
+                "$place": "auto a = ⟦Derived⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 20
+                  }
+                }
+              },
+              {
+                "$place": "auto* b = new ⟦Derived⟧(2);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 10,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 10,
+                    "character": 25
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "index cards",
+      "blocks": [
+        {
+          "label": "cast",
+          "marker": "cast",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Base` · struct `Base`\n\n```cpp\nBase(int value)\n```",
+              "range": {
+                "$place": "auto a = ⟦Derived⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 20
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "allocated",
+          "marker": "allocated",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Base` · struct `Base`\n\n```cpp\nBase(int value)\n```",
+              "range": {
+                "$place": "auto* b = new ⟦Derived⟧(2);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 10,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 10,
+                    "character": 25
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

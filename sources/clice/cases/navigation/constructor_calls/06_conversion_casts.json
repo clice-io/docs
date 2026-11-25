@@ -1,0 +1,452 @@
+{
+  "id": "navigation/constructor_calls/06_conversion_casts",
+  "topic": "navigation",
+  "subtopic": "constructor_calls",
+  "title": "Conversion casts",
+  "summary": "A functional cast through a conversion function names the type",
+  "prose": "`Target(source)`, when `Source` converts to `Target` with\n`operator Target()`, writes the type `Target`, which is the name of the\nconversion function too: the name leads to the class, and the\nparenthesis, as a C-style cast's does, to the conversion function.",
+  "status": "supported",
+  "issues": [],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "struct Target {\n    int value;\n};\n\nstruct Source {\n    operator Target() const;\n};\n\nTarget convert(Source source) {\n    return Target(source);\n}\n",
+      "markers": [
+        {
+          "name": "conversion",
+          "begin": 127,
+          "end": 127,
+          "range": false
+        },
+        {
+          "name": "conversion_paren",
+          "begin": 133,
+          "end": 133,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "cards",
+      "blocks": [
+        {
+          "label": "conversion",
+          "marker": "conversion",
+          "value": {
+            "hover": {
+              "markdown": "**struct** `Target`\n\n```cpp\nstruct Target {\n  int value;\n}\n```\n**Size:** 4 bytes\n**Alignment:** 4 bytes",
+              "range": {
+                "$place": "return ⟦Target⟧(source);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 11
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 17
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "struct ⟦Target⟧ {",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 0,
+                      "character": 7
+                    },
+                    "end": {
+                      "line": 0,
+                      "character": 13
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "operator ⟦Target⟧() const;",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 5,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 5,
+                      "character": 19
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "⟦Target⟧ convert(Source source) {",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 8,
+                      "character": 0
+                    },
+                    "end": {
+                      "line": 8,
+                      "character": 6
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "return ⟦Target⟧(source);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 9,
+                      "character": 11
+                    },
+                    "end": {
+                      "line": 9,
+                      "character": 17
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Target",
+              "type": "struct",
+              "modifiers": [
+                "global"
+              ]
+            }
+          }
+        },
+        {
+          "label": "conversion_paren",
+          "marker": "conversion_paren",
+          "value": {
+            "hover": {
+              "markdown": "**method** `operator Target` · struct `Source`\n\n```cpp\noperator Target() const\n```",
+              "range": {
+                "$place": "return Target⟦(⟧source);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 17
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 18
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦operator Target⟧() const;",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 5,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 5,
+                      "character": 19
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "return Target⟦(⟧source);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 9,
+                      "character": 17
+                    },
+                    "end": {
+                      "line": 9,
+                      "character": 18
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "(",
+              "type": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "navigation",
+      "blocks": [
+        {
+          "label": "conversion",
+          "marker": "conversion",
+          "value": {
+            "definition": [
+              {
+                "$place": "struct ⟦Target⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "struct ⟦Target⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Target⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "struct ⟦Target⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              },
+              {
+                "$place": "operator ⟦Target⟧() const;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 19
+                  }
+                }
+              },
+              {
+                "$place": "⟦Target⟧ convert(Source source) {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 0
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 6
+                  }
+                }
+              },
+              {
+                "$place": "return ⟦Target⟧(source);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 11
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 17
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "conversion_paren",
+          "marker": "conversion_paren",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦operator Target⟧() const;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 19
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦operator Target⟧() const;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 19
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Target⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦operator Target⟧() const;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 5,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 5,
+                    "character": 19
+                  }
+                }
+              },
+              {
+                "$place": "return Target⟦(⟧source);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 17
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 18
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "index cards",
+      "blocks": [
+        {
+          "label": "conversion",
+          "marker": "conversion",
+          "value": {
+            "hover": {
+              "markdown": "**struct** `Target`\n\n```cpp\nstruct Target { ... }\n```",
+              "range": {
+                "$place": "return ⟦Target⟧(source);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 11
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 17
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "conversion_paren",
+          "marker": "conversion_paren",
+          "value": {
+            "hover": {
+              "markdown": "**method** `operator Target` · struct `Source`\n\n```cpp\noperator Target() const\n```",
+              "range": {
+                "$place": "return Target⟦(⟧source);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 17
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 18
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -4,7 +4,7 @@
   "subtopic": "implicit_targets",
   "title": "Cast conversion navigation",
   "summary": "A cast navigates to the constructor or conversion operator it runs",
-  "prose": "Go-to-definition on a `static_cast`, on the parenthesis of a C-style cast\nor on the type of a functional cast reaches the constructor it selects or\nthe user-defined conversion operator it calls.",
+  "prose": "Go-to-definition on a `static_cast`, on the parenthesis of a C-style cast\nor of a functional cast written with a class's name, or on the builtin type\nof a functional cast (`double(m)`), reaches the constructor it selects or\nthe user-defined conversion operator it calls.",
   "status": "supported",
   "issues": [],
   "files": [

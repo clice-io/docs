@@ -1,0 +1,682 @@
+{
+  "id": "navigation/constructor_calls/04_aliases_and_deduction",
+  "topic": "navigation",
+  "subtopic": "constructor_calls",
+  "title": "Aliases and deduction",
+  "summary": "A construction through an alias or a deduced template leads to its constructor",
+  "prose": "`Alias(1)` calls the constructor of the class the alias names, and `Box(2)`\nthe constructor of the specialization its arguments deduce: both lead\nthere, go-to-type-definition to the type. `Box c(3)` declares a variable\nwhose declarator is the call: `Box` names the class, and the parenthesis\nleads to the constructor.",
+  "status": "supported",
+  "issues": [],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "struct Widget {\n    Widget(int size);\n};\n\nusing Alias = Widget;\n\ntemplate <typename T>\nstruct Box {\n    Box(T value);\n};\n\nvoid build() {\n    auto a = Alias(1);\n    auto b = Box(2);\n    Box c(3);\n}\n",
+      "markers": [
+        {
+          "name": "alias",
+          "begin": 150,
+          "end": 150,
+          "range": false
+        },
+        {
+          "name": "deduced",
+          "begin": 173,
+          "end": 173,
+          "range": false
+        },
+        {
+          "name": "declarator",
+          "begin": 185,
+          "end": 185,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "cards",
+      "blocks": [
+        {
+          "label": "alias",
+          "marker": "alias",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto a = ⟦Alias⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 12,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 12,
+                    "character": 18
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Widget⟧(int size);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto a = ⟦Alias⟧(1);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 12,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 12,
+                      "character": 18
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Alias",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "deduced",
+          "marker": "deduced",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Box` · struct `Box<…>`\n\n```cpp\nBox(T value)\n```\n**Template arguments:**\n```cpp\nT = int\n```",
+              "range": {
+                "$place": "auto b = ⟦Box⟧(2);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 13,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 13,
+                    "character": 16
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Box⟧(T value);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 8,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 8,
+                      "character": 7
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto b = ⟦Box⟧(2);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 13,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 13,
+                      "character": 16
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "Box c⟦(⟧3);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 14,
+                      "character": 9
+                    },
+                    "end": {
+                      "line": 14,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Box",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "declarator",
+          "marker": "declarator",
+          "value": {
+            "hover": {
+              "markdown": "**struct** `Box<…>`\n\n```cpp\ntemplate <typename T> struct Box {}\n```\n**Template arguments:**\n```cpp\nT = int\n```\n**Size:** 1 byte\n**Alignment:** 1 byte",
+              "range": {
+                "$place": "⟦Box⟧ c(3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 14,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 14,
+                    "character": 7
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "struct ⟦Box⟧ {",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 7
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "⟦Box⟧(T value);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 8,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 8,
+                      "character": 7
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto b = ⟦Box⟧(2);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 13,
+                      "character": 13
+                    },
+                    "end": {
+                      "line": 13,
+                      "character": 16
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "⟦Box⟧ c(3);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 14,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 14,
+                      "character": 7
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Box",
+              "type": "struct",
+              "modifiers": [
+                "global",
+                "template"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "navigation",
+      "blocks": [
+        {
+          "label": "alias",
+          "marker": "alias",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              },
+              {
+                "$place": "using ⟦Alias⟧ = Widget;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 4,
+                    "character": 6
+                  },
+                  "end": {
+                    "line": 4,
+                    "character": 11
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "auto a = ⟦Alias⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 12,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 12,
+                    "character": 18
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "deduced",
+          "marker": "deduced",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Box⟧(T value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 7
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Box⟧(T value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 7
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Box⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Box⟧(T value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 7
+                  }
+                }
+              },
+              {
+                "$place": "auto b = ⟦Box⟧(2);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 13,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 13,
+                    "character": 16
+                  }
+                }
+              },
+              {
+                "$place": "Box c⟦(⟧3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 14,
+                    "character": 9
+                  },
+                  "end": {
+                    "line": 14,
+                    "character": 10
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "declarator",
+          "marker": "declarator",
+          "value": {
+            "definition": [
+              {
+                "$place": "struct ⟦Box⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "struct ⟦Box⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Box⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "struct ⟦Box⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "⟦Box⟧(T value);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 7
+                  }
+                }
+              },
+              {
+                "$place": "auto b = ⟦Box⟧(2);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 13,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 13,
+                    "character": 16
+                  }
+                }
+              },
+              {
+                "$place": "⟦Box⟧ c(3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 14,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 14,
+                    "character": 7
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "index cards",
+      "blocks": [
+        {
+          "label": "alias",
+          "marker": "alias",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto a = ⟦Alias⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 12,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 12,
+                    "character": 18
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "deduced",
+          "marker": "deduced",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Box` · struct `Box`\n\n```cpp\nBox(T value)\n```",
+              "range": {
+                "$place": "auto b = ⟦Box⟧(2);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 13,
+                    "character": 13
+                  },
+                  "end": {
+                    "line": 13,
+                    "character": 16
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "declarator",
+          "marker": "declarator",
+          "value": {
+            "hover": {
+              "markdown": "**struct** `Box`\n\n```cpp\ntemplate <typename T>\nstruct Box { ... }\n```",
+              "range": {
+                "$place": "⟦Box⟧ c(3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 14,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 14,
+                    "character": 7
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1306 @@
+{
+  "id": "navigation/constructor_calls/03_new_expressions",
+  "topic": "navigation",
+  "subtopic": "constructor_calls",
+  "title": "`new` expressions",
+  "summary": "The class name a `new` allocates leads to the constructor it runs",
+  "prose": "In `new Widget(1)`, `new Widget{2}` and `new Widget`, the class's name\nanswers the constructor that builds the object, and go-to-type-definition\nthe class. An array's element type names the class alone.",
+  "status": "supported",
+  "issues": [],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "struct Widget {\n    Widget();\n    Widget(int size);\n};\n\nvoid build() {\n    auto* a = new Widget(1);\n    auto* b = new Widget{2};\n    auto* c = new Widget;\n    auto* d = new const Widget(3);\n    auto* e = new Widget[4];\n}\n",
+      "markers": [
+        {
+          "name": "paren",
+          "begin": 89,
+          "end": 89,
+          "range": false
+        },
+        {
+          "name": "braced",
+          "begin": 118,
+          "end": 118,
+          "range": false
+        },
+        {
+          "name": "bare",
+          "begin": 147,
+          "end": 147,
+          "range": false
+        },
+        {
+          "name": "constant",
+          "begin": 179,
+          "end": 179,
+          "range": false
+        },
+        {
+          "name": "array",
+          "begin": 208,
+          "end": 208,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "cards",
+      "blocks": [
+        {
+          "label": "paren",
+          "marker": "paren",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto* a = new ⟦Widget⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 24
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Widget⟧(int size);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 2,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 2,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* a = new ⟦Widget⟧(1);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 24
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* b = new ⟦Widget⟧{2};",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 24
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* d = new const ⟦Widget⟧(3);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 9,
+                      "character": 24
+                    },
+                    "end": {
+                      "line": 9,
+                      "character": 30
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Widget",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "braced",
+          "marker": "braced",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto* b = new ⟦Widget⟧{2};",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 24
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Widget⟧(int size);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 2,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 2,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* a = new ⟦Widget⟧(1);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 24
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* b = new ⟦Widget⟧{2};",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 24
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* d = new const ⟦Widget⟧(3);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 9,
+                      "character": 24
+                    },
+                    "end": {
+                      "line": 9,
+                      "character": 30
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Widget",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "bare",
+          "marker": "bare",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget()\n```",
+              "range": {
+                "$place": "auto* c = new ⟦Widget⟧;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 24
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Widget⟧();",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* c = new ⟦Widget⟧;",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 8,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 8,
+                      "character": 24
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Widget",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "constant",
+          "marker": "constant",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto* d = new const ⟦Widget⟧(3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 24
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 30
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "⟦Widget⟧(int size);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 2,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 2,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* a = new ⟦Widget⟧(1);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 24
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* b = new ⟦Widget⟧{2};",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 24
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* d = new const ⟦Widget⟧(3);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 9,
+                      "character": 24
+                    },
+                    "end": {
+                      "line": 9,
+                      "character": 30
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Widget",
+              "type": "method",
+              "modifiers": [
+                "member",
+                "constructor"
+              ]
+            }
+          }
+        },
+        {
+          "label": "array",
+          "marker": "array",
+          "value": {
+            "hover": {
+              "markdown": "**struct** `Widget`\n\n```cpp\nstruct Widget {}\n```\n**Size:** 1 byte\n**Alignment:** 1 byte",
+              "range": {
+                "$place": "auto* e = new ⟦Widget⟧[4];",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 10,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 10,
+                    "character": 24
+                  }
+                }
+              }
+            },
+            "highlights": [
+              {
+                "at": {
+                  "$place": "struct ⟦Widget⟧ {",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 0,
+                      "character": 7
+                    },
+                    "end": {
+                      "line": 0,
+                      "character": 13
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "⟦Widget⟧();",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "⟦Widget⟧(int size);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 2,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 2,
+                      "character": 10
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* a = new ⟦Widget⟧(1);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 24
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* b = new ⟦Widget⟧{2};",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 24
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* c = new ⟦Widget⟧;",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 8,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 8,
+                      "character": 24
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* d = new const ⟦Widget⟧(3);",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 9,
+                      "character": 24
+                    },
+                    "end": {
+                      "line": 9,
+                      "character": 30
+                    }
+                  }
+                },
+                "kind": "text"
+              },
+              {
+                "at": {
+                  "$place": "auto* e = new ⟦Widget⟧[4];",
+                  "path": "main.cpp",
+                  "range": {
+                    "start": {
+                      "line": 10,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 10,
+                      "character": 24
+                    }
+                  }
+                },
+                "kind": "text"
+              }
+            ],
+            "semantic_token": {
+              "text": "Widget",
+              "type": "struct",
+              "modifiers": [
+                "global"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "navigation",
+      "blocks": [
+        {
+          "label": "paren",
+          "marker": "paren",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "auto* a = new ⟦Widget⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 24
+                  }
+                }
+              },
+              {
+                "$place": "auto* b = new ⟦Widget⟧{2};",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 24
+                  }
+                }
+              },
+              {
+                "$place": "auto* d = new const ⟦Widget⟧(3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 24
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 30
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "braced",
+          "marker": "braced",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "auto* a = new ⟦Widget⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 24
+                  }
+                }
+              },
+              {
+                "$place": "auto* b = new ⟦Widget⟧{2};",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 24
+                  }
+                }
+              },
+              {
+                "$place": "auto* d = new const ⟦Widget⟧(3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 24
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 30
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "bare",
+          "marker": "bare",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Widget⟧();",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Widget⟧();",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Widget⟧();",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "auto* c = new ⟦Widget⟧;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 24
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "constant",
+          "marker": "constant",
+          "value": {
+            "definition": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "auto* a = new ⟦Widget⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 24
+                  }
+                }
+              },
+              {
+                "$place": "auto* b = new ⟦Widget⟧{2};",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 24
+                  }
+                }
+              },
+              {
+                "$place": "auto* d = new const ⟦Widget⟧(3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 24
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 30
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "array",
+          "marker": "array",
+          "value": {
+            "definition": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "declaration": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "type_definition": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              }
+            ],
+            "references": [
+              {
+                "$place": "struct ⟦Widget⟧ {",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 13
+                  }
+                }
+              },
+              {
+                "$place": "⟦Widget⟧();",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "⟦Widget⟧(int size);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "character": 4
+                  },
+                  "end": {
+                    "line": 2,
+                    "character": 10
+                  }
+                }
+              },
+              {
+                "$place": "auto* a = new ⟦Widget⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 24
+                  }
+                }
+              },
+              {
+                "$place": "auto* b = new ⟦Widget⟧{2};",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 24
+                  }
+                }
+              },
+              {
+                "$place": "auto* c = new ⟦Widget⟧;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 24
+                  }
+                }
+              },
+              {
+                "$place": "auto* d = new const ⟦Widget⟧(3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 24
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 30
+                  }
+                }
+              },
+              {
+                "$place": "auto* e = new ⟦Widget⟧[4];",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 10,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 10,
+                    "character": 24
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "index cards",
+      "blocks": [
+        {
+          "label": "paren",
+          "marker": "paren",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto* a = new ⟦Widget⟧(1);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 24
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "braced",
+          "marker": "braced",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto* b = new ⟦Widget⟧{2};",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 7,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 7,
+                    "character": 24
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "bare",
+          "marker": "bare",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget()\n```",
+              "range": {
+                "$place": "auto* c = new ⟦Widget⟧;",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 8,
+                    "character": 24
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "constant",
+          "marker": "constant",
+          "value": {
+            "hover": {
+              "markdown": "**method** `Widget` · struct `Widget`\n\n```cpp\nWidget(int size)\n```",
+              "range": {
+                "$place": "auto* d = new const ⟦Widget⟧(3);",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 9,
+                    "character": 24
+                  },
+                  "end": {
+                    "line": 9,
+                    "character": 30
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "array",
+          "marker": "array",
+          "value": {
+            "hover": {
+              "markdown": "**struct** `Widget`\n\n```cpp\nstruct Widget { ... }\n```",
+              "range": {
+                "$place": "auto* e = new ⟦Widget⟧[4];",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 10,
+                    "character": 18
+                  },
+                  "end": {
+                    "line": 10,
+                    "character": 24
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
