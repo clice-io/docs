@@ -1,0 +1,1015 @@
+{
+  "id": "code_completion/member_access/22_constructor_initializers",
+  "topic": "code_completion",
+  "subtopic": "member_access",
+  "title": "Constructor initializers",
+  "summary": "After a constructor's `:` the bases and members not initialized yet are offered, bases first, in declaration order",
+  "prose": "The one to initialize next comes first, though in a class with a virtual base it may not be. Each inserts the parameters of its constructor as placeholders, and a base or member with several constructors is one item, its parentheses left empty, unless overloads are listed apart. Names of other namespaces are not offered there.",
+  "status": "partial",
+  "issues": [],
+  "files": [
+    {
+      "path": "main.cpp",
+      "text": "namespace other {\nint width_limit;\n}\n\n/// What every widget is built on.\nstruct Base {\n    Base(int seed);\n};\n\nstruct Point {\n    int x;\n    int y;\n};\n\n/// A name a person reads.\nstruct Name {\n    Name();\n    Name(const char* text);\n};\n\ntemplate <typename T>\nstruct Tagged {\n    Tagged(T tag);\n};\n\nstruct Widget : Base {\n    int width;\n\n    /// The title of the window.\n    Name name;\n\n    Point origin;\n\n    Widget() :  {}\n\n    Widget(int seed) : Base(seed),  {}\n\n    Widget(long);\n    Widget(short);\n    Widget(char);\n    Widget(float);\n    Widget(double);\n    Widget(unsigned);\n};\n\nstruct Label : Tagged<int> {\n    Label() : Tagged<int>(1) {}\n\n    Label(int) : Tag{1} {}\n\n    Label(long) : Tagged <int>(1) {}\n\n    Label(short) : Tagged< int >(1) {}\n};\n\nWidget::Widget(long) :  {}\n\nWidget::Widget(double) : width(1),  {}\n\nWidget::Widget(short) : wid(1) {}\n\nWidget::Widget(float) : Base(1), wid{1} {}\n\nWidget::Widget(unsigned) : Base(1), wid {1}, name{} {}\n\ntemplate <typename T>\nstruct Holder : T {\n    T value;\n\n    Holder() :  {}\n};\n\ntemplate <typename T>\nstruct Outer {\n    using Base = T;\n\n    template <typename U>\n    struct Inner {\n        Inner(U value);\n    };\n\n    struct Derived : Base {\n        int Base;\n\n        Derived() :  {}\n    };\n};\n\nstruct Wrapped : Outer<int>::Inner<double> {\n    Wrapped() : Inn<double>(1) {}\n\n    Wrapped(int) : Out<int>::Inner<double>(1) {}\n};\n\n/// What a field grows from.\nstruct Grain {\n    Grain(int value);\n};\n\nstruct Planted : Grain {\n    /// A member named after its base.\n    int Grain;\n\n    Planted() :  {}\n};\n\nnamespace ns {\nstruct Seed {\n    Seed(int value);\n};\n}  // namespace ns\n\nstruct Seeded : ns::Seed {\n    Seeded() : n::Seed(1) {}\n};\n\nstruct Value {\n    bool is_int;\n\n    union {\n        int integer;\n        double real;\n    };\n\n    Value() :  {}\n};\n\ntemplate <typename... Bases>\nstruct Mixed : Bases... {\n    Mixed() : Bas{}... {}\n};\n\nWidget::Widget(char) : wi {}\n",
+      "markers": [
+        {
+          "name": "in_class",
+          "begin": 420,
+          "end": 420,
+          "range": false
+        },
+        {
+          "name": "after_base",
+          "begin": 460,
+          "end": 460,
+          "range": false
+        },
+        {
+          "name": "template_arguments_written",
+          "begin": 634,
+          "end": 634,
+          "range": false
+        },
+        {
+          "name": "template_base_braces",
+          "begin": 667,
+          "end": 667,
+          "range": false
+        },
+        {
+          "name": "template_arguments_spaced",
+          "begin": 699,
+          "end": 699,
+          "range": false
+        },
+        {
+          "name": "template_arguments_spelled_apart",
+          "begin": 738,
+          "end": 738,
+          "range": false
+        },
+        {
+          "name": "out_of_line",
+          "begin": 779,
+          "end": 779,
+          "range": false
+        },
+        {
+          "name": "after_member",
+          "begin": 819,
+          "end": 819,
+          "range": false
+        },
+        {
+          "name": "arguments_written",
+          "begin": 851,
+          "end": 851,
+          "range": false
+        },
+        {
+          "name": "braces_written",
+          "begin": 895,
+          "end": 895,
+          "range": false
+        },
+        {
+          "name": "braces_spaced",
+          "begin": 942,
+          "end": 942,
+          "range": false
+        },
+        {
+          "name": "dependent_base",
+          "begin": 1030,
+          "end": 1030,
+          "range": false
+        },
+        {
+          "name": "member_named_as_base",
+          "begin": 1240,
+          "end": 1240,
+          "range": false
+        },
+        {
+          "name": "qualified_template_arguments",
+          "begin": 1319,
+          "end": 1319,
+          "range": false
+        },
+        {
+          "name": "qualifier_template_arguments",
+          "begin": 1357,
+          "end": 1357,
+          "range": false
+        },
+        {
+          "name": "base_named_as_member",
+          "begin": 1554,
+          "end": 1554,
+          "range": false
+        },
+        {
+          "name": "namespace_written",
+          "begin": 1678,
+          "end": 1678,
+          "range": false
+        },
+        {
+          "name": "anonymous_union",
+          "begin": 1804,
+          "end": 1804,
+          "range": false
+        },
+        {
+          "name": "pack_braces",
+          "begin": 1884,
+          "end": 1884,
+          "range": false
+        },
+        {
+          "name": "typed",
+          "begin": 1922,
+          "end": 1922,
+          "range": false
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "default",
+      "blocks": [
+        {
+          "label": "in_class",
+          "marker": "in_class",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Base(int seed)",
+                  "kind": "Class",
+                  "insert": "Base(${1:int seed})",
+                  "snippet": true,
+                  "documentation": "What every widget is built on."
+                },
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width(${1:int})",
+                  "snippet": true
+                },
+                {
+                  "label": "name(…) +1 overload",
+                  "kind": "Field",
+                  "insert": "name($0)",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "origin(Point)",
+                  "kind": "Field",
+                  "insert": "origin(${1:Point})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "after_base",
+          "marker": "after_base",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width(${1:int})",
+                  "snippet": true
+                },
+                {
+                  "label": "name(…) +1 overload",
+                  "kind": "Field",
+                  "insert": "name($0)",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "origin(Point)",
+                  "kind": "Field",
+                  "insert": "origin(${1:Point})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "template_arguments_written",
+          "marker": "template_arguments_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Tagged<int>(int tag)",
+                  "kind": "Class",
+                  "insert": "Tagged"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "template_base_braces",
+          "marker": "template_base_braces",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Tagged<int>(int tag)",
+                  "kind": "Class",
+                  "insert": "Tagged<int>"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "template_arguments_spaced",
+          "marker": "template_arguments_spaced",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Tagged<int>(int tag)",
+                  "kind": "Class",
+                  "insert": "Tagged"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "template_arguments_spelled_apart",
+          "marker": "template_arguments_spelled_apart",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Tagged<int>(int tag)",
+                  "kind": "Class",
+                  "insert": "Tagged"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "out_of_line",
+          "marker": "out_of_line",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Base(…) +2 overloads",
+                  "kind": "Class",
+                  "insert": "Base($0)",
+                  "snippet": true,
+                  "documentation": "What every widget is built on."
+                },
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width(${1:int})",
+                  "snippet": true
+                },
+                {
+                  "label": "name(…) +3 overloads",
+                  "kind": "Field",
+                  "insert": "name($0)",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "origin(…) +1 overload",
+                  "kind": "Field",
+                  "insert": "origin($0)",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "after_member",
+          "marker": "after_member",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "name(…) +3 overloads",
+                  "kind": "Field",
+                  "insert": "name($0)",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "Base(…) +2 overloads",
+                  "kind": "Class",
+                  "insert": "Base($0)",
+                  "snippet": true,
+                  "documentation": "What every widget is built on."
+                },
+                {
+                  "label": "origin(…) +1 overload",
+                  "kind": "Field",
+                  "insert": "origin($0)",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "arguments_written",
+          "marker": "arguments_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "braces_written",
+          "marker": "braces_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "braces_spaced",
+          "marker": "braces_spaced",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "dependent_base",
+          "marker": "dependent_base",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "T(T)",
+                  "kind": "Class",
+                  "insert": "T(${1:T})",
+                  "snippet": true
+                },
+                {
+                  "label": "value(T)",
+                  "kind": "Field",
+                  "insert": "value(${1:T})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "member_named_as_base",
+          "marker": "member_named_as_base",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Base(int)",
+                  "kind": "Field",
+                  "insert": "Base(${1:int})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "qualified_template_arguments",
+          "marker": "qualified_template_arguments",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Outer<int>::Inner<double>(double value)",
+                  "kind": "Class",
+                  "insert": "Outer<int>::Inner"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "qualifier_template_arguments",
+          "marker": "qualifier_template_arguments",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Outer<int>::Inner<double>(double value)",
+                  "kind": "Class",
+                  "insert": "Outer"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "base_named_as_member",
+          "marker": "base_named_as_member",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Grain(int)",
+                  "kind": "Field",
+                  "insert": "Grain(${1:int})",
+                  "snippet": true,
+                  "documentation": "A member named after its base."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "namespace_written",
+          "marker": "namespace_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "ns::Seed(int value)",
+                  "kind": "Class",
+                  "insert": "ns"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "anonymous_union",
+          "marker": "anonymous_union",
+          "value": {
+            "wrong": "integer and real, the members of the anonymous union, are missing: clang skips a member without a name, and clice adds none",
+            "completion": {
+              "items": [
+                {
+                  "label": "is_int(bool)",
+                  "kind": "Field",
+                  "insert": "is_int(${1:bool})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "pack_braces",
+          "marker": "pack_braces",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Bases(Bases)",
+                  "kind": "Class",
+                  "insert": "Bases"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "typed",
+          "marker": "typed",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width(${1:int})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "unbundled",
+      "config": {
+        "code_completion": {
+          "bundle_overloads": false
+        }
+      },
+      "blocks": [
+        {
+          "label": "in_class",
+          "marker": "in_class",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Base(int seed)",
+                  "kind": "Class",
+                  "insert": "Base(${1:int seed})",
+                  "snippet": true,
+                  "documentation": "What every widget is built on."
+                },
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width(${1:int})",
+                  "snippet": true
+                },
+                {
+                  "label": "name()",
+                  "kind": "Field",
+                  "insert": "name()",
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "name(const char *text)",
+                  "kind": "Field",
+                  "insert": "name(${1:const char *text})",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "origin(Point)",
+                  "kind": "Field",
+                  "insert": "origin(${1:Point})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "after_base",
+          "marker": "after_base",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width(${1:int})",
+                  "snippet": true
+                },
+                {
+                  "label": "name()",
+                  "kind": "Field",
+                  "insert": "name()",
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "name(const char *text)",
+                  "kind": "Field",
+                  "insert": "name(${1:const char *text})",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "origin(Point)",
+                  "kind": "Field",
+                  "insert": "origin(${1:Point})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "template_arguments_written",
+          "marker": "template_arguments_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Tagged<int>(int tag)",
+                  "kind": "Class",
+                  "insert": "Tagged"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "template_base_braces",
+          "marker": "template_base_braces",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Tagged<int>(int tag)",
+                  "kind": "Class",
+                  "insert": "Tagged<int>"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "template_arguments_spaced",
+          "marker": "template_arguments_spaced",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Tagged<int>(int tag)",
+                  "kind": "Class",
+                  "insert": "Tagged"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "template_arguments_spelled_apart",
+          "marker": "template_arguments_spelled_apart",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Tagged<int>(int tag)",
+                  "kind": "Class",
+                  "insert": "Tagged"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "out_of_line",
+          "marker": "out_of_line",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Base(int seed)",
+                  "kind": "Class",
+                  "insert": "Base(${1:int seed})",
+                  "snippet": true,
+                  "documentation": "What every widget is built on."
+                },
+                {
+                  "label": "Base(const Base &)",
+                  "kind": "Class",
+                  "insert": "Base(${1:const Base &})",
+                  "snippet": true,
+                  "documentation": "What every widget is built on."
+                },
+                {
+                  "label": "Base(Base &&)",
+                  "kind": "Class",
+                  "insert": "Base(${1:Base &&})",
+                  "snippet": true,
+                  "documentation": "What every widget is built on."
+                },
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width(${1:int})",
+                  "snippet": true
+                },
+                {
+                  "label": "name()",
+                  "kind": "Field",
+                  "insert": "name()",
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "name(const char *text)",
+                  "kind": "Field",
+                  "insert": "name(${1:const char *text})",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "name(const Name &)",
+                  "kind": "Field",
+                  "insert": "name(${1:const Name &})",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "name(Name &&)",
+                  "kind": "Field",
+                  "insert": "name(${1:Name &&})",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "origin(const Point &)",
+                  "kind": "Field",
+                  "insert": "origin(${1:const Point &})",
+                  "snippet": true
+                },
+                {
+                  "label": "origin(Point &&)",
+                  "kind": "Field",
+                  "insert": "origin(${1:Point &&})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "after_member",
+          "marker": "after_member",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "name()",
+                  "kind": "Field",
+                  "insert": "name()",
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "name(const char *text)",
+                  "kind": "Field",
+                  "insert": "name(${1:const char *text})",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "name(const Name &)",
+                  "kind": "Field",
+                  "insert": "name(${1:const Name &})",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "name(Name &&)",
+                  "kind": "Field",
+                  "insert": "name(${1:Name &&})",
+                  "snippet": true,
+                  "documentation": "The title of the window."
+                },
+                {
+                  "label": "Base(int seed)",
+                  "kind": "Class",
+                  "insert": "Base(${1:int seed})",
+                  "snippet": true,
+                  "documentation": "What every widget is built on."
+                },
+                {
+                  "label": "Base(const Base &)",
+                  "kind": "Class",
+                  "insert": "Base(${1:const Base &})",
+                  "snippet": true,
+                  "documentation": "What every widget is built on."
+                },
+                {
+                  "label": "Base(Base &&)",
+                  "kind": "Class",
+                  "insert": "Base(${1:Base &&})",
+                  "snippet": true,
+                  "documentation": "What every widget is built on."
+                },
+                {
+                  "label": "origin(const Point &)",
+                  "kind": "Field",
+                  "insert": "origin(${1:const Point &})",
+                  "snippet": true
+                },
+                {
+                  "label": "origin(Point &&)",
+                  "kind": "Field",
+                  "insert": "origin(${1:Point &&})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "arguments_written",
+          "marker": "arguments_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "braces_written",
+          "marker": "braces_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "braces_spaced",
+          "marker": "braces_spaced",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "dependent_base",
+          "marker": "dependent_base",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "T(T)",
+                  "kind": "Class",
+                  "insert": "T(${1:T})",
+                  "snippet": true
+                },
+                {
+                  "label": "value(T)",
+                  "kind": "Field",
+                  "insert": "value(${1:T})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "member_named_as_base",
+          "marker": "member_named_as_base",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Base(int)",
+                  "kind": "Field",
+                  "insert": "Base(${1:int})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "qualified_template_arguments",
+          "marker": "qualified_template_arguments",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Outer<int>::Inner<double>(double value)",
+                  "kind": "Class",
+                  "insert": "Outer<int>::Inner"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "qualifier_template_arguments",
+          "marker": "qualifier_template_arguments",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Outer<int>::Inner<double>(double value)",
+                  "kind": "Class",
+                  "insert": "Outer"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "base_named_as_member",
+          "marker": "base_named_as_member",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Grain(int)",
+                  "kind": "Field",
+                  "insert": "Grain(${1:int})",
+                  "snippet": true,
+                  "documentation": "A member named after its base."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "namespace_written",
+          "marker": "namespace_written",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "ns::Seed(int value)",
+                  "kind": "Class",
+                  "insert": "ns"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "anonymous_union",
+          "marker": "anonymous_union",
+          "value": {
+            "wrong": "integer and real, the members of the anonymous union, are missing: clang skips a member without a name, and clice adds none",
+            "completion": {
+              "items": [
+                {
+                  "label": "is_int(bool)",
+                  "kind": "Field",
+                  "insert": "is_int(${1:bool})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "pack_braces",
+          "marker": "pack_braces",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "Bases(Bases)",
+                  "kind": "Class",
+                  "insert": "Bases"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "typed",
+          "marker": "typed",
+          "value": {
+            "completion": {
+              "items": [
+                {
+                  "label": "width(int)",
+                  "kind": "Field",
+                  "insert": "width(${1:int})",
+                  "snippet": true
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
