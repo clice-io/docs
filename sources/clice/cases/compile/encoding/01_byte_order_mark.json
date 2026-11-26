@@ -4,23 +4,23 @@
   "subtopic": "encoding",
   "title": "Byte order marks",
   "summary": "Files saved as UTF-8 with a byte order mark work like any other",
-  "prose": "Positions on the first line skip the mark, as the editor shows it, and data a file embeds keeps its bytes.",
+  "prose": "Positions skip the mark, as the editor shows the file, and clice reads the file as the compiler does: data it embeds keeps its bytes.",
   "status": "supported",
   "issues": [],
   "files": [
     {
       "path": "a.h",
-      "text": "﻿int shared_fn();\n",
+      "text": "int shared_fn();\n",
       "markers": []
     },
     {
       "path": "answer.h",
-      "text": "﻿#define ANSWER 42\n",
+      "text": "#define ANSWER 42\n",
       "markers": []
     },
     {
       "path": "c.cpp",
-      "text": "﻿int user3() {\n    return 3;\n}\n\n#include \"a.h\"\n",
+      "text": "int user3() {\n    return 3;\n}\n\n#include \"a.h\"\n",
       "markers": []
     },
     {
@@ -29,8 +29,28 @@
       "markers": []
     },
     {
+      "path": "column.cpp",
+      "text": "#include \"column.h\"\n\nstatic_assert(column == 27);\n",
+      "markers": []
+    },
+    {
+      "path": "column.h",
+      "text": "constexpr int column = __builtin_COLUMN();\n",
+      "markers": []
+    },
+    {
+      "path": "contexted.cpp",
+      "text": "#define FROM_HOST 1\n#include \"contexted.h\"\n",
+      "markers": []
+    },
+    {
+      "path": "contexted.h",
+      "text": "constexpr int column = __builtin_COLUMN();\n\n#ifndef FROM_HOST\n#define FROM_HOST 0\n#endif\n\nstatic_assert(column == 24 || FROM_HOST);\n",
+      "markers": []
+    },
+    {
       "path": "data.bin",
-      "text": "﻿AB",
+      "text": "AB",
       "markers": []
     },
     {
@@ -39,14 +59,51 @@
       "markers": []
     },
     {
+      "path": "embedded_first.cpp",
+      "text": "constexpr unsigned char bytes[] = {\n#embed \"answer.h\"\n};\n\nstatic_assert(sizeof(bytes) == 21);\n\n#include \"answer.h\"\n\nstatic_assert(ANSWER == 42);\n",
+      "markers": []
+    },
+    {
       "path": "entered.cpp",
-      "text": "#include \"answer.h\"\n\n#if __has_embed(\"answer.h\")\nstatic_assert(ANSWER == 42);\n#endif\n",
+      "text": "#include \"answer.h\"\n\n#if __has_embed(\"answer.h\")\nstatic_assert(ANSWER == 42);\n#endif\n\nconstexpr unsigned char bytes[] = {\n#embed \"answer.h\"\n};\n\nstatic_assert(sizeof(bytes) == 21);\n",
       "markers": []
     },
     {
       "path": "main.cpp",
-      "text": "﻿#include \"types.h\"\n#include \"utils.h\"\n#include \"a.h\"\n\nint main() {\n    return get_x({1, 2}) + shared_fn();\n}\n",
+      "text": "#include \"types.h\"\n#include \"utils.h\"\n#include \"a.h\"\n#include \"shapes.h\"\n\nint main() {\n    return get_x({1, 2}) + shared_fn() + area({3, 4});\n}\n",
       "markers": []
+    },
+    {
+      "path": "mark.bin",
+      "text": "",
+      "markers": []
+    },
+    {
+      "path": "mark_only.cpp",
+      "text": "#if __has_embed(\"mark.bin\") == __STDC_EMBED_FOUND__\nconstexpr bool found = true;\n#endif\n\nstatic_assert(found);\n",
+      "markers": []
+    },
+    {
+      "path": "own_column.cpp",
+      "text": "static_assert(__builtin_COLUMN() == 18);\n",
+      "markers": []
+    },
+    {
+      "path": "saved_column.cpp",
+      "text": "static_assert(__builtin_COLUMN() == 15);\n",
+      "markers": []
+    },
+    {
+      "path": "shapes.h",
+      "text": "/// A size on the plane.\nstruct Extent {\n    int width;\n    int height;\n};\n\ninline int area(Extent extent) {\n    return extent.width * extent.height;\n}\n",
+      "markers": [
+        {
+          "name": "extent",
+          "begin": 32,
+          "end": 32,
+          "range": false
+        }
+      ]
     },
     {
       "path": "types.h",
@@ -83,6 +140,122 @@
                 }
               }
             }
+          }
+        },
+        {
+          "label": "tokens",
+          "value": {
+            "semantic_tokens": [
+              {
+                "at": {
+                  "$place": "⟦int⟧ user3() {",
+                  "path": "c.cpp",
+                  "range": {
+                    "start": {
+                      "line": 0,
+                      "character": 0
+                    },
+                    "end": {
+                      "line": 0,
+                      "character": 3
+                    }
+                  }
+                },
+                "type": "primitive"
+              },
+              {
+                "at": {
+                  "$place": "int ⟦user3⟧() {",
+                  "path": "c.cpp",
+                  "range": {
+                    "start": {
+                      "line": 0,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 0,
+                      "character": 9
+                    }
+                  }
+                },
+                "type": "function",
+                "modifiers": [
+                  "definition",
+                  "global"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "⟦return⟧ 3;",
+                  "path": "c.cpp",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 10
+                    }
+                  }
+                },
+                "type": "keyword",
+                "modifiers": [
+                  "controlFlow"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "return ⟦3⟧;",
+                  "path": "c.cpp",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 11
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 12
+                    }
+                  }
+                },
+                "type": "number"
+              },
+              {
+                "at": {
+                  "$place": "⟦#include⟧ \"a.h\"",
+                  "path": "c.cpp",
+                  "range": {
+                    "start": {
+                      "line": 4,
+                      "character": 0
+                    },
+                    "end": {
+                      "line": 4,
+                      "character": 8
+                    }
+                  }
+                },
+                "type": "directive"
+              },
+              {
+                "at": {
+                  "$place": "#include ⟦\"a.h\"⟧",
+                  "path": "c.cpp",
+                  "range": {
+                    "start": {
+                      "line": 4,
+                      "character": 9
+                    },
+                    "end": {
+                      "line": 4,
+                      "character": 14
+                    }
+                  }
+                },
+                "type": "header"
+              }
+            ]
           }
         }
       ]
@@ -135,11 +308,560 @@
               }
             ]
           }
+        },
+        {
+          "label": "ANSWER",
+          "value": {
+            "definition": [
+              {
+                "$place": "answer.h │ #define ⟦ANSWER⟧ 42",
+                "path": "answer.h",
+                "range": {
+                  "start": {
+                    "line": 0,
+                    "character": 8
+                  },
+                  "end": {
+                    "line": 0,
+                    "character": 14
+                  }
+                }
+              }
+            ]
+          }
         }
       ]
     },
     {
-      "name": "marked host keeps the context",
+      "name": "header with a byte order mark",
+      "blocks": [
+        {
+          "label": "extent",
+          "marker": "extent",
+          "value": {
+            "hover": {
+              "markdown": "**struct** `Extent`\n\nA size on the plane.\n\n```cpp\nstruct Extent {\n  int width;\n  int height;\n}\n```\n**Size:** 8 bytes\n**Alignment:** 4 bytes",
+              "range": {
+                "$place": "struct ⟦Extent⟧ {",
+                "path": "shapes.h",
+                "range": {
+                  "start": {
+                    "line": 1,
+                    "character": 7
+                  },
+                  "end": {
+                    "line": 1,
+                    "character": 13
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "area",
+          "value": {
+            "hover": {
+              "markdown": "**function** `area`\n\n```cpp\ninline int area(Extent extent)\n```",
+              "range": {
+                "$place": "return get_x({1, 2}) + shared_fn() + ⟦area⟧({3, 4});",
+                "path": "main.cpp",
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "character": 41
+                  },
+                  "end": {
+                    "line": 6,
+                    "character": 45
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "outline",
+          "value": {
+            "document_symbols": [
+              {
+                "name": "Extent",
+                "kind": "Struct",
+                "at": {
+                  "$place": "struct ⟦Extent⟧ {",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 7
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 13
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "name": "width",
+                    "kind": "Field",
+                    "at": {
+                      "$place": "int ⟦width⟧;",
+                      "path": "shapes.h",
+                      "range": {
+                        "start": {
+                          "line": 2,
+                          "character": 8
+                        },
+                        "end": {
+                          "line": 2,
+                          "character": 13
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "height",
+                    "kind": "Field",
+                    "at": {
+                      "$place": "int ⟦height⟧;",
+                      "path": "shapes.h",
+                      "range": {
+                        "start": {
+                          "line": 3,
+                          "character": 8
+                        },
+                        "end": {
+                          "line": 3,
+                          "character": 14
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "area",
+                "kind": "Function",
+                "at": {
+                  "$place": "inline int ⟦area⟧(Extent extent) {",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 11
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 15
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "folding",
+          "value": {
+            "folding_ranges": [
+              {
+                "kind": "struct",
+                "at": {
+                  "$place": "struct Extent ⟦{ … }⟧ (4 lines)",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 14
+                    },
+                    "end": {
+                      "line": 4,
+                      "character": 1
+                    }
+                  }
+                },
+                "collapsed": "{...}"
+              },
+              {
+                "kind": "functionBody",
+                "at": {
+                  "$place": "inline int area(Extent extent) ⟦{ … }⟧ (3 lines)",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 31
+                    },
+                    "end": {
+                      "line": 8,
+                      "character": 1
+                    }
+                  }
+                },
+                "collapsed": "{...}"
+              }
+            ]
+          }
+        },
+        {
+          "label": "tokens",
+          "value": {
+            "semantic_tokens": [
+              {
+                "at": {
+                  "$place": "⟦/// A size on the plane.⟧",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 0,
+                      "character": 0
+                    },
+                    "end": {
+                      "line": 0,
+                      "character": 24
+                    }
+                  }
+                },
+                "type": "comment",
+                "modifiers": [
+                  "documentation"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "⟦struct⟧ Extent {",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 0
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 6
+                    }
+                  }
+                },
+                "type": "keyword"
+              },
+              {
+                "at": {
+                  "$place": "struct ⟦Extent⟧ {",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 1,
+                      "character": 7
+                    },
+                    "end": {
+                      "line": 1,
+                      "character": 13
+                    }
+                  }
+                },
+                "type": "struct",
+                "modifiers": [
+                  "definition",
+                  "global"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "⟦int⟧ width;",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 2,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 2,
+                      "character": 7
+                    }
+                  }
+                },
+                "type": "primitive"
+              },
+              {
+                "at": {
+                  "$place": "int ⟦width⟧;",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 2,
+                      "character": 8
+                    },
+                    "end": {
+                      "line": 2,
+                      "character": 13
+                    }
+                  }
+                },
+                "type": "field",
+                "modifiers": [
+                  "definition",
+                  "member"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "⟦int⟧ height;",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 3,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 3,
+                      "character": 7
+                    }
+                  }
+                },
+                "type": "primitive"
+              },
+              {
+                "at": {
+                  "$place": "int ⟦height⟧;",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 3,
+                      "character": 8
+                    },
+                    "end": {
+                      "line": 3,
+                      "character": 14
+                    }
+                  }
+                },
+                "type": "field",
+                "modifiers": [
+                  "definition",
+                  "member"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "⟦inline⟧ int area(Extent extent) {",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 0
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 6
+                    }
+                  }
+                },
+                "type": "keyword"
+              },
+              {
+                "at": {
+                  "$place": "inline ⟦int⟧ area(Extent extent) {",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 7
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 10
+                    }
+                  }
+                },
+                "type": "primitive"
+              },
+              {
+                "at": {
+                  "$place": "inline int ⟦area⟧(Extent extent) {",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 11
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 15
+                    }
+                  }
+                },
+                "type": "function",
+                "modifiers": [
+                  "definition",
+                  "global"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "inline int area(⟦Extent⟧ extent) {",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 16
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 22
+                    }
+                  }
+                },
+                "type": "struct",
+                "modifiers": [
+                  "global"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "inline int area(Extent ⟦extent⟧) {",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "character": 23
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 29
+                    }
+                  }
+                },
+                "type": "parameter",
+                "modifiers": [
+                  "definition",
+                  "local"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "⟦return⟧ extent.width * extent.height;",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 4
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 10
+                    }
+                  }
+                },
+                "type": "keyword",
+                "modifiers": [
+                  "controlFlow"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "return ⟦extent⟧.width * extent.height;",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 11
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 17
+                    }
+                  }
+                },
+                "type": "parameter",
+                "modifiers": [
+                  "local"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "return extent.⟦width⟧ * extent.height;",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 18
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 23
+                    }
+                  }
+                },
+                "type": "field",
+                "modifiers": [
+                  "member"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "return extent.width ⟦*⟧ extent.height;",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 24
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 25
+                    }
+                  }
+                },
+                "type": "operator"
+              },
+              {
+                "at": {
+                  "$place": "return extent.width * ⟦extent⟧.height;",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 26
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 32
+                    }
+                  }
+                },
+                "type": "parameter",
+                "modifiers": [
+                  "local"
+                ]
+              },
+              {
+                "at": {
+                  "$place": "return extent.width * extent.⟦height⟧;",
+                  "path": "shapes.h",
+                  "range": {
+                    "start": {
+                      "line": 7,
+                      "character": 33
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 39
+                    }
+                  }
+                },
+                "type": "field",
+                "modifiers": [
+                  "member"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "host with a byte order mark keeps the context",
       "blocks": [
         {
           "label": "utils.h",
@@ -156,7 +878,43 @@
       ]
     },
     {
-      "name": "embedded data keeps the mark",
+      "name": "the compile reads the bytes",
+      "blocks": []
+    },
+    {
+      "name": "a save adding the mark",
+      "blocks": [
+        {
+          "label": "after the save",
+          "value": {
+            "errors": [
+              {
+                "at": {
+                  "$place": "static_assert(⟦__builtin_COLUMN() == 15⟧);",
+                  "path": "saved_column.cpp",
+                  "range": {
+                    "start": {
+                      "line": 0,
+                      "character": 14
+                    },
+                    "end": {
+                      "line": 0,
+                      "character": 38
+                    }
+                  }
+                },
+                "severity": "error",
+                "message": "static assertion failed due to requirement '__builtin_COLUMN() == 15'",
+                "source": "clang",
+                "code": "err_static_assert_requirement_failed"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a save adding the mark to a header",
       "blocks": []
     }
   ]
