@@ -47,6 +47,7 @@
   --radius-lg: 12px;
   --hard-shadow: 4px 4px 0 var(--shadow-color);
   --hard-shadow-sm: 3px 3px 0 var(--shadow-color);
+  --menu-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12.5l5 5L20 6.5'/%3E%3C/svg%3E");
 
   --hatch: repeating-linear-gradient(
     -45deg,
@@ -1622,6 +1623,64 @@ html[lang^="zh"] {
   border-radius: calc(var(--radius) - var(--line));
   background: transparent;
   box-shadow: none;
+}
+
+/* The language menu, as a switch list: VitePress lists the current language
+ * as a bold title above links to the others, so weight alone told them apart.
+ * Every language gets the same row, the current one a check and a tint (as
+ * the case cards' configuration menu draws its pick), the others a plate on
+ * hover. The navbar flyout and the narrow screens' "..." menu share it. */
+.VPNavBarTranslations .items .title,
+.VPNavBarExtra .translations .trans-title,
+.VPNavBarTranslations .VPMenuLink .link,
+.VPNavBarExtra .translations .VPMenuLink .link {
+  position: relative;
+  margin: 0;
+  padding: 0 14px 0 32px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 32px;
+}
+
+.VPNavBarTranslations .items .title,
+.VPNavBarExtra .translations .trans-title {
+  margin-bottom: 2px;
+  background: var(--pinafore-soft);
+  color: var(--ink);
+  font-weight: 700;
+  cursor: default;
+}
+
+.VPNavBarTranslations .items .title::before,
+.VPNavBarExtra .translations .trans-title::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 11px;
+  width: 13px;
+  height: 13px;
+  margin-top: -7px;
+  background: var(--bow);
+  -webkit-mask: var(--menu-check) center / contain no-repeat;
+  mask: var(--menu-check) center / contain no-repeat;
+}
+
+.VPNavBarTranslations .VPMenuLink .link,
+.VPNavBarExtra .translations .VPMenuLink .link {
+  color: var(--ink-2);
+}
+
+.VPNavBarTranslations .VPMenuLink .link:hover,
+.VPNavBarExtra .translations .VPMenuLink .link:hover {
+  background: var(--paper-3);
+  color: var(--ink);
+}
+
+.VPNavBarTranslations .VPMenuLink .link:focus-visible,
+.VPNavBarExtra .translations .VPMenuLink .link:focus-visible {
+  outline: var(--line) solid var(--bow);
+  outline-offset: -2px;
 }
 
 /* ---------------------------------------------------------------------------
