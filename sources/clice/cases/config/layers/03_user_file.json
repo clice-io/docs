@@ -1,0 +1,47 @@
+{
+  "id": "config/layers/03_user_file",
+  "topic": "config",
+  "subtopic": "layers",
+  "title": "The user's file",
+  "summary": "Settings for every project go in the user's configuration file, under each project's own settings",
+  "prose": "`clice/clice.toml` in the user's configuration directory (`~/.config` on Linux and macOS, `%APPDATA%` on Windows, `$XDG_CONFIG_HOME` wherever it is set to an absolute path) applies to every project, under its `clice.toml`. Here the user's rule and the project's both give `main.cpp` a macro, and the file compiles; `clice inspect config` lists the files read and where each setting comes from.",
+  "status": "supported",
+  "issues": [],
+  "files": [
+    {
+      "path": "clice.toml",
+      "text": "[[rules]]\npatterns = [\"**/*.cpp\"]\nappend = [\"-DFROM_PROJECT\"]\n",
+      "markers": []
+    },
+    {
+      "path": "main.cpp",
+      "text": "int main() {\n    return FROM_USER + FROM_PROJECT;\n}\n",
+      "markers": []
+    },
+    {
+      "path": "user/clice/clice.toml",
+      "text": "[workers]\nforeground = 1\n\n[[rules]]\nappend = [\"-DFROM_USER\"]\n",
+      "markers": []
+    }
+  ],
+  "tests": [
+    {
+      "name": "test",
+      "blocks": [
+        {
+          "label": "main.cpp",
+          "value": {
+            "diagnostics": []
+          }
+        },
+        {
+          "label": "$ clice inspect config",
+          "value": {
+            "stdout": "{\n  \"files\": [\n    {\n      \"layer\": \"User\",\n      \"path\": \"${WS}/user/clice/clice.toml\",\n      \"read\": true\n    },\n    {\n      \"layer\": \"Project\",\n      \"path\": \"${WS}/clice.toml\",\n      \"read\": true\n    },\n    {\n      \"layer\": \"Project\",\n      \"path\": \"${WS}/.clice/clice.toml\",\n      \"read\": false\n    },\n    {\n      \"layer\": \"Local\",\n      \"path\": \"${WS}/.clice/clice.local.toml\",\n      \"read\": false\n    }\n  ],\n  \"settings\": [\n    {\n      \"key\": \"workers.foreground\",\n      \"value\": 1,\n      \"origin\": \"${WS}/user/clice/clice.toml:2\"\n    }\n  ],\n  \"rules\": [\n    \"${WS}/clice.toml:1\",\n    \"${WS}/user/clice/clice.toml:4\"\n  ]\n}",
+            "exit": 0
+          }
+        }
+      ]
+    }
+  ]
+}
