@@ -1,0 +1,40 @@
+{
+  "id": "config/layers/04_local_file",
+  "topic": "config",
+  "subtopic": "layers",
+  "title": "The local file",
+  "summary": "`.clice/clice.local.toml` holds a developer's own settings for a project whose `clice.toml` is committed",
+  "prose": "The project's `clice.toml` compiles `main.cpp` as C++17 with a macro; the local file, which the cache directory's `.gitignore` keeps out of Git, asks for C++20 and takes the macro away. Its rules come before the project's, so they decide first, and their flags come after, so they win on the command line: the concept compiles and the `#error` stays out.",
+  "status": "supported",
+  "issues": [],
+  "files": [
+    {
+      "path": ".clice/clice.local.toml",
+      "text": "[[rules]]\nappend = [\"-std=c++20\"]\nremove = [\"-DFROM_PROJECT\"]\n",
+      "markers": []
+    },
+    {
+      "path": "clice.toml",
+      "text": "[[rules]]\npatterns = [\"**/*.cpp\"]\nappend = [\"-std=c++17\", \"-DFROM_PROJECT\"]\n",
+      "markers": []
+    },
+    {
+      "path": "main.cpp",
+      "text": "template <typename T>\nconcept Small = sizeof(T) <= 8;\n\n#ifdef FROM_PROJECT\n#error the local file removes FROM_PROJECT\n#endif\n\nint twice(Small auto value) {\n    return value + value;\n}\n\nint main() {\n    return twice(1) - 2;\n}\n",
+      "markers": []
+    }
+  ],
+  "tests": [
+    {
+      "name": "test",
+      "blocks": [
+        {
+          "label": "main.cpp",
+          "value": {
+            "diagnostics": []
+          }
+        }
+      ]
+    }
+  ]
+}
